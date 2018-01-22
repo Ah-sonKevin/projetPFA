@@ -1,8 +1,7 @@
 open Tsdl
 
-
 let my_exit (window,renderer,background) =
-   Sdl.free_surface background;
+   Sdl.destroy_texture background;
    Sdl.destroy_renderer renderer;
    Sdl.destroy_window window;
    Sdl.quit();
@@ -30,6 +29,21 @@ let evenement e exit_arg =
        |_->print_string "Evenement inconnu non géré\n "
      end
   |false-> ()
+
+let load_picture (window,renderer,background) =
+   match Sdl.load_bmp "Image/Menu_backscreen_1160_870.bmp" with
+     | Error (`Msg e) -> Sdl.log "Init load picture error: %s" e; exit 1
+     | Ok surface_temp ->
+	 match Sdl.create_texture_from_surface render surface_temp with
+	  | Error (`Msg e) -> Sdl.log "Init surface to texture error: %s" e; exit 1
+	  | Ok background -> Sdl.free_surface surface_temp 
+	    match Sdl.query_texture background with
+	     |Error (`Msg e) -> Sdl.log "Init query texture error: %s" e; exit 1
+	     |Ok (_,_,(w,h)) ->
+	       let position_background = Sdl.Rect.create 0 0 w h in
+		 match Sdl.render_copy ~dst:position_background renderer background with
+		  |Error (`Msg e) -> Sdl.log "Init texture on screen error: %s" e; exit 1
+		  |Ok () -> Sdl.render_present renderer;
      
 let affichage () =
    match Sdl.init Sdl.Init.video with
@@ -42,20 +56,21 @@ let affichage () =
 	 | Error (`Msg e) -> Sdl.log "Init render error: %s" e; exit 1
 	 | Ok render ->
 	    Sdl.render_present render;
-	   match Sdl.load_bmp "Image/Menu_backscreen_1160_870.bmp" with
-	   | Error (`Msg e) -> Sdl.log "Init window error: %s" e; exit 1
-	   | Ok menu_back ->
 	     (* gestion de l'image de fond*)
+	    load_picture(window,render,fond)
+	  (* match Sdl.load_bmp "Image/Menu_backscreen_1160_870.bmp" with
+	   | Error (`Msg e) -> Sdl.log "Init load picture error: %s" e; exit 1
+	   | Ok menu_back ->
 	     match Sdl.create_texture_from_surface render menu_back with
-	     | Error (`Msg e) -> Sdl.log "Init window error: %s" e; exit 1
-	     | Ok menu_back_texture ->
+	     | Error (`Msg e) -> Sdl.log "Init surface to texture error: %s" e; exit 1
+	     | Ok menu_back_texture -> Sdl.free_surface menu_back 
 		match Sdl.query_texture menu_back_texture with
-		|Error (`Msg e) -> Sdl.log "Init window error: %s" e; exit 1
+		|Error (`Msg e) -> Sdl.log "Init query texture error: %s" e; exit 1
 		|Ok (_,_,(w,h)) ->
 		   let position_background = Sdl.Rect.create 0 0 w h in
 		   match Sdl.render_copy ~dst:position_background render menu_back_texture with
 		     |Error (`Msg e) -> Sdl.log "Init window error: %s" e; exit 1
-		     |Ok () -> Sdl.render_present render;
+	     |Ok () -> Sdl.render_present render;*)
 	     (*fin de la gestion de l'image de fond*)
 
 	     (* gestion d'un évènement *)
