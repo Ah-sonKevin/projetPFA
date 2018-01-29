@@ -1,11 +1,22 @@
 open Tsdl
+open Object
 
-let my_exit (window,renderer,background) =
-   Sdl.destroy_texture background;
-   Sdl.destroy_renderer renderer;
-   Sdl.destroy_window window;
-   Sdl.quit();
-   exit 0
+let background = ref [];;
+  
+let my_exit (window,renderer) =
+  let rec texture background =
+    match !background with
+    |[] -> background := [];
+    |t::list -> Sdl.destroy_texture t;
+      background := list;
+       texture background;
+  in
+  texture background;
+  Sdl.destroy_renderer renderer;
+  Sdl.destroy_window window;
+  Sdl.quit();
+  exit 0;;
+
 
 let evenement e exit_arg =
   match Sdl.poll_event (Some e) with
@@ -26,27 +37,46 @@ let evenement e exit_arg =
 	    |`Escape -> my_exit exit_arg
 	    |_->print_string "Evenement clavier non géré\n"
 	  end	  
-       |_->print_string "Evenement inconnu non géré\n "
+       |_-> ()
      end
   |false-> ()
+;;
 
-let load_picture (window,renderer,background) =
-   match Sdl.load_bmp "Image/Menu_backscreen_1160_870.bmp" with
+let load_picture_full (window,renderer) (x,y) source=
+   match Sdl.load_bmp source with
      | Error (`Msg e) -> Sdl.log "Init load picture error: %s" e; exit 1
      | Ok surface_temp ->
-	 match Sdl.create_texture_from_surface render surface_temp with
+	 match Sdl.create_texture_from_surface renderer surface_temp with
 	  | Error (`Msg e) -> Sdl.log "Init surface to texture error: %s" e; exit 1
-	  | Ok background -> Sdl.free_surface surface_temp 
-	    match Sdl.query_texture background with
+	  | Ok name -> background := name::(!background);
+	     Sdl.free_surface surface_temp;
+	    match Sdl.query_texture name with
 	     |Error (`Msg e) -> Sdl.log "Init query texture error: %s" e; exit 1
 	     |Ok (_,_,(w,h)) ->
-	       let position_background = Sdl.Rect.create 0 0 w h in
-		 match Sdl.render_copy ~dst:position_background renderer background with
+	       let position = Sdl.Rect.create x y (w+x) (h+y) in
+		 match Sdl.render_copy ~dst:position renderer name with
 		  |Error (`Msg e) -> Sdl.log "Init texture on screen error: %s" e; exit 1
-		  |Ok () -> Sdl.render_present renderer;
-     
+		  |Ok () -> Sdl.render_present renderer
+;;
+
+let load_picture_fragment (window,renderer) (x1,y1) (x2,y2,x3,y3) source =
+   match Sdl.load_bmp source with
+     | Error (`Msg e) -> Sdl.log "Init load picture error: %s" e; exit 1
+     | Ok surface_temp ->
+	 match Sdl.create_texture_from_surface renderer surface_temp with
+	  | Error (`Msg e) -> Sdl.log "Init surface to texture error: %s" e; exit 1
+	  | Ok name -> background := name::(!background);
+	    Sdl.free_surface surface_temp;
+	    let frag_rect = Sdl.Rect.create x2 y2 x3 y3 in
+	    let position_background = Sdl.Rect.create x1 y1 ((x3-x2)+x1) ((y3-y2)+y1) in
+		 match Sdl.render_copy ~dst:position_background ~src:frag_rect renderer name with
+		  |Error (`Msg e) -> Sdl.log "Init texture on screen error: %s" e; exit 1
+		  |Ok () -> Sdl.render_present renderer
+;;
+
 let affichage () =
-   match Sdl.init Sdl.Init.video with
+  (*gestion de l'ouverture de la fenetre*)
+  match Sdl.init Sdl.Init.video with
   | Error (`Msg e) -> Sdl.log "Init error: %s" e; exit 1
   | Ok () ->
      match Sdl.create_window  ~w:1160  ~h:870 "Metroidvania"  Sdl.Window.shown with
@@ -57,31 +87,19 @@ let affichage () =
 	 | Ok render ->
 	    Sdl.render_present render;
 	     (* gestion de l'image de fond*)
-	    load_picture(window,render,fond)
-	  (* match Sdl.load_bmp "Image/Menu_backscreen_1160_870.bmp" with
-	   | Error (`Msg e) -> Sdl.log "Init load picture error: %s" e; exit 1
-	   | Ok menu_back ->
-	     match Sdl.create_texture_from_surface render menu_back with
-	     | Error (`Msg e) -> Sdl.log "Init surface to texture error: %s" e; exit 1
-	     | Ok menu_back_texture -> Sdl.free_surface menu_back 
-		match Sdl.query_texture menu_back_texture with
-		|Error (`Msg e) -> Sdl.log "Init query texture error: %s" e; exit 1
-		|Ok (_,_,(w,h)) ->
-		   let position_background = Sdl.Rect.create 0 0 w h in
-		   match Sdl.render_copy ~dst:position_background render menu_back_texture with
-		     |Error (`Msg e) -> Sdl.log "Init window error: %s" e; exit 1
-	     |Ok () -> Sdl.render_present render;*)
-	     (*fin de la gestion de l'image de fond*)
-
+	   load_picture_full(window,render) (0,0) "Image/Menu_backscreen_1160_870.bmp";
+	  
 	     (* gestion d'un évènement *)
-	     
 	     let event = Sdl.Event.create() in
 	     while (true) do
-	       evenement event (window,render,menu_back)
+	       evenement event (window,render)
 	     done
-
-let main () =
-  affichage ()      
+;;
 
 
-let () = main()
+let main () = affichage () ;;
+
+
+
+let () = main();;
+
