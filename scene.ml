@@ -232,7 +232,7 @@ module Scene : Scene =  struct
  *)
   (* gestion des déplacements *)
 
-  let movePers scene = 
+ (* let movePers scene = 
     let rec movePers_sub listObjet listRes = 
       match listObjet with 
       |[] -> listRes 
@@ -260,6 +260,20 @@ module Scene : Scene =  struct
     |[]-> failwith " "
     |a::b -> if (Objet.getGenre a) = Personnage then a else getPers b 
 
+let load_picture_fragment (window,renderer) (x1,y1) (x2,y2,x3,y3) source =
+  match Sdl.load_bmp source with
+  | Error (`Msg e) -> Sdl.log "Init load picture error: %s" e; exit 1
+  | Ok surface_temp ->
+     match Sdl.create_texture_from_surface renderer surface_temp with
+     | Error (`Msg e) -> Sdl.log "Init surface to texture error: %s" e; exit 1
+     | Ok name -> background := name::(!background);
+       Sdl.free_surface surface_temp;
+       let frag_rect = Sdl.Rect.create x2 y2 x3 y3 in
+       let position_background = Sdl.Rect.create x1 y1 ((x3-x2)+x1) ((y3-y2)+y1) in
+       match Sdl.render_copy ~dst:position_background ~src:frag_rect renderer name with
+       |Error (`Msg e) -> Sdl.log "Init texture on screen error: %s" e; exit 1
+       |Ok () -> Sdl.render_present renderer
+	
   let moveCam scene = 
     let rec moveCam_sub listObjet listRes  = 
       match listObjet with 
@@ -275,39 +289,72 @@ module Scene : Scene =  struct
           let (vxPers,vyPers) = Objet.getSpeed pers in 
           let vxp = int_of_float vxPers in 
           let vyp = int_of_float vyPers in         
-          if x != pers then 
+          if (Objet.getGenre x != Personnage)  then 
             let objTemp = Objet.move x ((xp-vxp) , (yp)) in
             moveCam_sub s ((Objet.setSpeed objTemp (0.0,scene.gravitie))::listRes)
-          else 
-            let objTemp = Objet.move x ((xp-vxp) , (yp+  int_of_float(ceil(scene.gravitie/.2.)))) in
-            moveCam_sub s ((Objet.setSpeed objTemp (0.0,scene.gravitie))::listRes)
+          else
+	    let objTemp = Objet.move x (xp , (yp+  int_of_float(ceil(scene.gravitie/.2.)))) in
+	    moveCam_sub s ((Objet.setSpeed objTemp (0.0,scene.gravitie))::listRes)   
         |Some ((xNew,yNew),(xsNew,ysNew)) ->
-          let objTemp = Objet.allowJump (Objet.move x (xNew,yNew)) in
-          moveCam_sub s  ((Objet.setSpeed (Objet.resetSpeed objTemp) ((0.0 +. xsNew),(scene.gravitie +. ysNew)))::listRes)
+           let objTemp = (Objet.allowJump   (Objet.move x (xp-(xp-xNew),yNew))) in
+	   moveCam_sub s  ((Objet.setSpeed (Objet.resetSpeed objTemp) ((xsNew),(scene.gravitie +. ysNew)))::listRes)
+    (* moveCam_sub s  ((Objet.setSpeed (Objet.resetSpeed objTemp) ((0.0 +. xsNew),(scene.gravitie +. ysNew)))::listRes)*)
     in {scene with entities = (moveCam_sub scene.entities [] ) }
 
-
+	    
   let moveAll scene =
     let (xb,yb) = Objet.getPos scene.background in 
     let (wb,hb) = Objet.getSize scene.background in 
     let pers = getPers scene.entities in 
     let (vxPers,vyPers) = Objet.getSpeed pers in 
     let vxp = int_of_float vxPers in 
-    let vyp = int_of_float vyPers in
-    if (((xb + wb > 1000) && (vxPers>0.))|| ((xb<0)&&(vxPers<0.))) then  
+    let vyp = int_of_float vyPers in    
+    let (xp,yp) = Objet.getPos pers in
+    let () = print_int xp in
+    let () = print_newline () in
+    let temp = moveCam scene in
+    if ((((xb + wb > 1000) && (vxPers>0.))|| ((xb<0)&&(vxPers<0.)))&&(((xp)<((xb+1000/2+vxp)))||(xp>(xb+1000/2-vxp)))) then  
       let temp = moveCam scene in
       {temp with background =Objet.move scene.background (xb-vxp,yb) }
     else
       movePers scene
+ *)
+  let moveAll scene =
+    let rec moveAll_sub listObjet listRes =
+      match listObjet with
+      |[]-> listRes
+      |x::s when (Objet.isMovable x) ->
+	 begin
+	   match (hit_box x scene) with
+	   |None ->
+	      begin
+		let (xs,ys) = Objet.getSpeed x in
+		let xs_int = int_of_float xs in
+		let ys_int = int_of_float ys in
+		let (xp,yp) = Objet.getPos x in
+	      let objTemp = Objet.move x ((xs_int + xp) , ((int_of_float(ceil(scene.gravitie/.2.))) + ys_int + yp)) in
+	      moveAll_sub s ((Objet.setSpeed objTemp (0.0,scene.gravitie))::listRes)
+	      end
+	   |Some ((xNew,yNew),(xsNew,ysNew)) ->
+	      begin
+		let objTemp = Objet.allowJump (Objet.move x (xNew,yNew)) in
+		moveAll_sub s ((Objet.setSpeed (Objet.resetSpeed objTemp) ((0.0 +. xsNew),(scene.gravitie +. ysNew)))::listRes)
+	      end
+	 end
+		    (* Ne rien faire pour les autres objets *)
+      |x::s ->  moveAll_sub s (x::listRes)
+    in
+    {scene with entities = (moveAll_sub scene.entities [] ) }
 
+      
   let movePersonnage scene (xs,ys) =
     let rec changePerso listObjet listRes =
       match listObjet with
       |[] -> listRes
       |x::s -> if (Objet.getGenre x) = Personnage then changePerso s ((Objet.setSpeed x (xs,ys))::listRes)
-        else changePerso s (x::listRes)
+    else changePerso s (x::listRes)
     in
-{scene with entities = (changePerso scene.entities [] ) }
+    {scene with entities = (changePerso scene.entities [] ) }
 
  let loadPicture renderer (x1,y1) (w,h) texture =
     let frag_rect = Sdl.Rect.create 0 0 w h in
@@ -317,20 +364,22 @@ module Scene : Scene =  struct
 |Ok () -> ()
 
  let refresh sceneOld sceneNew =
-    let rec refresh_sub list =
-      match list with
-      |[] -> ();
-      |x::s ->
-         if ((Objet.getPV x) < 1) then (refresh_sub s) else
-           loadPicture sceneNew.renderer (Objet.getPos x) (Objet.getSize x) (Objet.getTexture x);
-           refresh_sub s
-    in
-    match Sdl.render_clear sceneOld.renderer with
-               |Error (`Msg e) -> Sdl.log "Init render error: %s" e; exit 1
-               |Ok () -> loadPicture sceneNew.renderer (Objet.getPos sceneNew.background) 
-                    (Objet.getSize sceneNew.background) (Objet.getTexture sceneNew.background);
-                  refresh_sub sceneNew.entities;
-                  Sdl.render_present sceneNew.renderer
+   let rec refresh_sub list =
+     match list with
+     |[] -> ();
+     |x::s ->
+        if ((Objet.getPV x) < 1) then (refresh_sub s) else
+	  let (xp,yp) = Objet.getPos x in
+	  let (xb,yb) = Objet.getPos sceneNew.background in 
+          loadPicture sceneNew.renderer (xp-xb,ypa) (Objet.getSize x) (Objet.getTexture x);
+          refresh_sub s
+   in
+   match Sdl.render_clear sceneOld.renderer with
+   |Error (`Msg e) -> Sdl.log "Init render error: %s" e; exit 1
+   |Ok () -> loadPicture sceneNew.renderer (Objet.getPos sceneNew.background) 
+      (Objet.getSize sceneNew.background) (Objet.getTexture sceneNew.background);
+     refresh_sub sceneNew.entities;
+     Sdl.render_present sceneNew.renderer
 
 
   let getTexture scene =
@@ -353,9 +402,6 @@ module Scene : Scene =  struct
       |x::s -> sub s (addEntitie res x)
     in
     sub objetList scene
-
-
-  ;;
 
   let closeScene scene =
     let rec close_sub list =
