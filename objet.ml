@@ -1,11 +1,10 @@
 open Tsdl
+open Anim
 
-
-    
 module type Objet = sig
   type genre_objet = Personnage|Ennemi|Plateforme|Wall|Door|Background|Projectile
   type objet
-  val create : genre_objet -> int*int -> float*float -> float*float -> int ->string ->int*int -> Sdl.renderer -> objet
+  val create : genre_objet -> int*int -> float*float -> float*float -> int ->(string array *string array *string array) -> int*int -> Sdl.renderer -> objet
   val move : objet -> (int*int) -> objet
   val changePV : objet -> int -> objet
   val setSpeed : objet -> (float*float) -> objet
@@ -19,33 +18,24 @@ module type Objet = sig
   val dmgObjet : objet -> objet
   val getPV : objet -> int
   val getSize : objet -> int*int
-  val getPath : objet -> string
   val getTexture : objet -> Sdl.texture
   val isMovable : objet -> bool
+  val changeFrame : objet -> Anim.direction -> objet
 end
 
 module Objet : Objet = struct
   type genre_objet = Personnage|Ennemi|Plateforme|Wall|Door|Background|Projectile
-  type objet = {genre : genre_objet; position : int*int; can_jump : bool; vitesse : float * float ; maxSpeed : float*float; pv : int ;size : int*int ; path : string ; texture : Sdl.texture}
-  let create genre_o pos vit maxvit hp  text s renderer  =
-    let x = 
-       match Sdl.load_bmp text with
-       | Error (`Msg e) -> Sdl.log "Init load picture error: %s" e; exit 1
-       | Ok surface_temp ->
-	  match Sdl.create_texture_from_surface renderer surface_temp with
-	  | Error (`Msg e) -> Sdl.log "Init surface to texture error: %s" e; exit 1
-	  | Ok name -> Sdl.free_surface surface_temp;
-	     name
-    in
+  type objet = {genre : genre_objet; position : int*int; can_jump : bool; vitesse : float * float ;
+                maxSpeed : float*float; pv : int ;size : int*int ; texture : Anim.anim }
+  let create genre_o pos vit maxvit hp  (textG, textM, textD) s renderer  =
     {genre = genre_o;
      position = pos;
      can_jump = true;
      vitesse = vit;
      maxSpeed = maxvit;
      pv = hp;
-     path = text;
      size = s;
-     texture = x
+     texture = Anim.create textG textM textD renderer
     }
           
   let setSpeed obj (x,y) =
@@ -62,13 +52,6 @@ module Objet : Objet = struct
     
   let changePV obj a = {obj with pv = obj.pv+a }
     
- (* let move obj  =
-    let (xs,ys) = obj.vitesse in
-    let (xp,yp) = obj.position in
-    {obj with position = ((xp+(int_of_float xs )),(yp+(int_of_float ys)))}
- *)
-
-    
   let move obj (x,y)  =
     {obj with position = (x,y)}
 	
@@ -79,21 +62,13 @@ module Objet : Objet = struct
   let allowJump obj = {obj with can_jump = true}
 
   let forbidJump obj = {obj with can_jump = false}
-
   let canJump obj = obj.can_jump
-
   let getSpeed obj = obj.vitesse
-
-  let dmgObjet obj = {obj with pv = obj.pv - 20}
-    
-  let getPV  obj = obj.pv
-    
-  let getSize obj = obj.size
-    
-  let getPath obj = obj.path
-    
-  let getTexture obj = obj.texture
-
+  let dmgObjet obj = {obj with pv = obj.pv - 20}    
+  let getPV  obj = obj.pv    
+  let getSize obj = obj.size    
+  let getTexture obj =  Anim.getTexture obj.texture
   let isMovable obj = if (obj.genre = Personnage) || (obj.genre = Ennemi) || (obj.genre = Projectile) then true else false
+  let changeFrame obj dir = {obj with texture = Anim.changeFrame obj.texture dir}
     
 end

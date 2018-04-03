@@ -1,6 +1,8 @@
 open Tsdl
 open Objet
 open Scene
+open Camera
+open Menu
 
 let my_exit (window,renderer) scene =
   Scene.closeScene scene;
@@ -10,8 +12,6 @@ let my_exit (window,renderer) scene =
   exit 0
 
 (*le jeu*)
-
-
 let evenement e exit_arg scene =
   let evenementFenetre e exit_arg = 
   match Sdl.poll_event (Some e) with
@@ -29,54 +29,86 @@ let evenement e exit_arg scene =
     end
   |false -> ()
   in 
-  (*evenementFenetre e exit_arg;  *)
+  (*evenementFenetre e exit_arg;*) 
   Sdl. pump_events ();
   let tab = Sdl.get_keyboard_state () in
   
   begin 
     if tab.{(Sdl.get_scancode_from_key Sdl.K.escape)}=1 then
       exit 0;
+    let temp = 
+      if tab.{(Sdl.get_scancode_from_key Sdl.K.space)}=1 then
+        Scene.suicide scene
+      else
+        scene
+    in
     let x =  (0.2 *. (float_of_int (tab.{(Sdl.get_scancode_from_key Sdl.K.right)})))
- -. 0.2 *. float_of_int (tab.{(Sdl.get_scancode_from_key Sdl.K.left)}) in
-    let y = float_of_int (-10 * tab.{(Sdl.get_scancode_from_key Sdl.K.up )}) in
-    Scene.movePersonnage scene (x,y)
+             -. 0.2 *. float_of_int (tab.{(Sdl.get_scancode_from_key Sdl.K.left)}) in
+    let y = float_of_int (-20 * tab.{(Sdl.get_scancode_from_key Sdl.K.up )}) in
+    Scene.movePersonnage temp (x,y)
   end
 
 
-let jeu () =
+let jeu () =  
   (*gestion de l'ouverture de la fenetre*)
-  match Sdl.init Sdl.Init.video with
-  | Error (`Msg e) -> Sdl.log "Init error: %s" e; exit 1
-  | Ok () ->
-     match Sdl.create_window  ~w:1000  ~h:700 "Metroidvania"  Sdl.Window.shown with
+    match Sdl.init Sdl.Init.video with
+    | Error (`Msg e) -> Sdl.log "Init error: %s" e; exit 1
+    | Ok () ->
+      match Sdl.create_window  ~w:1000  ~h:700 "Metroidvania"  Sdl.Window.shown with
       | Error (`Msg e) -> Sdl.log "Init window error: %s" e; exit 1
       | Ok window ->
-         match Sdl.create_renderer window ~index:(-1) ~flags:Sdl.Renderer.(accelerated + presentvsync) with
-         | Error (`Msg e) -> Sdl.log "Init render error: %s" e; exit 1
-         | Ok render ->
-            Sdl.render_present render;
-
-             (*charegement des éléments de jeu*)
-           let perso = Objet.create Personnage (500,200) (0.0,0.0) (4.0,5.0) 100 "Image/samus/Samus_face_23_40.bmp" (23,40) render in
-           let sprite = Objet.create Wall (200,500) (0.0,0.0) (0.0,0.0) 10000 "Image/sprite_obstacle.bmp" (231,89) render in
-           let plateform = Objet.create Plateforme (600,500) (0.0,0.0) (0.0,0.0) 10000 "Image/Plateforme_700_5.bmp" (200,5) render in
-           let background = Objet.create Background (-100,0) (0.0,0.0) (0.0,0.0) 10000 "Image/Background_2.bmp" (2560,1540) render in
-           let sol = Objet.create Plateforme (0,668) (0.0,0.0) (0.0,0.0) 10000  "Image/Plateforme_700_5.bmp" (2560,5) render in
-           let scene = Scene.create (sol::plateform::sprite::perso::[]) 1.06 background render in 
-           
+        match Sdl.create_renderer window ~index:(-1) ~flags:Sdl.Renderer.(accelerated + presentvsync) with
+        | Error (`Msg e) -> Sdl.log "Init render error: %s" e; exit 1
+        | Ok render ->
+          Sdl.render_present render;
           
-             (* gestion du jeu une fois lancé *)
-           let event = Sdl.Event.create() in
-           
-           let rec game scene window renderer =
-             let sceneEvent = evenement event (window,renderer) scene in
-             let sceneActive = Scene.moveAll sceneEvent in
-             Scene.refresh scene sceneActive;
-             Sdl.delay 17l;
-             game sceneActive window renderer in
-           game scene window render
+          (*charegement des éléments de jeu*)
+          let perso = Objet.create Personnage (500,200) (0.0,0.0) (4.0,5.0) 100 
+                       ( [|"Image/samus/Samus_left/Samus_left_walk/Samus_left_walk1_25_38.bmp";
+                          "Image/samus/Samus_left/Samus_left_walk/Samus_left_walk2_25_38.bmp";
+                          "Image/samus/Samus_left/Samus_left_walk/Samus_left_walk3_21_38.bmp";
+                          "Image/samus/Samus_left/Samus_left_walk/Samus_left_walk4_20_39.bmp";
+                          "Image/samus/Samus_left/Samus_left_walk/Samus_left_walk5_20_38.bmp";
+                          "Image/samus/Samus_left/Samus_left_walk/Samus_left_walk6_26_38.bmp";
+                          "Image/samus/Samus_left/Samus_left_walk/Samus_left_walk7_25_38.bmp";
+                          "Image/samus/Samus_left/Samus_left_walk/Samus_left_walk8_23_38.bmp";
+                          "Image/samus/Samus_left/Samus_left_walk/Samus_left_walk9_21_38.bmp";
+                          "Image/samus/Samus_left/Samus_left_walk/Samus_left_walk10_18_38.bmp"
+                        |], 
+                        [|"Image/samus/Samus_face_23_40.bmp"|] ,
+                        [|
+                          "Image/samus/Samus_right/Samus_right_walk/Samus_right_walk1_19_38.bmp";
+                          "Image/samus/Samus_right/Samus_right_walk/Samus_right_walk2_21_38.bmp";
+                          "Image/samus/Samus_right/Samus_right_walk/Samus_right_walk3_23_38.bmp";
+                          "Image/samus/Samus_right/Samus_right_walk/Samus_right_walk4_25_38.bmp";
+                          "Image/samus/Samus_right/Samus_right_walk/Samus_right_walk5_26_38.bmp";
+                          "Image/samus/Samus_right/Samus_right_walk/Samus_right_walk6_20_38.bmp";
+                          "Image/samus/Samus_right/Samus_right_walk/Samus_right_walk7_20_39.bmp";
+                          "Image/samus/Samus_right/Samus_right_walk/Samus_right_walk8_21_38.bmp";
+                          "Image/samus/Samus_right/Samus_right_walk/Samus_right_walk9_25_38.bmp";
+                          "Image/samus/Samus_right/Samus_right_walk/Samus_right_walk10_18_38.bmp"
+                        |])
+                        (23,40) render in
+          let sprite = Objet.create Wall (200,500) (0.0,0.0) (0.0,0.0) 10000 ([||], [|"Image/sprite_obstacle.bmp"|] ,[||]) (231,89) render in
+          let plateform = Objet.create Plateforme (600,500) (0.0,0.0) (0.0,0.0) 10000  ([||], [|"Image/Plateforme_700_5.bmp"|],  [||]) (200,5) render in
+          let background = Objet.create Background (0,0) (0.0,0.0) (0.0,0.0) 10000  ([||], [|"Image/Background_2.bmp"|] , [||]) (3494,982) render in
+          let sol = Objet.create Plateforme (-100,668) (0.0,0.0) (0.0,0.0) 10000   ([||], [|"Image/Plateforme_700_5.bmp"|],  [||]) (3600,5) render in
+          let cam = Camera.create (Objet.getPos perso) (Objet.getSize background) (Sdl.get_window_size window) in
+          let scene = Scene.create (sol::plateform::sprite::perso::[]) 1.06 background cam render in
+         
+          (* gestion du jeu une fois lancé *)
+          let event = Sdl.Event.create() in     
+          let rec menu window renderer = 
+            Menu.startMenu window renderer;
+            let rec game scene window renderer =
+              let sceneEvent = evenement event (window,renderer) scene in
+              let sceneActive = Scene.moveAll sceneEvent in
+              Scene.refresh scene sceneActive;
+              Sdl.delay 17l;
+              game sceneActive window renderer in
+            game scene window render
+          in menu window render
+               
+let main () = jeu ()
 
-;;
-let main () = jeu () ;;
-
-let () = main();;
+let () = main()
