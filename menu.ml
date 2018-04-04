@@ -26,15 +26,12 @@ module Menu = struct
         let _ = exit 0 in None
       else
       if ((tab.{(Sdl.get_scancode_from_key Sdl.K.return)} = 1) || ((tab.{(Sdl.get_scancode_from_key Sdl.K.space)} = 1))) then 
-        (* WTF    (J°i°)J|__| *)
         None
       else
-        if (tab.{(Sdl.get_scancode_from_key Sdl.K.down )} = 1) then 
-          let _ = print_string "aa" in 
-          Some true
+        if (tab.{(Sdl.get_scancode_from_key Sdl.K.up )} = 1) then 
+           Some true
         else
-          if (tab.{(Sdl.get_scancode_from_key Sdl.K.up )} = 1) then 
-            let _ = print_string "bb" in 
+          if (tab.{(Sdl.get_scancode_from_key Sdl.K.down )} = 1) then 
             Some false
           else
             Some bool
@@ -42,11 +39,11 @@ module Menu = struct
 
   let startMenu window render  =
     (*chargement des éléments de jeu*)
-    let background = Objet.create Background (0,0) (0.0,0.0) (0.0,0.0) 10000  ([||], [|"Image/Menu_backscreen_1200_900.bmp"|] , [||]) (1200,900) render in
-    let jouer    = Objet.create Wall (200,100) (0.0,0.0) (0.0,0.0) 10000 ([||], [|"Image/jouer.bmp"|], [||]) (200,97) render in 
-    let quitter  = Objet.create Wall (200,400) (0.0,0.0) (0.0,0.0) 10000 ([||], [|"Image/quitter.bmp"|], [||]) (200,97) render in
-    let jouer2   = Objet.create Wall (200,100) (0.0,0.0) (0.0,0.0) 10000 ([||], [|"Image/jouer2.bmp"|], [||]) (200,97) render in 
-    let quitter2 = Objet.create Wall (200,400) (0.0,0.0) (0.0,0.0) 10000 ([||], [|"Image/quitter2.bmp"|], [||]) (200,97) render in
+    let background = Objet.create Background (0,0) (0.0,0.0) (0.0,0.0) 10000  ([||], [|"Image/Menu_backscreen_1200_900.bmp"|] , [||],[||]) (1200,900) render in
+    let jouer    = Objet.create Wall (200,100) (0.0,0.0) (0.0,0.0) 10000 ([||], [|"Image/jouer.bmp"|], [||],[||]) (200,97) render in 
+    let quitter  = Objet.create Wall (200,400) (0.0,0.0) (0.0,0.0) 10000 ([||], [|"Image/quitter.bmp"|], [||],[||]) (200,97) render in
+    let jouer2   = Objet.create Wall (200,100) (0.0,0.0) (0.0,0.0) 10000 ([||], [|"Image/jouer2.bmp"|], [||],[||]) (200,97) render in 
+    let quitter2 = Objet.create Wall (200,400) (0.0,0.0) (0.0,0.0) 10000 ([||], [|"Image/quitter2.bmp"|], [||],[||]) (200,97) render in
     
     let refresh jouerBool renderer =
       match Sdl.render_clear renderer with

@@ -4,7 +4,7 @@ open Anim
 module type Objet = sig
   type genre_objet = Personnage|Ennemi|Plateforme|Wall|Door|Background|Projectile
   type objet
-  val create : genre_objet -> int*int -> float*float -> float*float -> int ->(string array *string array *string array) -> int*int -> Sdl.renderer -> objet
+  val create : genre_objet -> int*int -> float*float -> float*float -> int ->(string array *string array *string array * string array) -> int*int -> Sdl.renderer -> objet
   val move : objet -> (int*int) -> objet
   val changePV : objet -> int -> objet
   val setSpeed : objet -> (float*float) -> objet
@@ -27,7 +27,7 @@ module Objet : Objet = struct
   type genre_objet = Personnage|Ennemi|Plateforme|Wall|Door|Background|Projectile
   type objet = {genre : genre_objet; position : int*int; can_jump : bool; vitesse : float * float ;
                 maxSpeed : float*float; pv : int ;size : int*int ; texture : Anim.anim }
-  let create genre_o pos vit maxvit hp  (textG, textM, textD) s renderer  =
+  let create genre_o pos vit maxvit hp  (textG, textM, textD, textS) s renderer  =
     {genre = genre_o;
      position = pos;
      can_jump = true;
@@ -35,7 +35,7 @@ module Objet : Objet = struct
      maxSpeed = maxvit;
      pv = hp;
      size = s;
-     texture = Anim.create textG textM textD renderer
+     texture = Anim.create textG textM textD textS renderer
     }
           
   let setSpeed obj (x,y) =

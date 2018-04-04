@@ -37,7 +37,7 @@ let evenement e exit_arg scene =
     if tab.{(Sdl.get_scancode_from_key Sdl.K.escape)}=1 then
       exit 0;
     let temp = 
-      if tab.{(Sdl.get_scancode_from_key Sdl.K.space)}=1 then
+      if tab.{(Sdl.get_scancode_from_key Sdl.K.s)}=1 then
         Scene.suicide scene
       else
         scene
@@ -87,12 +87,20 @@ let jeu () =
                           "Image/samus/Samus_right/Samus_right_walk/Samus_right_walk8_21_38.bmp";
                           "Image/samus/Samus_right/Samus_right_walk/Samus_right_walk9_25_38.bmp";
                           "Image/samus/Samus_right/Samus_right_walk/Samus_right_walk10_18_38.bmp"
-                        |])
+                        |],
+                        [|"Image/samus/Samus_saut/Samus_saut8_16_16.bmp";
+                         "Image/samus/Samus_saut/Samus_saut7_16_16.bmp";
+                         "Image/samus/Samus_saut/Samus_saut6_16_16.bmp";
+                         "Image/samus/Samus_saut/Samus_saut5_16_16.bmp";
+                         "Image/samus/Samus_saut/Samus_saut4_16_16.bmp";
+                         "Image/samus/Samus_saut/Samus_saut3_16_16.bmp";
+                         "Image/samus/Samus_saut/Samus_saut2_16_16.bmp";
+                         "Image/samus/Samus_saut/Samus_saut1_16_16.bmp"|])
                         (23,40) render in
-          let sprite = Objet.create Wall (200,500) (0.0,0.0) (0.0,0.0) 10000 ([||], [|"Image/sprite_obstacle.bmp"|] ,[||]) (231,89) render in
-          let plateform = Objet.create Plateforme (600,500) (0.0,0.0) (0.0,0.0) 10000  ([||], [|"Image/Plateforme_700_5.bmp"|],  [||]) (200,5) render in
-          let background = Objet.create Background (0,0) (0.0,0.0) (0.0,0.0) 10000  ([||], [|"Image/Background_2.bmp"|] , [||]) (3494,982) render in
-          let sol = Objet.create Plateforme (-100,668) (0.0,0.0) (0.0,0.0) 10000   ([||], [|"Image/Plateforme_700_5.bmp"|],  [||]) (3600,5) render in
+          let sprite = Objet.create Wall (200,500) (0.0,0.0) (0.0,0.0) 10000 ([||], [|"Image/sprite_obstacle.bmp"|] ,[||],[||]) (231,89) render in
+          let plateform = Objet.create Plateforme (600,500) (0.0,0.0) (0.0,0.0) 10000  ([||], [|"Image/Plateforme_700_5.bmp"|],  [||],[||]) (200,5) render in
+          let background = Objet.create Background (0,0) (0.0,0.0) (0.0,0.0) 10000  ([||], [|"Image/Background_2.bmp"|] , [||],[||]) (3494,982) render in
+          let sol = Objet.create Plateforme (-100,668) (0.0,0.0) (0.0,0.0) 10000   ([||], [|"Image/Plateforme_700_5.bmp"|],  [||],[||]) (3600,5) render in
           let cam = Camera.create (Objet.getPos perso) (Objet.getSize background) (Sdl.get_window_size window) in
           let scene = Scene.create (sol::plateform::sprite::perso::[]) 1.06 background cam render in
          
@@ -101,12 +109,16 @@ let jeu () =
           let rec menu window renderer = 
             Menu.startMenu window renderer;
             let rec game scene window renderer =
+              Sdl.delay 17l;
               let sceneEvent = evenement event (window,renderer) scene in
               let sceneActive = Scene.moveAll sceneEvent in
               Scene.refresh scene sceneActive;
-              Sdl.delay 17l;
-              game sceneActive window renderer in
-            game scene window render
+              if Scene.continue sceneActive then 
+                game sceneActive window renderer 
+              else ()
+            in
+            game scene window render;
+            menu window renderer 
           in menu window render
                
 let main () = jeu ()

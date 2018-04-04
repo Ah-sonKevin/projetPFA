@@ -16,6 +16,7 @@ module type Scene = sig
   val closeScene : scene -> unit
   val moveAll : scene -> scene
   val movePersonnage : scene -> (float*float) -> scene
+  val continue : scene -> bool
   val suicide : scene -> scene 
 end
 
@@ -36,7 +37,8 @@ module Scene : Scene =  struct
           getPers_rec s
     in 
     getPers_rec scene.entities
-
+                
+  let continue scene = (Objet.getPV (getPers scene))>0 
   let suicide scene =
     let rec sub l acc = 
       match l with
@@ -45,11 +47,11 @@ module Scene : Scene =  struct
       |x::s->sub s (x::acc)
     in sub scene.entities []
 
-let nextPos obj scene = 
-  let (xs,ys) = Objet.getSpeed obj in
-  let xs_int = int_of_float xs in
-  let (xp,yp) = Objet.getPos obj in
-  ((xs_int + xp) , ((int_of_float(ceil(scene.gravitie/.2.) +. ys) + yp)))
+  let nextPos obj scene = 
+    let (xs,ys) = Objet.getSpeed obj in
+    let xs_int = int_of_float xs in
+    let (xp,yp) = Objet.getPos obj in
+    ((xs_int + xp) , ((int_of_float(ceil(scene.gravitie/.2.) +. ys) + yp)))
  
  let changeAnim l = 
     let rec changeAnimRec l res = 
@@ -87,8 +89,6 @@ let nextPos obj scene =
       {sceneTemp with entities = changeAnim sceneTemp.entities}
  
   (* gestion des déplacements *)
-
-          
   let movePersonnage scene (xs,ys) =
     let rec changePerso listObjet listRes =
       match listObjet with
@@ -99,7 +99,7 @@ let nextPos obj scene =
             changePerso s (((Objet.setSpeed x (xs,ys)))::listRes)
           else
              changePerso s ((Objet.setSpeed x (xs,0.0))::listRes)
-    else changePerso s (x::listRes)
+        else changePerso s (x::listRes)
     in
     {scene with entities = (changePerso scene.entities [] ) }
 
@@ -118,7 +118,7 @@ let nextPos obj scene =
      |x::s ->
        if ((Objet.getPV x) < 1) then 
          if ((Objet.getGenre x) = Personnage) then
-           exit 0
+           ()
          else
            (refresh_sub s) 
        else
@@ -169,5 +169,4 @@ let nextPos obj scene =
          end
     in
     close_sub scene.entities
-
 end
