@@ -14,8 +14,8 @@ module type Objet = sig
   val allowJump : objet -> objet
   val forbidJump : objet -> objet
   val canJump : objet -> bool
+  val dmgGesture : objet -> objet
   val getSpeed : objet -> float*float
-  val dmgObjet : objet -> objet
   val getPV : objet -> int
   val getSize : objet -> int*int
   val getTexture : objet -> Sdl.texture

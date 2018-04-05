@@ -40,17 +40,16 @@ module Collision : Collision = struct
   let hit_boxObjet obj list nextP (sizeX,sizeY)  =
     (* éléments nécessaire pour les calculs sur l'objet traité *)
     let (xm,ym) = Objet.getPos obj in
-    let (wm2,hm2) = Objet.getSize obj in
-    let (wm,hm) = Objet.getBaseSize obj in 
+    let (wm,hm) = Objet.getSize obj in
     let (xs,ys) = Objet.getSpeed obj in
     (* calcul de la position future *)
     let (xf,yf) = nextP in 
     (* création d'un rectangle correspondant à l'objet traité dans le "future" *)
-    let rectObjet = Sdl.Rect.create xf yf wm2 hm2 in
+    let rectObjet = Sdl.Rect.create xf yf wm hm in
     (* méthode de calcul des hit box *)
     let rec subHit list =
       (* calcul des collisions avec les bords de la scene, on regarde si l'objet est "sorti" de la scene*)
-      if (((xf-wm2) < 0) || ((yf-hm2) < 0) || (xf>sizeX) || (yf>sizeY))
+      if (((xf-wm) < 0) || ((yf-hm) < 0) || (xf>sizeX) || (yf>sizeY))
       then
 	begin
 	  Some ((0,0),(1000.0,0.0))
@@ -94,7 +93,6 @@ module Collision : Collision = struct
 		   end
                end
              else subHit s
-	  |x::s when (Objet.isMovable x) -> None
 	  |x::s -> 
              (* éléments nécessaire pour les calculs sur le deuxieme objet traité *)
              let (xt,yt) = Objet.getPos x in
@@ -223,6 +221,24 @@ module Collision : Collision = struct
     print_string "Debut Collision " ;
     (* éléments nécessaire pour les calculs sur l'objet traité *)
     let (xm,ym) = Objet.getPos obj in
+    let (wm2,hm2) = Objet.getSize obj in
+    let (wm,hm) = Objet.getBaseSize obj in
+    let (xs,ys) = Objet.getSpeed obj in
+    (* calcul de la position future *)
+    let (xf,yf) = nextP in
+    (* creation d'un rectangle correspondant à l'objet traité maintenant *)
+    let rectObjetPre = Sdl.Rect.create xm ym wm hm in
+    (* création d'un rectangle correspondant à l'objet traité dans le "future" *)
+    let rectObjet = Sdl.Rect.create xf yf wm hm in
+    (* méthode de calcul des hit box *)
+    let rec subHit list =
+      (* calcul des collisions avec les bords de la scene, on regarde si l'objet est "sorti" de la scene*)
+      if (((xf-wm) < 0) || ((yf-hm) < 0) || (xf>sizeX) || (yf>sizeY))
+      then
+	begin
+	  Some (obj,(0,0),(1000.0,0.0))
+	end    (* éléments nécessaire pour les calculs sur l'objet traité *)
+    let (xm,ym) = Objet.getPos obj in
     let (wm,hm) = Objet.getSize obj in
     let (xs,ys) = Objet.getSpeed obj in
     (* calcul de la position future *)
@@ -249,7 +265,6 @@ module Collision : Collision = struct
 	     let (wt,ht) = Objet.getSize x in
 	     (* let (xst,yst) = Objet.getSpeed x in *)
 	     let rectTemp = Sdl.Rect.create  xt yt wt ht in
-	        Printf.printf "\nCoordonné %d %d \n" xm (xt+wt);
 	     (* gestion des collisions *)
 	     (* gestion des collisions pour les objets "Ennemi" *)
              if (Sdl.has_intersection rectObjet rectTemp || Sdl.has_intersection rectObjetPre rectTemp)
@@ -277,17 +292,17 @@ module Collision : Collision = struct
 		   les différentes faces du rectangle fixe : LEFT: 1 /UP: 2 /RIGHT: 3 /DOWN: 4 
 		 *)
 		 (* notre objet en mouvement était t'il à droite où à gauche de l'objet avec lequel il entre en collision *)
-		 if xd>0 then
+		 if xd>0
+		 then
 		   begin
                      (* si il est à gauche, est-il dans les cas 5/1/8 ou alors dans les cas 2/4 *)
-                     if (xm + wm) <= xt (*************)
+                     if (xm + wm) <= xt
                      then
                        begin
 			 (*dans le cadres des cas 5/1/8, il faut maintenant savoir précisément les différencier *)
 			 if (ym + hm) < yt
 			 then
 			   begin
-			     print_string "cas 5";
                              (* cas 5 uniquement, necessité de savoir si face 1 ou 2 rencontrée en premier -> Calcul des temps relatif avant collision *)
                              if ((abs_float (float_of_int (xt - (xm + wm)))/.(float_of_int xd)) > (abs_float (float_of_int (yt - (ym + hm)))/.(float_of_int yd)))
                              (* face 1 rencontre en premiere *)
@@ -301,7 +316,6 @@ module Collision : Collision = struct
                              if ym > (yt + ht)
                              then
                                begin
-				 print_string "cas 8 ";
 				 (* cas 8 uniquement, necessité de savoir si face 1 ou 4 rencontrée en premier -> Calcul des temps relatif avant collision *)
 				 if ((abs_float (float_of_int (xt - (xm + wm)))/.(float_of_int xd)) > (abs_float (float_of_int (ym - (yt + ht)))/.(float_of_int yd)))
 				 (* face 1 rencontre en premiere *)
@@ -309,37 +323,32 @@ module Collision : Collision = struct
 				 (* face 4 rencontre en premier *)
 				 else Some (x,((xf,(yt+ht))),((xs-.5.0),(0.0+.10.0)))
                                end
-                             (* cas 1 *)				 
-                             else begin print_string "cas 1" ; Some (x,(((xt-wm),yf)),((0.0-.5.0),(ys-.10.0)))end 
+                             (* cas 1 *)
+                             else Some (x,(((xt-wm),yf)),((0.0-.5.0),(ys-.10.0)))
 			   end
                        end
                      (* reste les cas 2 et 4 à traiter pour ce faire il suffit de savoir si l'objet movible était au dessus ou en dessous *)
                      else
                        begin
 			 (* normalement le bon test à faire est : (ym + hm) <= yt mais suite à un bug incompris, on a bidouillé*)
-			 if ym <= (yt+ht)
+			 if ym < (yt+ht)
 			 (* cas 2 *)
-			 then  begin print_string "cas 2";Some (x,((xf,(yt-hm))),((xs-.5.0),(0.0-.10.0)))end
+			 then Some (x,((xf,(yt-hm))),((xs-.5.0),(0.0-.10.0)))
 			 (* cas 4 *)
-<<<<<<< HEAD
-			 else begin print_string "cas 4 " ; Some (x,((xf,(yt+ht))),((xs-.5.0),(0.0+.10.0)))end
-=======
 			 else begin Printf.printf "cas g -->  4 %d %d %d %d \n" xt (xm+wm) yt (ym+hm); Some (x,((xf,(yt+ht))),((xs-.5.0),(0.0+.10.0)))end
->>>>>>> dcf27abdccff8e160ce7c6154bc15513a9fe8b05
                        end
 		   end
 		 else
 		   begin
-		     Printf.printf "\nCoordonné %d %d \n" xm (xt+wt);
                      (* si il est à droite, est-il dans les cas 6/3/7 ou alors dans les cas 2/4 *)
-                     if xm >= (xt + wt)  then begin print_string "droite "; None end
-                      (* begin
+                     if xm >= (xt + wt)
+                     then
+                       begin
 			 (*dans le cadres des cas 6/3/7, il faut maintenant savoir précisément les différencier *)
 			 if (ym + hm) < yt
 			 then
 			   begin
                              (* cas 6 uniquement, necessité de savoir si face 3 ou 2 rencontrée en premier -> Calcul des temps relatif avant collision *)
-			     print_string "cas 6 ";
                              if ((abs_float (float_of_int (xm - (xt + wt)))/.(float_of_int xd)) > (abs_float (float_of_int (yt - (ym + hm)))/.(float_of_int yd)))
                              (* face 3 rencontre en premiere *)
                              then Some (x,(((xt+wt),yf)),((0.0+.5.0),(ys-.10.0)))
@@ -353,30 +362,23 @@ module Collision : Collision = struct
                              then
                                begin
 				 (* cas 7 uniquement, necessité de savoir si face 3 ou 4 rencontrée en premier -> Calcul des temps relatif avant collision *)
-				 print_string "cas 7 ";
 				 if ((abs_float (float_of_int (xm - (xt + wt)))/.(float_of_int xd)) > (abs_float (float_of_int (ym - (yt + ht)))/.(float_of_int yd)))
 				 (* face 3 rencontre en premiere *)
 				 then Some (x,(((xt+wt),yf)),((0.0+.5.0),(ys-.10.0)))
 				 (* face 4 rencoantre en premier *)
 				 else  begin Printf.printf "cas 7 --> 4 \n" ;Some (x,((xf,(yt+ht))),((xs+.5.0),(0.0+.10.0)))end
                                end
-<<<<<<< HEAD
-                             (* cas 3 *)				 
-                             else begin print_string "cas 3 "; Printf.printf "   cas 7 --> 3" ; Some (x,(((xt+wt),yf)),((0.0+.5.0),(ys-.10.0))) end
-=======
                              (* cas 3 *)
                              else begin Printf.printf "cas 7 --> 3 \n" ; Some (x,(((xt+wt),yf)),((0.0+.5.0),(ys-.10.0))) end
->>>>>>> dcf27abdccff8e160ce7c6154bc15513a9fe8b05
 			   end
                        end
                      (* reste les cas 2 et 4 à traiter pour ce faire il suffit de savoir si l'objet movible était au dessus ou en dessous *)
-		      *)
                      else
                        begin
 			 (* normalement le bon test à faire est : (ym + hm) <= yt mais suite à un bug incompris, on a bidouillé*)
-			 if ym <= (yt+ht)
+			 if ym < (yt+ht)
 			 (* cas 2 *)
-			 then begin print_string "cas 2 ";Some (x,((xf,(yt-hm))),((xs+.5.0),(0.0-.10.0)))end 
+			 then Some (x,((xf,(yt-hm))),((xs+.5.0),(0.0-.10.0)))
 			 (* cas 4 *)
 			 else begin Printf.printf "cas d -->  4 %d %d %d %d \n" xm (xt+wt) yt (ym+hm) ;Some (x,((xf,(yt+ht))),((xs+.5.0),(0.0+.10.0)))end
                        end

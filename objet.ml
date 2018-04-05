@@ -15,6 +15,7 @@ module type Objet = sig
   val allowJump : objet -> objet
   val forbidJump : objet -> objet
   val canJump : objet -> bool
+  val dmgGesture : objet -> objet
   val getSpeed : objet -> float*float
   val dmgObjet : objet -> objet
   val getPV : objet -> int
@@ -30,7 +31,7 @@ end
 module Objet : Objet = struct
   type genre_objet = Personnage|Ennemi|Plateforme|Wall|Door|Background|Projectile
   type objet = {genre : genre_objet; position : int*int; can_jump : bool; vitesse : float * float ;
-                maxSpeed : float*float; pv : int ;size : int*int; baseSize : int*int ; texture : Anim.anim }
+                maxSpeed : float*float; pv : int;canBeDmg : bool*int  ;size : int*int; baseSize : int*int ; texture : Anim.anim }
   let create genre_o pos vit maxvit hp  (textG, textM, textD, textS) renderer  =
     let sizeT t=
       match Sdl.query_texture t with 
@@ -44,6 +45,7 @@ module Objet : Objet = struct
      vitesse = vit;
      maxSpeed = maxvit;
      pv = hp;
+     canBeDmg = if ((genre_o = Personnage) || (genre_o = Ennemi)) then (true,0) else (false,(-1));
      texture = textu; 
      size =sizeT (Anim.getTexture textu) ;
      baseSize = sizeT (Anim.getTexture textu) ;
@@ -62,6 +64,7 @@ module Objet : Objet = struct
       vitesse = (0.0,0.0);
       maxSpeed = (0.0,0.0);
       pv = 10000;
+      canBeDmg = if ((genre_o = Personnage) || (genre_o = Ennemi)) then (true,0) else (false,(-1));
       texture = textu ;
       size =sizeT (Anim.getTexture textu) ;
       baseSize = sizeT (Anim.getTexture textu) ;	
@@ -81,7 +84,17 @@ module Objet : Objet = struct
 
   let resetSpeed obj = {obj with vitesse =(0.0,0.0)}
     
-  let changePV obj a = {obj with pv = obj.pv+a }
+  let changePV obj a =
+    let (b,x) = obj.canBeDmg in
+    if b
+    then
+      begin
+	match obj.genre with
+	|Personnage -> {obj with pv = obj.pv+a ; canBeDmg = (false,5)}
+	|Ennemi     -> {obj with pv = obj.pv+a }
+	|_          -> obj
+      end
+    else obj
     
   let move obj (x,y)  =
     {obj with position = (x,y)}
@@ -93,6 +106,13 @@ module Objet : Objet = struct
   let allowJump obj = {obj with can_jump = true}
   let forbidJump obj = {obj with can_jump = false}
   let canJump obj = obj.can_jump
+  let dmgGesture obj =
+    let (b,x) = obj.canBeDmg in
+    match x with
+    |y when (y=0) -> {obj with canBeDmg = (true,0)}
+    |y when (y>0) -> {obj with canBeDmg = (false,(x-1))}
+    |y when (y<0) -> {obj with canBeDmg = (false,(-1))}
+    |_            -> obj
   let getSpeed obj = obj.vitesse
   let dmgObjet obj = {obj with pv = obj.pv - 20}    
   let getPV  obj = obj.pv    

@@ -66,7 +66,7 @@ let jeu () =
           Sdl.render_present render;
           
           (*charegement des éléments de jeu*)
-          let perso = Objet.create Personnage (500,200) (0.0,0.0) (4.0,5.0) 100 
+          let perso = Objet.create Personnage (200,100) (0.0,5.0) (4.0,5.0) 100 
                        ( [|"Image/samus/Samus_left/Samus_left_walk/Samus_left_walk1_25_38.bmp";
                           "Image/samus/Samus_left/Samus_left_walk/Samus_left_walk2_25_38.bmp";
                           "Image/samus/Samus_left/Samus_left_walk/Samus_left_walk3_21_38.bmp";
@@ -100,8 +100,8 @@ let jeu () =
                          "Image/samus/Samus_saut/Samus_saut2_16_16.bmp";
                          "Image/samus/Samus_saut/Samus_saut1_16_16.bmp"|])
                        render in
-	  let e1 = Objet.create Ennemi (300,500) (3.0,0.0) (5.0,0.0) 200 ([||], [|"Image/ennemies/ennemi_test_24_14.bmp"|] ,[||],[||]) render in
-	  let e2 = Objet.create Ennemi (300,500) (3.0,0.0) (5.0,0.0) 200 ([||], [|"Image/ennemies/ennemi_test_24_14.bmp"|] ,[||],[||]) render in
+	  let e1 = Objet.create Ennemi (200,200) (0.0,10.0) (10.0,00.0) 200 ([||], [|"Image/ennemies/ennemi_test_24_14.bmp"|] ,[||],[||]) render in
+	  let e2 = Objet.create Ennemi (500,298) (0.0,0.0) (5.0,10.0) 200 ([||], [|"Image/ennemies/ennemi_test_24_14.bmp"|] ,[||],[||]) render in
           let sprite     = Objet.create_immobile Wall (200,500) [|"Image/sprite_obstacle.bmp"|] render in
           let plateform  = Objet.create_immobile Plateforme (600,500) [|"Image/Plateforme_700_5.bmp"|] render in
           let background = Objet.create_immobile Background (0,0) [|"Image/Background_2.bmp"|] render in

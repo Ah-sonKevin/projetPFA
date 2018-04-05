@@ -25,9 +25,7 @@ end
 
 module Scene : Scene =  struct
   type scene = {entities:Objet.objet list ; gravitie:float ; background : Objet.objet ; cam : Camera.camera ; renderer : Sdl.renderer}
-
-    exception NoPerso
-    
+  exception NoPerso    
   let create objs grav back camera render = {entities = objs ; gravitie = grav ; background = back ; cam = camera ;renderer = render}
 
   let getEntitie scene = scene.entities
@@ -101,12 +99,11 @@ module Scene : Scene =  struct
      |x::s -> if x = obj then damageObjet obj s ((Objet.changePV x (-20))::reslist) else damageObjet obj s (x::reslist)
    in
    
-   
    let rec moveAll_sub listObjet listRes cam =
      match listObjet with
      |[]-> (listRes,cam)
      (* traitement des déplacement / collision pour un projectile *)
-     |x::s when ((Objet.getGenre x)=(Projectile)) ->
+   (*  |x::s when ((Objet.getGenre x)=(Projectile)) ->
 	begin
 	  match (Collision.hit_boxProj x (List.append listObjet listRes) scene.gravitie (sizeX,sizeY)) with
 	  |None ->
@@ -132,24 +129,22 @@ module Scene : Scene =  struct
 		 (* on modifie le "obj" du traitement on sait qu'il n'a pas encore été traité*)
 		 moveAll_sub (damageObjet obj s []) listRes cam
 	       end
-	end
+       end*)
      (* traitement des déplacements / collisions pour le personnage*)
      |x::s when ((Objet.getGenre x)=(Personnage)) ->
         begin
-	  let temp = Camera.move (Objet.getPos x) cam in  
           match Collision.hit_boxPerso x (List.append listObjet listRes) (nextPos x scene) (sizeX,sizeY) with
           |None ->
 	     let objTemp = Objet.move x (nextPos x scene) in
+             let temp = if (Objet.getGenre x) = Personnage then Camera.move (Objet.getPos x) cam else cam in  
 	     moveAll_sub s ((Objet.setSpeed objTemp (0.0,scene.gravitie))::listRes) temp
 	  (*gestion du cas où le perso/un ennemi est "sortie" de la scene*)
 	  |Some (obj,(xNew,yNew),(xsNew,ysNew)) when (obj = x) ->
 	     (* on tue le "x" en cours de traitement*)
 		 moveAll_sub s ((Objet.changePV x (-Objet.getPV x))::listRes) cam
-          |Some (obj,(xNew,yNew),(xsNew,ysNew)) when ((Objet.getGenre obj)=(Ennemi))->
-	     let objTemp = (Objet.changePV (Objet.allowJump (Objet.move x (xNew,yNew))) (-30)) in
-	     moveAll_sub s ((Objet.setSpeed (Objet.resetSpeed objTemp) ((0.0 +. xsNew),(scene.gravitie +. ysNew)))::listRes) temp
-	  |Some (obj,(xNew,yNew),(xsNew,ysNew)) ->
+          |Some (obj,(xNew,yNew),(xsNew,ysNew)) ->
 	     let objTemp = Objet.allowJump (Objet.move x (xNew,yNew)) in
+             let temp = if (Objet.getGenre x) = Personnage then Camera.move (Objet.getPos x) cam else cam in  
 	     moveAll_sub s ((Objet.setSpeed (Objet.resetSpeed objTemp) ((0.0 +. xsNew),(scene.gravitie +. ysNew)))::listRes) temp
 	end
      (* traitement des déplacements / collisions pour les ennemis*)
@@ -157,31 +152,32 @@ module Scene : Scene =  struct
         begin
           match Collision.hit_boxObjet x (List.append listObjet listRes) (nextPos x scene) (sizeX,sizeY) with
           |None ->
-	     let objTemp = Objet.move x (nextPos x scene) in  
-	     moveAll_sub s ((Objet.setSpeed objTemp (0.0,scene.gravitie))::listRes) cam
+	     let objTemp = Objet.move x (nextPos x scene) in
+             let temp = if (Objet.getGenre x) = Personnage then Camera.move (Objet.getPos x) cam else cam in  
+	     moveAll_sub s ((Objet.setSpeed objTemp (0.0,scene.gravitie))::listRes) temp
 	  (*gestion du cas où le perso/un ennemi est "sortie" de la scene*)
 	  |Some ((xNew,yNew),(xsNew,ysNew)) when (xsNew = 1000.0) ->
 	     (* on tue le "x" en cours de traitement*)
 		 moveAll_sub s ((Objet.changePV x (-Objet.getPV x))::listRes) cam
           |Some ((xNew,yNew),(xsNew,ysNew)) ->
 	     let objTemp = Objet.allowJump (Objet.move x (xNew,yNew)) in
-	     moveAll_sub s ((Objet.setSpeed (Objet.resetSpeed objTemp) ((0.0 +. xsNew),(scene.gravitie +. ysNew)))::listRes) cam
-	end
+             let temp = if (Objet.getGenre x) = Personnage then Camera.move (Objet.getPos x) cam else cam in  
+	     moveAll_sub s ((Objet.setSpeed (Objet.resetSpeed objTemp) ((0.0 +. xsNew),(scene.gravitie +. ysNew)))::listRes) temp
+       end
      (* Ne rien faire pour les autres objets *)
      |x2::s -> moveAll_sub s (x2::listRes) cam
    in
 
    (* on met les projectiles de façon à ce qu'ils soient traiter avant toutes autres entitées, puis le personnage, puis le reste*)
-    let rec sort list_iter list_proj list_perso list_enne list_others =
+    let rec sort list_iter list_proj list_perso list_others =
       match list_iter with
-      |[]   -> List.append (List.append list_proj list_perso) (List.append list_others list_enne)
-      |x::s when ((Objet.getGenre x)=(Projectile)) -> sort s (x::list_proj) list_perso list_enne list_others
-      |x::s when ((Objet.getGenre x)=(Personnage)) -> sort s list_proj (x::list_perso) list_enne list_others
-      |x::s when ((Objet.getGenre x)=(Ennemi))     -> sort s list_proj list_perso (x::list_enne) list_others
-      |x::s -> sort s list_proj list_perso list_enne (x::list_others)
+      |[]   -> List.append (List.append list_proj list_perso) list_others
+      |x::s when ((Objet.getGenre x)=(Projectile)) -> sort s (x::list_proj) list_perso list_others
+      |x::s when ((Objet.getGenre x)=(Personnage)) -> sort s list_proj (x::list_perso) list_others
+      |x::s -> sort s list_proj list_perso (x::list_others)
     in
    
-   let (temp,tempCam) = moveAll_sub (sort scene.entities [] [] [] []) [] scene.cam in 
+   let (temp,tempCam) = moveAll_sub (sort scene.entities [] [] []) [] scene.cam in 
    let sceneTemp = {scene with entities = temp; cam = tempCam}in
    {sceneTemp with entities = changeAnim sceneTemp.entities}
 
@@ -212,24 +208,23 @@ module Scene : Scene =  struct
        |((-1),(-1))-> addEntitie scene (Objet.create Projectile (xP-10,yP-10) ((-.8.0),(-.8.0))  (8.0,8.0) 10 ([||],[|"Image/Samus_proj_10_10.bmp"|],[||],[||]) scene.renderer)
        |_          -> scene
      end
-      
-        
+       
  (* gestion des déplacements *)
- let movePersonnage scene (xs,ys)=
+ let movePersonnage scene (xs,ys) =
    let rec changePerso listObjet listRes =
      match listObjet with
      |[] -> listRes
      |x::s when ((Objet.getGenre x) = Personnage) ->
-	if ys < 0.0
+	    if ys < 0.0
 	    then
 	      begin
 		if (Objet.canJump x = false)
-		then changePerso s ((Objet.dmgGesture (Objet.setSpeed x (xs,0.0)))::listRes)
-		else changePerso s ((Objet.dmgGesture (Objet.forbidJump (Objet.setSpeed x (xs,ys))))::listRes)
+		then changePerso s ((Objet.setSpeed x (xs,0.0))::listRes)
+		else changePerso s ((Objet.forbidJump (Objet.setSpeed x (xs,ys)))::listRes)
 	      end
-	    else changePerso s ((Objet.dmgGesture (Objet.setSpeed x (xs,ys)))::listRes)
-     |x::s -> changePerso s (x::listRes)
-   in
+	       else changePerso s ((Objet.setSpeed x (xs,ys))::listRes)
+      |x::s -> changePerso s (x::listRes)
+    in
    {scene with entities = (changePerso scene.entities [] ) }
      
  let loadPicture renderer (x1,y1) (w,h) texture =
