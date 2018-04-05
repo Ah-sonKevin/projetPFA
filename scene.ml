@@ -72,16 +72,24 @@ module Scene : Scene =  struct
     let (xp,yp) = Objet.getPos obj in
     ((xs_int + xp) , ((int_of_float(ceil(scene.gravitie/.2.) +. ys) + yp)))
  
- let changeAnim l = 
+  let changeAnim l = 
     let rec changeAnimRec l res = 
       match l with
       |[]->res 
       |x::s -> 
-        let (xs,ys) = Objet.getSpeed x in 
-        let dir = if xs > 0.0 then Anim.Droite else if xs < 0.0 then  Anim.Gauche else Milieu 
-        in changeAnimRec s ((Objet.changeFrame x dir)::res)
+         let (xs,ys) = Objet.getSpeed x in 
+         let dir =
+           if Objet.canJump x then 
+             if xs > 1.0 then Anim.Droite else if xs < -1.0 then  Anim.Gauche else Milieu
+             else Anim.Saut
+         in let size  = if Objet.getGenre x = Personnage then 
+             if (dir = Anim.Saut) then (16,16) 
+             else (23,40)
+           else
+             Objet.getSize x
+            in changeAnimRec s ((Objet.setSize (Objet.changeFrame x dir) size)::res)
     in changeAnimRec l []
-
+    
   (* gestion des déplacements *)
  let moveAll scene =
 
@@ -97,7 +105,7 @@ module Scene : Scene =  struct
      match listObjet with
      |[]-> (listRes,cam)
      (* traitement des déplacement / collision pour un projectile *)
-     |x::s when ((Objet.getGenre x)=(Projectile)) ->
+   (*  |x::s when ((Objet.getGenre x)=(Projectile)) ->
 	begin
 	  match (Collision.hit_boxProj x (List.append listObjet listRes) scene.gravitie (sizeX,sizeY)) with
 	  |None ->
@@ -123,7 +131,7 @@ module Scene : Scene =  struct
 		 (* on modifie le "obj" du traitement on sait qu'il n'a pas encore été traité*)
 		 moveAll_sub (damageObjet obj s []) listRes cam
 	       end
-	end
+       end*)
      (* traitement des déplacements / collisions pour le personnage*)
      |x::s when ((Objet.getGenre x)=(Personnage)) ->
         begin
@@ -157,7 +165,7 @@ module Scene : Scene =  struct
 	     let objTemp = Objet.allowJump (Objet.move x (xNew,yNew)) in
              let temp = if (Objet.getGenre x) = Personnage then Camera.move (Objet.getPos x) cam else cam in  
 	     moveAll_sub s ((Objet.setSpeed (Objet.resetSpeed objTemp) ((0.0 +. xsNew),(scene.gravitie +. ysNew)))::listRes) temp
-	end
+       end
      (* Ne rien faire pour les autres objets *)
      |x2::s -> moveAll_sub s (x2::listRes) cam
    in
@@ -192,14 +200,14 @@ module Scene : Scene =  struct
        
        match (x,y) with
        (* coordonnée d'apparition des projectile à determiné *)
-       |(0,(-1))   -> addEntitie scene (Objet.create Projectile (xP+11,yP-10) (0.0,(-.8.0))      (8.0,8.0) 10 ([||],[|"Image/Samus_proj_10_10.bmp"|],[||],[||]) (10,10) scene.renderer)
-       |((-1),0)   -> addEntitie scene (Objet.create Projectile (xP-10,yP+13) ((-.8.0),0.0)      (8.0,8.0) 10 ([||],[|"Image/Samus_proj_10_10.bmp"|],[||],[||]) (10,10) scene.renderer)
-       |(0,1)      -> addEntitie scene (Objet.create Projectile (xP+11,yP+40) (0.0,8.0)          (8.0,8.0) 10 ([||],[|"Image/Samus_proj_10_10.bmp"|],[||],[||]) (10,10) scene.renderer)
-       |(1,0)      -> addEntitie scene (Objet.create Projectile (xP+25,yP+13) (8.0,0.0)          (8.0,8.0) 10 ([||],[|"Image/Samus_proj_10_10.bmp"|],[||],[||]) (10,10) scene.renderer)
-       |(1,1)      -> addEntitie scene (Objet.create Projectile (xP+25,yP+40) (8.0,8.0)          (8.0,8.0) 10 ([||],[|"Image/Samus_proj_10_10.bmp"|],[||],[||]) (10,10) scene.renderer)
-       |(1,(-1))   -> addEntitie scene (Objet.create Projectile (xP+25,yP-10) (8.0,(-.8.0))      (8.0,8.0) 10 ([||],[|"Image/Samus_proj_10_10.bmp"|],[||],[||]) (10,10) scene.renderer)
-       |((-1),1)   -> addEntitie scene (Objet.create Projectile (xP-10,yP+40) ((-.8.0),8.0)      (8.0,8.0) 10 ([||],[|"Image/Samus_proj_10_10.bmp"|],[||],[||]) (10,10) scene.renderer)
-       |((-1),(-1))-> addEntitie scene (Objet.create Projectile (xP-10,yP-10) ((-.8.0),(-.8.0))  (8.0,8.0) 10 ([||],[|"Image/Samus_proj_10_10.bmp"|],[||],[||]) (10,10) scene.renderer)
+       |(0,(-1))   -> addEntitie scene (Objet.create Projectile (xP+11,yP-10) (0.0,(-.8.0))      (8.0,8.0) 10 ([||],[|"Image/Samus_proj_10_10.bmp"|],[||],[||]) scene.renderer)
+       |((-1),0)   -> addEntitie scene (Objet.create Projectile (xP-10,yP+13) ((-.8.0),0.0)      (8.0,8.0) 10 ([||],[|"Image/Samus_proj_10_10.bmp"|],[||],[||]) scene.renderer)
+       |(0,1)      -> addEntitie scene (Objet.create Projectile (xP+11,yP+40) (0.0,8.0)          (8.0,8.0) 10 ([||],[|"Image/Samus_proj_10_10.bmp"|],[||],[||]) scene.renderer)
+       |(1,0)      -> addEntitie scene (Objet.create Projectile (xP+25,yP+13) (8.0,0.0)          (8.0,8.0) 10 ([||],[|"Image/Samus_proj_10_10.bmp"|],[||],[||]) scene.renderer)
+       |(1,1)      -> addEntitie scene (Objet.create Projectile (xP+25,yP+40) (8.0,8.0)          (8.0,8.0) 10 ([||],[|"Image/Samus_proj_10_10.bmp"|],[||],[||]) scene.renderer)
+       |(1,(-1))   -> addEntitie scene (Objet.create Projectile (xP+25,yP-10) (8.0,(-.8.0))      (8.0,8.0) 10 ([||],[|"Image/Samus_proj_10_10.bmp"|],[||],[||]) scene.renderer)
+       |((-1),1)   -> addEntitie scene (Objet.create Projectile (xP-10,yP+40) ((-.8.0),8.0)      (8.0,8.0) 10 ([||],[|"Image/Samus_proj_10_10.bmp"|],[||],[||]) scene.renderer)
+       |((-1),(-1))-> addEntitie scene (Objet.create Projectile (xP-10,yP-10) ((-.8.0),(-.8.0))  (8.0,8.0) 10 ([||],[|"Image/Samus_proj_10_10.bmp"|],[||],[||]) scene.renderer)
        |_          -> scene
      end
        

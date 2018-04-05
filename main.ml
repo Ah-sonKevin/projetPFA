@@ -100,13 +100,15 @@ let jeu () =
                          "Image/samus/Samus_saut/Samus_saut2_16_16.bmp";
                          "Image/samus/Samus_saut/Samus_saut1_16_16.bmp"|])
                        render in
-	  let ennemi = Objet.create Ennemi (300,500) (3.0,0.0) (5.0,0.0) 200 ([||], [|"Image/ennemies/ennemi_test_24_14.bmp"|] ,[||],[||]) render in
+	  let e1 = Objet.create Ennemi (300,500) (3.0,0.0) (5.0,0.0) 200 ([||], [|"Image/ennemies/ennemi_test_24_14.bmp"|] ,[||],[||]) render in
+	  let e2 = Objet.create Ennemi (300,500) (3.0,0.0) (5.0,0.0) 200 ([||], [|"Image/ennemies/ennemi_test_24_14.bmp"|] ,[||],[||]) render in
           let sprite     = Objet.create_immobile Wall (200,500) [|"Image/sprite_obstacle.bmp"|] render in
           let plateform  = Objet.create_immobile Plateforme (600,500) [|"Image/Plateforme_700_5.bmp"|] render in
           let background = Objet.create_immobile Background (0,0) [|"Image/Background_2.bmp"|] render in
           let sol        = Objet.create_immobile Plateforme (-100,668) [|"Image/Plateforme.bmp"|] render in
           let cam = Camera.create (Objet.getPos perso) (Objet.getSize background) (Sdl.get_window_size window) in
-          let scene = Scene.create (perso::plateform::sprite::sol::[]) 0.15 background cam render in
+          let scene = Scene.create (perso::plateform::sprite::sol::e1::e2::[]) 0.15 background cam render in
+	  
          
           (* gestion du jeu une fois lancé *)
           let event = Sdl.Event.create() in     
