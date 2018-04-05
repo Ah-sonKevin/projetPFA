@@ -30,22 +30,23 @@ module Collision : Collision = struct
   let hit_boxObjet obj list nextP (sizeX,sizeY)  =
     (* éléments nécessaire pour les calculs sur l'objet traité *)
     let (xm,ym) = Objet.getPos obj in
-    let (wm,hm) = Objet.getSize obj in
+    let (wm2,hm2) = Objet.getSize obj in
+      let (wm,hm) = Objet.getBaseSize obj in 
     let (xs,ys) = Objet.getSpeed obj in
     (* calcul de la position future *)
     let (xf,yf) = nextP in 
     (* création d'un rectangle correspondant à l'objet traité dans le "future" *)
-    let rectObjet = Sdl.Rect.create xf yf wm hm in
+    let rectObjet = Sdl.Rect.create xf yf wm2 hm2 in
     (* méthode de calcul des hit box *)
     let rec subHit list =
       (* calcul des collisions avec les bords de la scene, on regarde si l'objet est "sorti" de la scene*)
-      if (((xf-wm) < 0) || ((yf-hm) < 0) || (xf>sizeX) || (yf>sizeY))
+      if (((xf-wm2) < 0) || ((yf-hm2) < 0) || (xf>sizeX) || (yf>sizeY))
       then
 	begin
 	  Some ((0,0),(1000.0,0.0))
 	end
       else
-	begin
+	begin	   
 	  match list with
 	  |[] -> None
 	  |x::s when ((Objet.getGenre x)=(Plateforme)) ->
@@ -54,7 +55,7 @@ module Collision : Collision = struct
              let (wt,ht) = Objet.getSize x in
              let rectTemp = Sdl.Rect.create  xt yt wt ht in
          (* gestion des collisions pour les plateformes *)
-             if ((Sdl.has_intersection rectObjet rectTemp)&&((ym+hm) <= yt))  then
+             if ((Sdl.has_intersection rectObjet rectTemp)&&((ym+hm2) <= yt))  then	     
                begin
              (*calcul du déplacement de notre objet*)
 		 let (xd,yd) = (xf-xm , yf-ym) in

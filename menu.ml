@@ -39,11 +39,11 @@ module Menu = struct
 
   let startMenu window render  =
     (*chargement des éléments de jeu*)
-    let background = Objet.create Background (0,0) (0.0,0.0) (0.0,0.0) 10000  ([||], [|"Image/Menu_backscreen_1200_900.bmp"|] , [||],[||]) (1200,900) render in
-    let jouer    = Objet.create Wall (200,100) (0.0,0.0) (0.0,0.0) 10000 ([||], [|"Image/jouer.bmp"|], [||],[||]) (200,97) render in 
-    let quitter  = Objet.create Wall (200,400) (0.0,0.0) (0.0,0.0) 10000 ([||], [|"Image/quitter.bmp"|], [||],[||]) (200,97) render in
-    let jouer2   = Objet.create Wall (200,100) (0.0,0.0) (0.0,0.0) 10000 ([||], [|"Image/jouer2.bmp"|], [||],[||]) (200,97) render in 
-    let quitter2 = Objet.create Wall (200,400) (0.0,0.0) (0.0,0.0) 10000 ([||], [|"Image/quitter2.bmp"|], [||],[||]) (200,97) render in
+    let background = Objet.create Background (0,0) (0.0,0.0) (0.0,0.0) 10000  ([||], [|"Image/Menu_backscreen_1200_900.bmp"|] , [||],[||]) render in
+    let jouer    = Objet.create Wall (200,100) (0.0,0.0) (0.0,0.0) 10000 ([||], [|"Image/jouer.bmp"|], [||],[||])  render in 
+    let quitter  = Objet.create Wall (200,400) (0.0,0.0) (0.0,0.0) 10000 ([||], [|"Image/quitter.bmp"|], [||],[||])  render in
+    let jouer2   = Objet.create Wall (200,100) (0.0,0.0) (0.0,0.0) 10000 ([||], [|"Image/jouer2.bmp"|], [||],[||])  render in 
+    let quitter2 = Objet.create Wall (200,400) (0.0,0.0) (0.0,0.0) 10000 ([||], [|"Image/quitter2.bmp"|], [||],[||])  render in
     
     let refresh jouerBool renderer =
       match Sdl.render_clear renderer with
