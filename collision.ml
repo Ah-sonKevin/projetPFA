@@ -227,6 +227,8 @@ module Collision : Collision = struct
     let (xs,ys) = Objet.getSpeed obj in
     (* calcul de la position future *)
     let (xf,yf) = nextP in
+    (* creation d'un rectangle correspondant à l'objet traité maintenant *)
+    let rectObjetPre = Sdl.Rect.create xm ym wm hm in
     (* création d'un rectangle correspondant à l'objet traité dans le "future" *)
     let rectObjet = Sdl.Rect.create xf yf wm hm in
     (* méthode de calcul des hit box *)
@@ -245,13 +247,16 @@ module Collision : Collision = struct
 	     (* éléments nécessaire pour les calculs sur le deuxieme objet traité *)
 	     let (xt,yt) = Objet.getPos x in
 	     let (wt,ht) = Objet.getSize x in
+	     (* let (xst,yst) = Objet.getSpeed x in *)
 	     let rectTemp = Sdl.Rect.create  xt yt wt ht in
 	        Printf.printf "\nCoordonné %d %d \n" xm (xt+wt);
 	     (* gestion des collisions *)
 	     (* gestion des collisions pour les objets "Ennemi" *)
-             if Sdl.has_intersection rectObjet rectTemp
+             if (Sdl.has_intersection rectObjet rectTemp || Sdl.has_intersection rectObjetPre rectTemp)
              then
                begin
+		 Printf.printf "debut gestion ennemi \n";
+		 Printf.printf "coord ennemi : %d %d %d %d \n" xt yt wt ht;
 		 (*calcul du déplacement de notre objet*)
 		 let (xd,yd) = (xf-xm , yf-ym) in
 		 (*
@@ -311,11 +316,16 @@ module Collision : Collision = struct
                      (* reste les cas 2 et 4 à traiter pour ce faire il suffit de savoir si l'objet movible était au dessus ou en dessous *)
                      else
                        begin
-			 if (ym + hm) <= yt
+			 (* normalement le bon test à faire est : (ym + hm) <= yt mais suite à un bug incompris, on a bidouillé*)
+			 if ym <= (yt+ht)
 			 (* cas 2 *)
 			 then  begin print_string "cas 2";Some (x,((xf,(yt-hm))),((xs-.5.0),(0.0-.10.0)))end
 			 (* cas 4 *)
+<<<<<<< HEAD
 			 else begin print_string "cas 4 " ; Some (x,((xf,(yt+ht))),((xs-.5.0),(0.0+.10.0)))end
+=======
+			 else begin Printf.printf "cas g -->  4 %d %d %d %d \n" xt (xm+wm) yt (ym+hm); Some (x,((xf,(yt+ht))),((xs-.5.0),(0.0+.10.0)))end
+>>>>>>> dcf27abdccff8e160ce7c6154bc15513a9fe8b05
                        end
 		   end
 		 else
@@ -348,21 +358,27 @@ module Collision : Collision = struct
 				 (* face 3 rencontre en premiere *)
 				 then Some (x,(((xt+wt),yf)),((0.0+.5.0),(ys-.10.0)))
 				 (* face 4 rencoantre en premier *)
-				 else  begin Printf.printf "cas 7 --> 4" ;Some (x,((xf,(yt+ht))),((xs+.5.0),(0.0+.10.0)))end
+				 else  begin Printf.printf "cas 7 --> 4 \n" ;Some (x,((xf,(yt+ht))),((xs+.5.0),(0.0+.10.0)))end
                                end
+<<<<<<< HEAD
                              (* cas 3 *)				 
                              else begin print_string "cas 3 "; Printf.printf "   cas 7 --> 3" ; Some (x,(((xt+wt),yf)),((0.0+.5.0),(ys-.10.0))) end
+=======
+                             (* cas 3 *)
+                             else begin Printf.printf "cas 7 --> 3 \n" ; Some (x,(((xt+wt),yf)),((0.0+.5.0),(ys-.10.0))) end
+>>>>>>> dcf27abdccff8e160ce7c6154bc15513a9fe8b05
 			   end
                        end
                      (* reste les cas 2 et 4 à traiter pour ce faire il suffit de savoir si l'objet movible était au dessus ou en dessous *)
 		      *)
                      else
                        begin
-			 if (ym + hm) <= yt
+			 (* normalement le bon test à faire est : (ym + hm) <= yt mais suite à un bug incompris, on a bidouillé*)
+			 if ym <= (yt+ht)
 			 (* cas 2 *)
 			 then begin print_string "cas 2 ";Some (x,((xf,(yt-hm))),((xs+.5.0),(0.0-.10.0)))end 
 			 (* cas 4 *)
-			 else begin Printf.printf "cas d -->  4 %d %d %d %d" xm (xt+wt) yt (ym+hm) ;Some (x,((xf,(yt+ht))),((xs+.5.0),(0.0+.10.0)))end
+			 else begin Printf.printf "cas d -->  4 %d %d %d %d \n" xm (xt+wt) yt (ym+hm) ;Some (x,((xf,(yt+ht))),((xs+.5.0),(0.0+.10.0)))end
                        end
 		   end
                end
