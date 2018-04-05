@@ -78,17 +78,8 @@ module Scene : Scene =  struct
       |[]->res 
       |x::s -> 
         let (xs,ys) = Objet.getSpeed x in 
-        let dir =
-	  let _ = Printf.printf "%f\n" xs in 
-          if Objet.canJump x then 
-            if xs > 1.0 then Anim.Droite else if xs < -1.0 then  Anim.Gauche else Milieu
-          else Anim.Saut
-        in let size  = if Objet.getGenre x = Personnage then 
-                         if (dir = Anim.Saut) then (16,16) 
-                         else (23,40)
-                       else
-                         Objet.getSize x
-        in changeAnimRec s ((Objet.setSize (Objet.changeFrame x dir) size)::res)
+        let dir = if xs > 0.0 then Anim.Droite else if xs < 0.0 then  Anim.Gauche else Milieu 
+        in changeAnimRec s ((Objet.changeFrame x dir)::res)
     in changeAnimRec l []
 
   (* gestion des déplacements *)
@@ -133,8 +124,25 @@ module Scene : Scene =  struct
 		 moveAll_sub (damageObjet obj s []) listRes cam
 	       end
 	end
-     (* traitement des déplacements / collisions pour les objets en déplacements autres que projectile*)
-     |x::s when (Objet.isMovable x) ->
+     (* traitement des déplacements / collisions pour le personnage*)
+     |x::s when ((Objet.getGenre x)=(Personnage)) ->
+        begin
+          match Collision.hit_boxPerso x (List.append listObjet listRes) (nextPos x scene) (sizeX,sizeY) with
+          |None ->
+	     let objTemp = Objet.move x (nextPos x scene) in
+             let temp = if (Objet.getGenre x) = Personnage then Camera.move (Objet.getPos x) cam else cam in  
+	     moveAll_sub s ((Objet.setSpeed objTemp (0.0,scene.gravitie))::listRes) temp
+	  (*gestion du cas où le perso/un ennemi est "sortie" de la scene*)
+	  |Some (obj,(xNew,yNew),(xsNew,ysNew)) when (obj = x) ->
+	     (* on tue le "x" en cours de traitement*)
+		 moveAll_sub s ((Objet.changePV x (-Objet.getPV x))::listRes) cam
+          |Some (obj,(xNew,yNew),(xsNew,ysNew)) ->
+	     let objTemp = Objet.allowJump (Objet.move x (xNew,yNew)) in
+             let temp = if (Objet.getGenre x) = Personnage then Camera.move (Objet.getPos x) cam else cam in  
+	     moveAll_sub s ((Objet.setSpeed (Objet.resetSpeed objTemp) ((0.0 +. xsNew),(scene.gravitie +. ysNew)))::listRes) temp
+	end
+     (* traitement des déplacements / collisions pour les ennemis*)
+     |x::s when ((Objet.getGenre x)=(Ennemi)) ->
         begin
           match Collision.hit_boxObjet x (List.append listObjet listRes) (nextPos x scene) (sizeX,sizeY) with
           |None ->
@@ -144,7 +152,7 @@ module Scene : Scene =  struct
 	  (*gestion du cas où le perso/un ennemi est "sortie" de la scene*)
 	  |Some ((xNew,yNew),(xsNew,ysNew)) when (xsNew = 1000.0) ->
 	     (* on tue le "x" en cours de traitement*)
-		 moveAll_sub s ((Objet.changePV x (-50000))::listRes) cam
+		 moveAll_sub s ((Objet.changePV x (-Objet.getPV x))::listRes) cam
           |Some ((xNew,yNew),(xsNew,ysNew)) ->
 	     let objTemp = Objet.allowJump (Objet.move x (xNew,yNew)) in
              let temp = if (Objet.getGenre x) = Personnage then Camera.move (Objet.getPos x) cam else cam in  
@@ -154,15 +162,16 @@ module Scene : Scene =  struct
      |x2::s -> moveAll_sub s (x2::listRes) cam
    in
 
-   (* on met les projectiles de façon à ce qu'ils soient traiter avant toutes autres entitées *)
-    let rec sort list_iter list_proj list_others =
+   (* on met les projectiles de façon à ce qu'ils soient traiter avant toutes autres entitées, puis le personnage, puis le reste*)
+    let rec sort list_iter list_proj list_perso list_others =
       match list_iter with
-      |[]   -> List.append list_proj list_others
-      |x::s when ((Objet.getGenre x)=(Projectile)) -> sort s (x::list_proj) list_others
-      |x::s -> sort s list_proj (x::list_others)
+      |[]   -> List.append (List.append list_proj list_perso) list_others
+      |x::s when ((Objet.getGenre x)=(Projectile)) -> sort s (x::list_proj) list_perso list_others
+      |x::s when ((Objet.getGenre x)=(Personnage)) -> sort s list_proj (x::list_perso) list_others
+      |x::s -> sort s list_proj list_perso (x::list_others)
     in
    
-   let (temp,tempCam) = moveAll_sub (sort scene.entities [] []) [] scene.cam in 
+   let (temp,tempCam) = moveAll_sub (sort scene.entities [] [] []) [] scene.cam in 
    let sceneTemp = {scene with entities = temp; cam = tempCam}in
    {sceneTemp with entities = changeAnim sceneTemp.entities}
 
@@ -183,14 +192,14 @@ module Scene : Scene =  struct
        
        match (x,y) with
        (* coordonnée d'apparition des projectile à determiné *)
-       |(0,(-1))   -> addEntitie scene (Objet.create Projectile (xP+11,yP-10) (0.0,(-.8.0))      (8.0,8.0) 10 ([||],[|"Image/Samus_proj_10_10.bmp"|],[||],[||])  (scene.renderer))
-       |((-1),0)   -> addEntitie scene (Objet.create Projectile (xP-10,yP+13) ((-.8.0),0.0)      (8.0,8.0) 10 ([||],[|"Image/Samus_proj_10_10.bmp"|],[||],[||])  (scene.renderer))
-       |(0,1)      -> addEntitie scene (Objet.create Projectile (xP+11,yP+40) (0.0,8.0)          (8.0,8.0) 10 ([||],[|"Image/Samus_proj_10_10.bmp"|],[||],[||])  (scene.renderer))
-       |(1,0)      -> addEntitie scene (Objet.create Projectile (xP+25,yP+13) (8.0,0.0)          (8.0,8.0) 10 ([||],[|"Image/Samus_proj_10_10.bmp"|],[||],[||])  (scene.renderer))
-       |(1,1)      -> addEntitie scene (Objet.create Projectile (xP+25,yP+40) (8.0,8.0)          (8.0,8.0) 10 ([||],[|"Image/Samus_proj_10_10.bmp"|],[||],[||])  (scene.renderer))
-       |(1,(-1))   -> addEntitie scene (Objet.create Projectile (xP+25,yP-10) (8.0,(-.8.0))      (8.0,8.0) 10 ([||],[|"Image/Samus_proj_10_10.bmp"|],[||],[||])  (scene.renderer))
-       |((-1),1)   -> addEntitie scene (Objet.create Projectile (xP-10,yP+40) ((-.8.0),8.0)      (8.0,8.0) 10 ([||],[|"Image/Samus_proj_10_10.bmp"|],[||],[||])  (scene.renderer))
-       |((-1),(-1))-> addEntitie scene (Objet.create Projectile (xP-10,yP-10) ((-.8.0),(-.8.0))  (8.0,8.0) 10 ([||],[|"Image/Samus_proj_10_10.bmp"|],[||],[||])  (scene.renderer))
+       |(0,(-1))   -> addEntitie scene (Objet.create Projectile (xP+11,yP-10) (0.0,(-.8.0))      (8.0,8.0) 10 ([||],[|"Image/Samus_proj_10_10.bmp"|],[||],[||]) (10,10) scene.renderer)
+       |((-1),0)   -> addEntitie scene (Objet.create Projectile (xP-10,yP+13) ((-.8.0),0.0)      (8.0,8.0) 10 ([||],[|"Image/Samus_proj_10_10.bmp"|],[||],[||]) (10,10) scene.renderer)
+       |(0,1)      -> addEntitie scene (Objet.create Projectile (xP+11,yP+40) (0.0,8.0)          (8.0,8.0) 10 ([||],[|"Image/Samus_proj_10_10.bmp"|],[||],[||]) (10,10) scene.renderer)
+       |(1,0)      -> addEntitie scene (Objet.create Projectile (xP+25,yP+13) (8.0,0.0)          (8.0,8.0) 10 ([||],[|"Image/Samus_proj_10_10.bmp"|],[||],[||]) (10,10) scene.renderer)
+       |(1,1)      -> addEntitie scene (Objet.create Projectile (xP+25,yP+40) (8.0,8.0)          (8.0,8.0) 10 ([||],[|"Image/Samus_proj_10_10.bmp"|],[||],[||]) (10,10) scene.renderer)
+       |(1,(-1))   -> addEntitie scene (Objet.create Projectile (xP+25,yP-10) (8.0,(-.8.0))      (8.0,8.0) 10 ([||],[|"Image/Samus_proj_10_10.bmp"|],[||],[||]) (10,10) scene.renderer)
+       |((-1),1)   -> addEntitie scene (Objet.create Projectile (xP-10,yP+40) ((-.8.0),8.0)      (8.0,8.0) 10 ([||],[|"Image/Samus_proj_10_10.bmp"|],[||],[||]) (10,10) scene.renderer)
+       |((-1),(-1))-> addEntitie scene (Objet.create Projectile (xP-10,yP-10) ((-.8.0),(-.8.0))  (8.0,8.0) 10 ([||],[|"Image/Samus_proj_10_10.bmp"|],[||],[||]) (10,10) scene.renderer)
        |_          -> scene
      end
        
