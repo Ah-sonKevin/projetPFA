@@ -5,6 +5,7 @@ module type Objet = sig
   type genre_objet = Personnage|Ennemi|Plateforme|Wall|Door|Background|Projectile
   type objet
   val create : genre_objet -> int*int -> float*float -> float*float -> int ->(string array *string array *string array * string array) -> int*int -> Sdl.renderer -> objet
+  val create_immobile : genre_objet -> int*int -> string array-> int*int -> Sdl.renderer -> objet
   val move : objet -> (int*int) -> objet
   val changePV : objet -> int -> objet
   val setSpeed : objet -> (float*float) -> objet
@@ -21,6 +22,8 @@ module type Objet = sig
   val getTexture : objet -> Sdl.texture
   val isMovable : objet -> bool
   val changeFrame : objet -> Anim.direction -> objet
+  val setSize : objet -> int * int -> objet
+
 end
 
 module Objet : Objet = struct
@@ -37,6 +40,18 @@ module Objet : Objet = struct
      size = s;
      texture = Anim.create textG textM textD textS renderer
     }
+  let create_immobile genre_o pos textM s render = 
+    {
+      genre = genre_o;
+     position = pos;
+     can_jump = true;
+     vitesse = (0.0,0.0);
+     maxSpeed = (0.0,0.0);
+     pv = 10000;
+     size = s;
+     texture = Anim.create [||] textM [||] [||] render
+    }
+
           
   let setSpeed obj (x,y) =
     let (x1,y1) = obj.vitesse in
@@ -54,21 +69,42 @@ module Objet : Objet = struct
     
   let move obj (x,y)  =
     {obj with position = (x,y)}
+
+  let setSize obj (x,y) = {obj with size = (x,y)} 
 	
-  let getGenre obj = obj.genre
-      
+  let getGenre obj = obj.genre      
   let getPos obj = obj.position
-
   let allowJump obj = {obj with can_jump = true}
-
   let forbidJump obj = {obj with can_jump = false}
   let canJump obj = obj.can_jump
   let getSpeed obj = obj.vitesse
   let dmgObjet obj = {obj with pv = obj.pv - 20}    
   let getPV  obj = obj.pv    
-  let getSize obj = obj.size    
   let getTexture obj =  Anim.getTexture obj.texture
   let isMovable obj = if (obj.genre = Personnage) || (obj.genre = Ennemi) || (obj.genre = Projectile) then true else false
   let changeFrame obj dir = {obj with texture = Anim.changeFrame obj.texture dir}
+  let getSize obj = obj.size 
+
+(*  let getSize obj = 
+    let x = Anim.getTexture obj.texture in
+   match Sdl.query_texture x with 
+    |Error (`Msg e) -> Sdl.log "Init load picture error: %s" e; exit 1
+    |Ok (_,_,(x,y)) ->        
+      let (x2,y2) = getSize2 obj in 
+      if ((x2!=x)||(y2!=y)) then         
+        let s =  match  getGenre obj with 
+          |Personnage -> "perso"
+          |Wall -> "wall"
+          |Plateforme -> "plateform"
+          |Projectile -> "projectile"
+          |Door -> "door"
+          |Ennemi -> "ennimi"
+          | _ ->"background" in
+        print_string s;       
+        Printf.printf " %d %d %d %d \n" x y x2 y2;
+      else ();             
+      (x,y)*)
+      
+
     
 end

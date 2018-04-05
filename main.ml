@@ -12,7 +12,7 @@ let my_exit (window,renderer) scene =
   exit 0
 
 (*le jeu*)
-let evenement e exit_arg scene =
+let evenement e exit_arg scene clock =
   let evenementFenetre e exit_arg = 
   match Sdl.poll_event (Some e) with
   |true->
@@ -36,8 +36,8 @@ let evenement e exit_arg scene =
   begin 
     if tab.{(Sdl.get_scancode_from_key Sdl.K.escape)}=1 then
       exit 0;
-    let temp = 
-      if tab.{(Sdl.get_scancode_from_key Sdl.K.s)}=1 then
+    let temp1 = 
+      if tab.{(Sdl.get_scancode_from_key Sdl.K.r)}=1 then
         Scene.suicide scene
       else
         scene
@@ -45,7 +45,10 @@ let evenement e exit_arg scene =
     let x =  (0.2 *. (float_of_int (tab.{(Sdl.get_scancode_from_key Sdl.K.right)})))
              -. 0.2 *. float_of_int (tab.{(Sdl.get_scancode_from_key Sdl.K.left)}) in
     let y = float_of_int (-20 * tab.{(Sdl.get_scancode_from_key Sdl.K.up )}) in
-    Scene.movePersonnage temp (x,y)
+    let xt = (tab.{(Sdl.get_scancode_from_key Sdl.K.d)})-(tab.{(Sdl.get_scancode_from_key Sdl.K.q)}) in
+    let yt = (tab.{(Sdl.get_scancode_from_key Sdl.K.s)})-(tab.{(Sdl.get_scancode_from_key Sdl.K.z)}) in
+    let temp2 = Scene.shoot temp1 (xt,yt) clock in
+    Scene.movePersonnage temp2 (x,y)
   end
 
 
@@ -96,28 +99,30 @@ let jeu () =
                          "Image/samus/Samus_saut/Samus_saut3_16_16.bmp";
                          "Image/samus/Samus_saut/Samus_saut2_16_16.bmp";
                          "Image/samus/Samus_saut/Samus_saut1_16_16.bmp"|])
-                        (23,40) render in
-          let sprite = Objet.create Wall (200,500) (0.0,0.0) (0.0,0.0) 10000 ([||], [|"Image/sprite_obstacle.bmp"|] ,[||],[||]) (231,89) render in
-          let plateform = Objet.create Plateforme (600,500) (0.0,0.0) (0.0,0.0) 10000  ([||], [|"Image/Plateforme_700_5.bmp"|],  [||],[||]) (200,5) render in
-          let background = Objet.create Background (0,0) (0.0,0.0) (0.0,0.0) 10000  ([||], [|"Image/Background_2.bmp"|] , [||],[||]) (3494,982) render in
-          let sol = Objet.create Plateforme (-100,668) (0.0,0.0) (0.0,0.0) 10000   ([||], [|"Image/Plateforme_700_5.bmp"|],  [||],[||]) (3600,5) render in
+                       (23,40) render in
+	  let ennemi = Objet.create Ennemi (300,500) (3.0,0.0) (5.0,0.0) 200 ([||], [|"Image/ennemies/ennemi_test_24_14.bmp"|] ,[||],[||]) (24,20) render in
+          let sprite     = Objet.create_immobile Wall (200,500) [|"Image/sprite_obstacle.bmp"|] (231,89) render in
+          let plateform  = Objet.create_immobile Plateforme (600,500) [|"Image/Plateforme_700_5.bmp"|] (200,5) render in
+          let background = Objet.create_immobile Background (0,0) [|"Image/Background_2.bmp"|] (3494,982) render in
+          let sol        = Objet.create_immobile Plateforme (-100,668) [|"Image/Plateforme_700_5.bmp"|] (3600,5) render in
           let cam = Camera.create (Objet.getPos perso) (Objet.getSize background) (Sdl.get_window_size window) in
-          let scene = Scene.create (sol::plateform::sprite::perso::[]) 1.06 background cam render in
+          let scene = Scene.create (sol::ennemi::plateform::sprite::perso::[]) 0.15 background cam render in
          
           (* gestion du jeu une fois lancé *)
           let event = Sdl.Event.create() in     
           let rec menu window renderer = 
             Menu.startMenu window renderer;
-            let rec game scene window renderer =
+            let rec game scene window renderer clock =
               Sdl.delay 17l;
-              let sceneEvent = evenement event (window,renderer) scene in
-              let sceneActive = Scene.moveAll sceneEvent in
+              let sceneEvent = evenement event (window,renderer) scene clock in
+              let sceneMove = Scene.moveAll sceneEvent in
+	      let sceneActive = Scene.kickDead sceneMove in
               Scene.refresh scene sceneActive;
               if Scene.continue sceneActive then 
-                game sceneActive window renderer 
+                game sceneActive window renderer ((clock+1) mod 5)
               else ()
             in
-            game scene window render;
+            game scene window render 0;
             menu window renderer 
           in menu window render
                

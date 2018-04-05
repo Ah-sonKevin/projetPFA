@@ -5,6 +5,7 @@ module type Objet = sig
   type genre_objet = Personnage|Ennemi|Plateforme|Wall|Door|Background|Projectile
   type objet
   val create : genre_objet -> int*int -> float*float -> float*float -> int ->(string array * string array * string array * string array ) ->int*int -> Sdl.renderer -> objet
+  val create_immobile : genre_objet -> int*int -> string array-> int*int -> Sdl.renderer -> objet
   val move : objet ->(int*int)->  objet
   val changePV : objet -> int -> objet
   val setSpeed : objet -> (float*float) -> objet
@@ -20,9 +21,11 @@ module type Objet = sig
   val getSize : objet -> int*int
   val getTexture : objet -> Sdl.texture
   val isMovable : objet -> bool
+
  (* val getFrame : objet -> int
   *)
   val changeFrame : objet -> Anim.direction -> objet 
+  val setSize : objet -> int*int -> objet
 end
 
 module Objet : Objet
