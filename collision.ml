@@ -36,12 +36,15 @@ module Collision : Collision = struct
     |x::s when x = obj -> kickObjectWithMovable obj s reslist
     |x::s when (Objet.isMovable x) -> kickObjectWithMovable obj s reslist
     |x::s -> kickObjectWithMovable obj s (x::reslist)
-       
+
+  (*gestion des collisions pour les ennemis *)
   let hit_boxObjet obj list nextP (sizeX,sizeY)  =
     (* éléments nécessaire pour les calculs sur l'objet traité *)
     let (xm,ym) = Objet.getPos obj in
     let (wm,hm) = Objet.getSize obj in
     let (xs,ys) = Objet.getSpeed obj in
+    (*creation d'un rectangle correspondant à l'objet traité right now *)
+    let rectPres = Sdl.Rect.create xm ym wm hm in
     (* calcul de la position future *)
     let (xf,yf) = nextP in 
     (* création d'un rectangle correspondant à l'objet traité dans le "future" *)
@@ -59,174 +62,358 @@ module Collision : Collision = struct
 	  match list with
 	  |[] -> None
 	  |x::s when ((Objet.getGenre x)=(Plateforme)) ->
+	     begin
              (* éléments nécessaire pour les calculs sur le deuxieme objet traité *)
              let (xt,yt) = Objet.getPos x in
              let (wt,ht) = Objet.getSize x in
              let rectTemp = Sdl.Rect.create  xt yt wt ht in
-             (* gestion des collisions pour les plateformes *)
-             if ((Sdl.has_intersection rectObjet rectTemp)&&((ym+hm) <= yt))  then
-               begin
-		 (*calcul du déplacement de notre objet*)
-		 let (xd,yd) = (xf-xm , yf-ym) in
-		 (* Gestion des 3 cas de collisions possibles pour une plateforme (directions) :
-                    -------------------
-                    -     -     -     -
-                    -  5  -  2  -  6  -
-                    -     -     -     -
-                    -------------------
-                    -     -     -     -
-                    -  1  -  0  -  3  -
-                    -     -     -     -
-                    -------------------
-		    les différentes faces du rectangle fixe : LEFT: 1 /UP: 2 /RIGHT: 3 /DOWN: 4 
-		 *)
-		 (* cas 5 et 6, necessité de savoir si face 2 ou 1/3 rencontrée en premier -> Calcul des temps relatif avant collision *)
-		 if (((abs_float (float_of_int (xt - (xm + wm)))/.float_of_int xd)) < (abs_float (float_of_int (yt - (ym + hm)))/.(float_of_int yd)))
-		 (* face 2 rencontre en premier *)
-		 then Some (((xf,(yt-hm))),(xs,0.0))
-		 (* soit cas 2 soit rien *)
-		 else
+	     (* Etape 1 : on vérifie que l'objet traité n'est pas déjà DANS l'objet en cours, si c'est le cas
+		alors on gère cette collision en priorité *)
+	     if (Sdl.has_intersection rectPres rectTemp)
+	       (* Si l'objet traité est à l'interieur de l'objet en cours, alors on doit savoir d'où il vient
+		  Pour ça on check d'abord l'axe verticale, puis horizontale, et ensuite on détermine avec
+		  un calcul de temps relatif d'où vient l'objet traité par rapport à l'objet en cours
+		  cad, par où il est rentré dans l'objet *)
+	       (*
+		             Face 2
+		   .........................
+		   .           .           .
+		   .           .           .
+		   .   cas 1   .   cas 2   .
+		F  .           .           . F
+		a  .           .           . a
+		c  ......................... c
+		e  .           .           . e
+		   .           .           .
+		1  .   cas 3   .   cas 4   . 3
+		   .           .           .
+		   .           .           .
+		   .........................
+		             Face 4
+	       *)
+	       then
+		 begin
+		   if (xs > 0.0) 
+		   then
+		     begin
+		       if (ys > 0.0)
+		       (* cas 1 *)
+		       then
+			 begin
+			   (* calcul des distances necessaire aux calculs qui vont suivre *)
+			   let (disX,disY) = (abs((xm+wm)-xt),abs((ym+hm)-yt)) in
+			   (* maintenant qu'on à les distance on effectue un calcul de temps relatif, afin de
+			      determiner par quelle face de l'objet, l'objet qu'on traite est rentré *)
+			   if (abs_float((float_of_int disX)/.xs)) >= (abs_float((float_of_int disY)/.ys))
+			   (* Face 2 *)
+			   then Some (((xf,(yt-hm))),(xs,0.0))
+			   (* Face 1 *)
+			   else Some ((((xt-wm),yf)),((0.0-.xs),ys))
+			 end
+		       (*cas 2*)
+		       else
+			 begin
+			   (* calcul des distances necessaire aux calculs qui vont suivre *)
+			   let (disX,disY) = (abs(((xm+wm)-xt)-(xt+wt)),abs((ym+hm)-(yt+ht))) in
+			   (* maintenant qu'on à les distance on effectue un calcul de temps relatif, afin de
+			      determiner par quelle face de l'objet, l'objet qu'on traite est rentré *)
+			   if (abs_float((float_of_int disX)/.xs)) >= (abs_float((float_of_int disY)/.ys))
+			   (* Face 4 *)
+			   then Some (((xf,(yt+ht))),(xs,0.0))
+			   (* Face 1 *)
+			   else Some ((((xt-wm),yf)),((0.0-.xs),ys))
+			 end
+		     end
+		   else
+		     begin
+		       if (ys > 0.0)
+		       (* cas 3 *)
+		       then
+			 begin
+			   (* calcul des distances necessaire aux calculs qui vont suivre *)
+			   let (disX,disY) = (abs((xm+wm)-(xt+wt)),abs((ym+hm)-yt)) in
+			   (* maintenant qu'on à les distance on effectue un calcul de temps relatif, afin de
+			      determiner par quelle face de l'objet, l'objet qu'on traite est rentré *)
+			   if (abs_float((float_of_int disX)/.xs)) >= (abs_float((float_of_int disY)/.ys))
+			   (* Face 2 *)
+			   then Some (((xf,(yt-hm))),(xs,0.0))
+			   (* Face 3 *)
+			   else Some ((((xt+wt),yf)),((0.0-.xs),ys))
+			 end
+		       (*cas 4*)
+		       else
+			 begin
+			   (* calcul des distances necessaire aux calculs qui vont suivre *)
+			   let (disX,disY) = (abs((xm+wm)-(xt+wt)),abs((ym+hm)-(yt+ht))) in
+			   (* maintenant qu'on à les distance on effectue un calcul de temps relatif, afin de
+			      determiner par quelle face de l'objet, l'objet qu'on traite est rentré *)
+			   if (abs_float((float_of_int disX)/.xs)) >= (abs_float((float_of_int disY)/.ys))
+			   (* Face 4 *)
+			   then Some (((xf,(yt+ht))),(xs,0.0))
+			   (* Face 3 *)
+			   else Some ((((xt+wt),yf)),((0.0-.xs),ys))
+			 end
+		     end
+		 end
+	     else
+	       begin
+		 (* Etape 2 : on gere les collisions eventuelles à venir pour les plateformes *)
+		 if ((Sdl.has_intersection rectObjet rectTemp)&&((ym+hm) <= yt))  then
 		   begin
-                     if(((xm + wm) > xt) && (xm < (xt + wt)))
-                     then Some ((xf,(yt-hm)),(xs,0.0))
-                     else subHit s
+		     (*calcul du déplacement de notre objet*)
+		     let (xd,yd) = (xf-xm , yf-ym) in
+		     (* Gestion des 3 cas de collisions possibles pour une plateforme (directions) :
+			-------------------
+			-     -     -     -
+			-  5  -  2  -  6  -
+			-     -     -     -
+			-------------------
+			-     -     -     -
+			-  1  -  0  -  3  -
+			-     -     -     -
+			-------------------
+			les différentes faces du rectangle fixe : LEFT: 1 /UP: 2 /RIGHT: 3 /DOWN: 4 
+		     *)
+		     (* cas 5 et 6, necessité de savoir si face 2 ou 1/3 rencontrée en premier -> Calcul des temps relatif avant collision *)
+		     if (((abs_float (float_of_int (xt - (xm + wm)))/.float_of_int xd)) < (abs_float (float_of_int (yt - (ym + hm)))/.(float_of_int yd)))
+		     (* face 2 rencontre en premier *)
+		     then Some (((xf,(yt-hm))),(xs,0.0))
+		     (* soit cas 2 soit rien *)
+		     else
+		       begin
+			 if(((xm + wm) > xt) && (xm < (xt + wt)))
+			 then Some ((xf,(yt-hm)),(xs,0.0))
+			 else subHit s
+		       end
 		   end
-               end
-             else subHit s
+		 else subHit s
+	       end
+	     end
 	  |x::s -> 
-             (* éléments nécessaire pour les calculs sur le deuxieme objet traité *)
-             let (xt,yt) = Objet.getPos x in
-             let (wt,ht) = Objet.getSize x in
-             let rectTemp = Sdl.Rect.create  xt yt wt ht in
-             (* gestion des collisions pour les objets autres que les plateformes/ennemis *)
-             if Sdl.has_intersection rectObjet rectTemp
-             then
-               begin
-		 (*calcul du déplacement de notre objet*)
-		 let (xd,yd) = (xf-xm , yf-ym) in
-		 (*
-		   Gestion des 8 cas de collisions possibles (directions) :
-		   -------------------
-		   -     -     -     -
-		   -  5  -  2  -  6  -
-		   -     -     -     -
-		   -------------------
-		   -     -     -     -
-		   -  1  -  0  -  3  -
-		   -     -     -     -
-		   -------------------
-		   -     -     -     -
-		   -  8  -  4  -  7  -
-		   -     -     -     -
-		   -------------------
-		   les différentes faces du rectangle fixe : LEFT: 1 /UP: 2 /RIGHT: 3 /DOWN: 4 
-		 *)
-		 (* notre objet en mouvement était t'il à droite où à gauche de l'objet avec lequel il entre en collision *)
-		 if xd>0
-		 then
-		   begin
-                     (* si il est à gauche, est-il dans les cas 5/1/8 ou alors dans les cas 2/4 *)
-                     if (xm + wm) <= xt
-                     then
-                       begin
-			 (*dans le cadres des cas 5/1/8, il faut maintenant savoir précisément les différencier *)
-			 if (ym + hm) < yt
-			 then
-			   begin
-                             (* cas 5 uniquement, necessité de savoir si face 1 ou 2 rencontrée en premier -> Calcul des temps relatif avant collision *)
-                             if ((abs_float (float_of_int (xt - (xm + wm)))/.(float_of_int xd)) > (abs_float (float_of_int (yt - (ym + hm)))/.(float_of_int yd)))
-                             (* face 1 rencontre en premiere *)
-                             then Some ((((xt-wm),yf)),(0.0,ys))
-                             (* face 2 rencontre en premier *)
-                             else Some (((xf,(yt-hm))),(xs,0.0))
-			   end
-			 else
-			   begin
-                             (* reste à differencier cas 8 et cas 1 *)
-                             if ym > (yt + ht)
-                             then
-                               begin
-				 (* cas 8 uniquement, necessité de savoir si face 1 ou 4 rencontrée en premier -> Calcul des temps relatif avant collision *)
-				 if ((abs_float (float_of_int (xt - (xm + wm)))/.(float_of_int xd)) > (abs_float (float_of_int (ym - (yt + ht)))/.(float_of_int yd)))
-				 (* face 1 rencontre en premiere *)
-				 then Some ((((xt-wm),yf)),(0.0,ys))
-				 (* face 4 rencontre en premier *)
-				 else Some (((xf,(yt+ht))),(xs,0.0))
-                               end
-                             (* cas 1 *)
-                             else Some ((((xt-wm),yf)),(0.0,ys))
-			   end
-                       end
-                     (* reste les cas 2 et 4 à traiter pour ce faire il suffit de savoir si l'objet movible était au dessus ou en dessous *)
-                     else
-                       begin
-			 if (ym + hm) <= yt
-			 (* cas 2 *)
-			 then Some (((xf,(yt-hm))),(xs,0.0))
-			 (* cas 4 *)
-			 else Some (((xf,(yt+ht))),(xs,0.0))
-                       end
-		   end
-		 else
-		   begin
-                     (* si il est à droite, est-il dans les cas 6/3/7 ou alors dans les cas 2/4 *)
-                     if xm >= (xt + wt)
-                     then
-                       begin
-			 (*dans le cadres des cas 6/3/7, il faut maintenant savoir précisément les différencier *)
-			 if (ym + hm) < yt
-			 then
-			   begin
-                             (* cas 6 uniquement, necessité de savoir si face 3 ou 2 rencontrée en premier -> Calcul des temps relatif avant collision *)
-                             if ((abs_float (float_of_int (xm - (xt + wt)))/.(float_of_int xd)) > (abs_float (float_of_int (yt - (ym + hm)))/.(float_of_int yd)))
-                             (* face 3 rencontre en premiere *)
-                             then Some ((((xt+wt),yf)),(0.0,ys))
-                             (* face 2 rencontre en premier *)
-                             else Some (((xf,(yt-hm))),(xs,0.0))
-			   end
-			 else
-			   begin
-                             (* reste à differencier cas 7 et cas 3 *)
-                             if ym > (yt + ht)
-                             then
-                               begin
-				 (* cas 7 uniquement, necessité de savoir si face 3 ou 4 rencontrée en premier -> Calcul des temps relatif avant collision *)
-				 if ((abs_float (float_of_int (xm - (xt + wt)))/.(float_of_int xd)) > (abs_float (float_of_int (ym - (yt + ht)))/.(float_of_int yd)))
-				 (* face 3 rencontre en premiere *)
-				 then Some ((((xt+wt),yf)),(0.0,ys))
-				 (* face 4 rencoantre en premier *)
-				 else Some (((xf,(yt+ht))),(xs,0.0))
-                               end
-                             (* cas 3 *)
-                             else Some ((((xt+wt),yf)),(0.0,ys))
-			   end
-                       end
-                     (* reste les cas 2 et 4 à traiter pour ce faire il suffit de savoir si l'objet movible était au dessus ou en dessous *)
-                     else
-                       begin
-			 if (ym + hm) <= yt
-			 (* cas 2 *)
-			 then Some (((xf,(yt-hm))),(xs,0.0))
-			 (* cas 4 *)
-			 else Some (((xf,(yt+ht))),(xs,0.0))
-                       end
-		   end
-               end
-             else subHit s
+             begin
+               (* éléments nécessaire pour les calculs sur le deuxieme objet traité *)
+               let (xt,yt) = Objet.getPos x in
+               let (wt,ht) = Objet.getSize x in
+               let rectTemp = Sdl.Rect.create  xt yt wt ht in
+	       (* Etape 1 : on vérifie que l'objet traité n'est pas déjà DANS l'objet en cours, si c'est le cas
+		  alors on gère cette collision en priorité *)
+	       if (Sdl.has_intersection rectPres rectTemp)
+	       (* Si l'objet traité est à l'interieur de l'objet en cours, alors on doit savoir d'où il vient
+		  Pour ça on check d'abord l'axe verticale, puis horizontale, et ensuite on détermine avec
+		  un calcul de temps relatif d'où vient l'objet traité par rapport à l'objet en cours
+		  cad, par où il est rentré dans l'objet *)
+	       (*
+		              Face 2
+		    .........................
+		    .           .           .
+		    .           .           .
+		    .   cas 1   .   cas 3   .
+		 F  .           .           . F
+		 a  .           .           . a
+		 c  ......................... c
+		 e  .           .           . e
+		    .           .           .
+		 1  .   cas 2   .   cas 4   . 3
+		    .           .           .
+		    .           .           .
+		    .........................
+		              Face 4
+	       *)
+	       then
+		 begin
+		   if (xs > 0.0) 
+		   then
+		     begin
+		       if (ys > 0.0)
+		       (* cas 1 *)
+		       then
+			 begin
+			   (* calcul des distances necessaire aux calculs qui vont suivre *)
+			   let (disX,disY) = (abs((xm+wm)-xt),abs((ym+hm)-yt)) in
+			   (* maintenant qu'on à les distance on effectue un calcul de temps relatif, afin de
+			      determiner par quelle face de l'objet, l'objet qu'on traite est rentré *)
+			   if (abs_float((float_of_int disX)/.xs)) >= (abs_float((float_of_int disY)/.ys))
+			   (* Face 2 *)
+			   then Some (((xf,(yt-hm))),(xs,0.0))
+			   (* Face 1 *)
+			   else Some ((((xt-wm),yf)),((0.0-.xs),ys))
+			 end
+		       (*cas 2*)
+		       else
+			 begin
+			   (* calcul des distances necessaire aux calculs qui vont suivre *)
+			   let (disX,disY) = (abs(((xm+wm)-xt)-(xt+wt)),abs((ym+hm)-(yt+ht))) in
+			   (* maintenant qu'on à les distance on effectue un calcul de temps relatif, afin de
+			      determiner par quelle face de l'objet, l'objet qu'on traite est rentré *)
+			   if (abs_float((float_of_int disX)/.xs)) >= (abs_float((float_of_int disY)/.ys))
+			   (* Face 4 *)
+			   then Some (((xf,(yt+ht))),(xs,0.0))
+			   (* Face 1 *)
+			   else Some ((((xt-wm),yf)),((0.0-.xs),ys))
+			 end
+		     end
+		   else
+		     begin
+		       if (ys > 0.0)
+		       (* cas 3 *)
+		       then
+			 begin
+			   (* calcul des distances necessaire aux calculs qui vont suivre *)
+			   let (disX,disY) = (abs((xm+wm)-(xt+wt)),abs((ym+hm)-yt)) in
+			   (* maintenant qu'on à les distance on effectue un calcul de temps relatif, afin de
+			      determiner par quelle face de l'objet, l'objet qu'on traite est rentré *)
+			   if (abs_float((float_of_int disX)/.xs)) >= (abs_float((float_of_int disY)/.ys))
+			   (* Face 2 *)
+			   then Some (((xf,(yt-hm))),(xs,0.0))
+			   (* Face 3 *)
+			   else Some ((((xt+wt),yf)),((0.0-.xs),ys))
+			 end
+		       (*cas 4*)
+		       else
+			 begin
+			   (* calcul des distances necessaire aux calculs qui vont suivre *)
+			   let (disX,disY) = (abs((xm+wm)-(xt+wt)),abs((ym+hm)-(yt+ht))) in
+			   (* maintenant qu'on à les distance on effectue un calcul de temps relatif, afin de
+			      determiner par quelle face de l'objet, l'objet qu'on traite est rentré *)
+			   if (abs_float((float_of_int disX)/.xs)) >= (abs_float((float_of_int disY)/.ys))
+			   (* Face 4 *)
+			   then Some (((xf,(yt+ht))),(xs,0.0))
+			   (* Face 3 *)
+			   else Some ((((xt+wt),yf)),((0.0-.xs),ys))
+			 end
+		     end
+		 end
+	       else
+		 begin
+		   if Sdl.has_intersection rectObjet rectTemp
+		   then
+		     begin
+		       (*calcul du déplacement de notre objet*)
+		       let (xd,yd) = (xf-xm , yf-ym) in
+		       (*
+			 Gestion des 8 cas de collisions possibles (directions) :
+			 -------------------
+			 -     -     -     -
+			 -  5  -  2  -  6  -
+			 -     -     -     -
+			 -------------------
+			 -     -     -     -
+			 -  1  -  0  -  3  -
+			 -     -     -     -
+			 -------------------
+			 -     -     -     -
+			 -  8  -  4  -  7  -
+			 -     -     -     -
+			 -------------------
+			 les différentes faces du rectangle fixe : LEFT: 1 /UP: 2 /RIGHT: 3 /DOWN: 4 
+		       *)
+		       (* notre objet en mouvement était t'il à droite où à gauche de l'objet avec lequel il entre en collision *)
+		       if xd>0
+		       then
+			 begin
+			   (* si il est à gauche, est-il dans les cas 5/1/8 ou alors dans les cas 2/4 *)
+			   if (xm + wm) <= xt
+			   then
+			     begin
+			       (*dans le cadres des cas 5/1/8, il faut maintenant savoir précisément les différencier *)
+			       if (ym + hm) < yt
+			       then
+				 begin
+				   (* cas 5 uniquement, necessité de savoir si face 1 ou 2 rencontrée en premier -> Calcul des temps relatif avant collision *)
+				   if ((abs_float (float_of_int (xt - (xm + wm)))/.(float_of_int xd)) > (abs_float (float_of_int (yt - (ym + hm)))/.(float_of_int yd)))
+				   (* face 1 rencontre en premiere *)
+				   then Some ((((xt-wm),yf)),((0.0-.xs),ys))
+				   (* face 2 rencontre en premier *)
+				   else Some (((xf,(yt-hm))),(xs,0.0))
+				 end
+			       else
+				 begin
+				   (* reste à differencier cas 8 et cas 1 *)
+				   if ym > (yt + ht)
+				   then
+				     begin
+				       (* cas 8 uniquement, necessité de savoir si face 1 ou 4 rencontrée en premier -> Calcul des temps relatif avant collision *)
+				       if ((abs_float (float_of_int (xt - (xm + wm)))/.(float_of_int xd)) > (abs_float (float_of_int (ym - (yt + ht)))/.(float_of_int yd)))
+				       (* face 1 rencontre en premiere *)
+				       then Some ((((xt-wm),yf)),((0.0-.xs),ys))
+				       (* face 4 rencontre en premier *)
+				       else Some (((xf,(yt+ht))),(xs,0.0))
+				     end
+				   (* cas 1 *)
+				   else Some ((((xt-wm),yf)),((0.0-.xs),ys))
+				 end
+			     end
+			   (* reste les cas 2 et 4 à traiter pour ce faire il suffit de savoir si l'objet movible était au dessus ou en dessous *)
+			   else
+			     begin
+			       if (ym + hm) <= yt
+			       (* cas 2 *)
+			       then Some (((xf,(yt-hm))),(xs,0.0))
+			       (* cas 4 *)
+			       else Some (((xf,(yt+ht))),(xs,0.0))
+			     end
+			 end
+		       else
+			 begin
+			   (* si il est à droite, est-il dans les cas 6/3/7 ou alors dans les cas 2/4 *)
+			   if xm >= (xt + wt)
+			   then
+			     begin
+			       (*dans le cadres des cas 6/3/7, il faut maintenant savoir précisément les différencier *)
+			       if (ym + hm) < yt
+			       then
+				 begin
+				   (* cas 6 uniquement, necessité de savoir si face 3 ou 2 rencontrée en premier -> Calcul des temps relatif avant collision *)
+				   if ((abs_float (float_of_int (xm - (xt + wt)))/.(float_of_int xd)) > (abs_float (float_of_int (yt - (ym + hm)))/.(float_of_int yd)))
+				   (* face 3 rencontre en premiere *)
+				   then Some ((((xt+wt),yf)),((0.0-.xs),ys))
+				 (* face 2 rencontre en premier *)
+				   else Some (((xf,(yt-hm))),(xs,0.0))
+				 end
+			       else
+				 begin
+				   (* reste à differencier cas 7 et cas 3 *)
+				   if ym > (yt + ht)
+				   then
+				     begin
+				       (* cas 7 uniquement, necessité de savoir si face 3 ou 4 rencontrée en premier -> Calcul des temps relatif avant collision *)
+				       if ((abs_float (float_of_int (xm - (xt + wt)))/.(float_of_int xd)) > (abs_float (float_of_int (ym - (yt + ht)))/.(float_of_int yd)))
+				       (* face 3 rencontre en premiere *)
+				       then Some ((((xt+wt),yf)),((0.0-.xs),ys))
+				       (* face 4 rencontre en premier *)
+				       else Some (((xf,(yt+ht))),(xs,0.0))
+				     end
+				   (* cas 3 *)
+				   else Some ((((xt+wt),yf)),((0.0-.xs),ys))
+				 end
+			     end
+			   (* reste les cas 2 et 4 à traiter pour ce faire il suffit de savoir si l'objet movible était au dessus ou en dessous *)
+			   else
+			     begin
+			       if (ym + hm) <= yt
+			       (* cas 2 *)
+			       then Some (((xf,(yt-hm))),(xs,0.0))
+			       (* cas 4 *)
+			       else Some (((xf,(yt+ht))),(xs,0.0))
+			     end
+			 end
+		     end
+		   else subHit s
+		 end
+	     end
 	end
     in
     subHit (kickObjectWithMovable obj list [])
-      
+	  
   let hit_boxPerso obj list nextP (sizeX,sizeY)  =
     (* éléments nécessaire pour les calculs sur l'objet traité *)
     let (xm,ym) = Objet.getPos obj in
-    let (wm2,hm2) = Objet.getSize obj in
     let (wm,hm) = Objet.getBaseSize obj in
     let (xs,ys) = Objet.getSpeed obj in
     (* calcul de la position future *)
     let (xf,yf) = nextP in
     (* creation d'un rectangle correspondant à l'objet traité maintenant *)
-    let rectObjetPre = Sdl.Rect.create xm ym wm hm in
+    let rectPres = Sdl.Rect.create xm ym wm hm in
     (* création d'un rectangle correspondant à l'objet traité dans le "future" *)
     let rectObjet = Sdl.Rect.create xf yf wm hm in
     let rec subHit list =
@@ -241,285 +428,560 @@ module Collision : Collision = struct
 	  match list with
 	  |[] -> None
 	  |x::s when ((Objet.getGenre x)=(Ennemi))->
-	     (* éléments nécessaire pour les calculs sur le deuxieme objet traité *)
-	     let (xt,yt) = Objet.getPos x in
-	     let (wt,ht) = Objet.getSize x in
-	     (* let (xst,yst) = Objet.getSpeed x in *)
-	     let rectTemp = Sdl.Rect.create  xt yt wt ht in
-	     (* gestion des collisions *)
-	     (* gestion des collisions pour les objets "Ennemi" *)
-             if (Sdl.has_intersection rectObjet rectTemp || Sdl.has_intersection rectObjetPre rectTemp)
-             then
-               begin
-		 (*calcul du déplacement de notre objet*)
-		 let (xd,yd) = (xf-xm , yf-ym) in
-		 (*
-		   Gestion des 8 cas de collisions possibles (directions) :
-		   -------------------
-		   -     -     -     -
-		   -  5  -  2  -  6  -
-		   -     -     -     -
-		   -------------------
-		   -     -     -     -
-		   -  1  -  0  -  3  -
-		   -     -     -     -
-		   -------------------
-		   -     -     -     -
-		   -  8  -  4  -  7  -
-		   -     -     -     -
-		   -------------------
-		   les différentes faces du rectangle fixe : LEFT: 1 /UP: 2 /RIGHT: 3 /DOWN: 4 
-		 *)
-		 (* notre objet en mouvement était t'il à droite où à gauche de l'objet avec lequel il entre en collision *)
-		 if xd>0
-		 then
-		   begin
-                     (* si il est à gauche, est-il dans les cas 5/1/8 ou alors dans les cas 2/4 *)
-                     if (xm + wm) <= xt
-                     then
-                       begin
-			 (*dans le cadres des cas 5/1/8, il faut maintenant savoir précisément les différencier *)
-			 if (ym + hm) < yt
-			 then
-			   begin
-                             (* cas 5 uniquement, necessité de savoir si face 1 ou 2 rencontrée en premier -> Calcul des temps relatif avant collision *)
-                             if ((abs_float (float_of_int (xt - (xm + wm)))/.(float_of_int xd)) > (abs_float (float_of_int (yt - (ym + hm)))/.(float_of_int yd)))
-                             (* face 1 rencontre en premiere *)
-                             then Some (x,(((xt-wm),yf)),((0.0-.5.0),(ys-.10.0)))
-                             (* face 2 rencontre en premier *)
-                             else Some (x,((xf,(yt-hm))),((xs-.5.0),(0.0-.10.0)))
-			   end
-			 else
-			   begin
-                             (* reste à differencier cas 8 et cas 1 *)
-                             if ym > (yt + ht)
-                             then
-                               begin
-				 (* cas 8 uniquement, necessité de savoir si face 1 ou 4 rencontrée en premier -> Calcul des temps relatif avant collision *)
-				 if ((abs_float (float_of_int (xt - (xm + wm)))/.(float_of_int xd)) > (abs_float (float_of_int (ym - (yt + ht)))/.(float_of_int yd)))
-				 (* face 1 rencontre en premiere *)
-				 then Some (x,(((xt-wm),yf)),((0.0-.5.0),(ys-.10.0)))
-				 (* face 4 rencontre en premier *)
-				 else Some (x,((xf,(yt+ht))),((xs-.5.0),(0.0+.10.0)))
-                               end
-                             (* cas 1 *)
-                             else Some (x,(((xt-wm),yf)),((0.0-.5.0),(ys-.10.0)))
-			   end
-                       end
-                     (* reste les cas 2 et 4 à traiter pour ce faire il suffit de savoir si l'objet movible était au dessus ou en dessous *)
-                     else
-                       begin
-			 (* normalement le bon test à faire est : (ym + hm) <= yt mais suite à un bug incompris, on a bidouillé*)
-			   (*	 if ym < (yt+ht)*)
-			 if (ym + hm) <= yt 
-			 (* cas 2 *)
-			 then Some (x,((xf,(yt-hm))),((xs-.5.0),(0.0-.10.0)))
-			 (* cas 4 *)
-			 else begin Some (x,((xf,(yt+ht))),((xs-.5.0),(0.0+.10.0)))end
-                       end
-		   end
-		 else
-		   begin
-                     (* si il est à droite, est-il dans les cas 6/3/7 ou alors dans les cas 2/4 *)
-                     if xm >= (xt + wt)
-                     then
-                       begin
-			 (*dans le cadres des cas 6/3/7, il faut maintenant savoir précisément les différencier *)
-			 if (ym + hm) < yt
-			 then
-			   begin
-                             (* cas 6 uniquement, necessité de savoir si face 3 ou 2 rencontrée en premier -> Calcul des temps relatif avant collision *)
-                             if ((abs_float (float_of_int (xm - (xt + wt)))/.(float_of_int xd)) > (abs_float (float_of_int (yt - (ym + hm)))/.(float_of_int yd)))
-                             (* face 3 rencontre en premiere *)
-                             then Some (x,(((xt+wt),yf)),((0.0+.5.0),(ys-.10.0)))
-                             (* face 2 rencontre en premier *)
-                             else Some (x,((xf,(yt-hm))),((xs+.5.0),(0.0-.10.0)))
-			   end
-			 else
-			   begin
-                             (* reste à differencier cas 7 et cas 3 *)
-                             if ym >= (yt + ht)
-                             then
-                               begin
-				 (* cas 7 uniquement, necessité de savoir si face 3 ou 4 rencontrée en premier -> Calcul des temps relatif avant collision *)
-				 if ((abs_float (float_of_int (xm - (xt + wt)))/.(float_of_int xd)) > (abs_float (float_of_int (ym - (yt + ht)))/.(float_of_int yd)))
-				 (* face 3 rencontre en premiere *)
-				 then Some (x,(((xt+wt),yf)),((0.0+.5.0),(ys-.10.0)))
-				 (* face 4 rencoantre en premier *)
-				 else  begin Some (x,((xf,(yt+ht))),((xs+.5.0),(0.0+.10.0)))end
-                               end
-                             (* cas 3 *)
-                             else begin Some (x,(((xt+wt),yf)),((0.0+.5.0),(ys-.10.0))) end
-			   end
-                       end
-                     (* reste les cas 2 et 4 à traiter pour ce faire il suffit de savoir si l'objet movible était au dessus ou en dessous *)
-                     else
-                       begin
-			 (* normalement le bon test à faire est : (ym + hm) <= yt mais suite à un bug incompris, on a bidouillé*)
-			 if ym < (yt+ht)
-			 (* cas 2 *)
-			 then Some (x,((xf,(yt-hm))),((xs+.5.0),(0.0-.10.0)))
-			 (* cas 4 *)
-			 else begin Some (x,((xf,(yt+ht))),((xs+.5.0),(0.0+.10.0)))end
-                       end
-		   end
-               end
-             else subHit s
+	     begin
+	       (* éléments nécessaire pour les calculs sur le deuxieme objet traité *)
+               let (xt,yt) = Objet.getPos x in
+               let (wt,ht) = Objet.getSize x in
+               let rectTemp = Sdl.Rect.create  xt yt wt ht in
+	       (* Etape 1 : on vérifie que l'objet traité n'est pas déjà DANS l'objet en cours, si c'est le cas
+		  alors on gère cette collision en priorité *)
+	       if (Sdl.has_intersection rectPres rectTemp)
+	       (* Si l'objet traité est à l'interieur de l'objet en cours, alors on doit savoir d'où il vient
+		  Pour ça on check d'abord l'axe verticale, puis horizontale, et ensuite on détermine avec
+		  un calcul de temps relatif d'où vient l'objet traité par rapport à l'objet en cours
+		  cad, par où il est rentré dans l'objet *)
+	       (*
+		              Face 2
+		    .........................
+		    .           .           .
+		    .           .           .
+		    .   cas 1   .   cas 3   .
+		 F  .           .           . F
+		 a  .           .           . a
+		 c  ......................... c
+		 e  .           .           . e
+		    .           .           .
+		 1  .   cas 2   .   cas 4   . 3
+		    .           .           .
+		    .           .           .
+		    .........................
+		              Face 4
+	       *)
+	       then
+		 begin
+		   if (xs > 0.0) 
+		   then
+		     begin
+		       if (ys > 0.0)
+		       (* cas 1 *)
+		       then
+			 begin
+			   (* calcul des distances necessaire aux calculs qui vont suivre *)
+			   let (disX,disY) = (abs((xm+wm)-xt),abs((ym+hm)-yt)) in
+			   (* maintenant qu'on à les distance on effectue un calcul de temps relatif, afin de
+			      determiner par quelle face de l'objet, l'objet qu'on traite est rentré *)
+			   if (abs_float((float_of_int disX)/.xs)) >= (abs_float((float_of_int disY)/.ys))
+			   (* Face 2 *)
+			   then Some (x,((xf,(yt-hm))),((-.5.0),(-.10.0)))
+			   (* Face 1 *)
+			   else Some (x,(((xt-wm),yf)),((-.5.0),(-.10.0)))
+			 end
+		       (*cas 2*)
+		       else
+			 begin
+			   (* calcul des distances necessaire aux calculs qui vont suivre *)
+			   let (disX,disY) = (abs(((xm+wm)-xt)-(xt+wt)),abs((ym+hm)-(yt+ht))) in
+			   (* maintenant qu'on à les distance on effectue un calcul de temps relatif, afin de
+			      determiner par quelle face de l'objet, l'objet qu'on traite est rentré *)
+			   if (abs_float((float_of_int disX)/.xs)) >= (abs_float((float_of_int disY)/.ys))
+			   (* Face 4 *)
+			   then Some (x,((xf,(yt+ht))),((-.5.0),(+.10.0)))
+			   (* Face 1 *)
+			   else Some (x,(((xt-wm),yf)),((-.5.0),(-.10.0)))
+			 end
+		     end
+		   else
+		     begin
+		       if (ys > 0.0)
+		       (* cas 3 *)
+		       then
+			 begin
+			   (* calcul des distances necessaire aux calculs qui vont suivre *)
+			   let (disX,disY) = (abs((xm+wm)-(xt+wt)),abs((ym+hm)-yt)) in
+			   (* maintenant qu'on à les distance on effectue un calcul de temps relatif, afin de
+			      determiner par quelle face de l'objet, l'objet qu'on traite est rentré *)
+			   if (abs_float((float_of_int disX)/.xs)) >= (abs_float((float_of_int disY)/.ys))
+			   (* Face 2 *)
+			   then Some (x,((xf,(yt-hm))),((+.5.0),(-.10.0)))
+			   (* Face 3 *)
+			   else Some (x,(((xt+wt),yf)),((+.5.0),(-.10.0)))
+			 end
+		       (*cas 4*)
+		       else
+			 begin
+			   (* calcul des distances necessaire aux calculs qui vont suivre *)
+			   let (disX,disY) = (abs((xm+wm)-(xt+wt)),abs((ym+hm)-(yt+ht))) in
+			   (* maintenant qu'on à les distance on effectue un calcul de temps relatif, afin de
+			      determiner par quelle face de l'objet, l'objet qu'on traite est rentré *)
+			   if (abs_float((float_of_int disX)/.xs)) >= (abs_float((float_of_int disY)/.ys))
+			   (* Face 4 *)
+			   then Some (x,((xf,(yt+ht))),((-.5.0),(+.10.0)))
+			   (* Face 3 *)
+			   else Some (x,(((xt+wt),yf)),((+.5.0),(-.10.0)))
+			 end
+		     end
+		 end
+	       else
+		 begin
+		   if Sdl.has_intersection rectObjet rectTemp
+		   then
+		     begin
+		       (*calcul du déplacement de notre objet*)
+		       let (xd,yd) = (xf-xm , yf-ym) in
+		       (*
+			 Gestion des 8 cas de collisions possibles (directions) :
+			 -------------------
+			 -     -     -     -
+			 -  5  -  2  -  6  -
+			 -     -     -     -
+			 -------------------
+			 -     -     -     -
+			 -  1  -  0  -  3  -
+			 -     -     -     -
+			 -------------------
+			 -     -     -     -
+			 -  8  -  4  -  7  -
+			 -     -     -     -
+			 -------------------
+			 les différentes faces du rectangle fixe : LEFT: 1 /UP: 2 /RIGHT: 3 /DOWN: 4 
+		       *)
+		       (* notre objet en mouvement était t'il à droite où à gauche de l'objet avec lequel il entre en collision *)
+		       if xd>0
+		       then
+			 begin
+			   (* si il est à gauche, est-il dans les cas 5/1/8 ou alors dans les cas 2/4 *)
+			   if (xm + wm) <= xt
+			   then
+			     begin
+			       (*dans le cadres des cas 5/1/8, il faut maintenant savoir précisément les différencier *)
+			       if (ym + hm) < yt
+			       then
+				 begin
+				   (* cas 5 uniquement, necessité de savoir si face 1 ou 2 rencontrée en premier -> Calcul des temps relatif avant collision *)
+				   if ((abs_float (float_of_int (xt - (xm + wm)))/.(float_of_int xd)) > (abs_float (float_of_int (yt - (ym + hm)))/.(float_of_int yd)))
+				   (* face 1 rencontre en premiere *)
+				   then Some (x,(((xt-wm),yf)),((-.5.0),(-.10.0)))
+				   (* face 2 rencontre en premier *)
+				   else Some (x,((xf,(yt-hm))),((-.5.0),(-.10.0)))
+				 end
+			       else
+				 begin
+				   (* reste à differencier cas 8 et cas 1 *)
+				   if ym > (yt + ht)
+				   then
+				     begin
+				       (* cas 8 uniquement, necessité de savoir si face 1 ou 4 rencontrée en premier -> Calcul des temps relatif avant collision *)
+				       if ((abs_float (float_of_int (xt - (xm + wm)))/.(float_of_int xd)) > (abs_float (float_of_int (ym - (yt + ht)))/.(float_of_int yd)))
+				       (* face 1 rencontre en premiere *)
+				       then Some (x,(((xt-wm),yf)),((-.5.0),(-.10.0)))
+				       (* face 4 rencontre en premier *)
+				       else Some (x,((xf,(yt+ht))),((-.5.0),(+.10.0)))
+				     end
+				   (* cas 1 *)
+				   else Some (x,(((xt-wm),yf)),((-.5.0),(-.10.0)))
+				 end
+			     end
+			   (* reste les cas 2 et 4 à traiter pour ce faire il suffit de savoir si l'objet movible était au dessus ou en dessous *)
+			   else
+			     begin
+			       (* normalement le bon test à faire est : (ym + hm) <= yt mais suite à un bug incompris, on a bidouillé*)
+			       (*	 if ym < (yt+ht)*)
+			       if (ym + hm) <= yt
+			       (* cas 2 *)
+			       then Some (x,((xf,(yt-hm))),((-.5.0),(-.10.0)))
+			       (* cas 4 *)
+			       else Some (x,((xf,(yt+ht))),((-.5.0),(+.10.0)))
+			     end
+			 end
+		       else
+			 begin
+			   (* si il est à droite, est-il dans les cas 6/3/7 ou alors dans les cas 2/4 *)
+			   if xm >= (xt + wt)
+			   then
+			     begin
+			       (*dans le cadres des cas 6/3/7, il faut maintenant savoir précisément les différencier *)
+			       if (ym + hm) < yt
+			       then
+				 begin
+				   (* cas 6 uniquement, necessité de savoir si face 3 ou 2 rencontrée en premier -> Calcul des temps relatif avant collision *)
+				   if ((abs_float (float_of_int (xm - (xt + wt)))/.(float_of_int xd)) > (abs_float (float_of_int (yt - (ym + hm)))/.(float_of_int yd)))
+				   (* face 3 rencontre en premiere *)
+				   then Some (x,(((xt+wt),yf)),((+.5.0),(-.10.0)))
+				   (* face 2 rencontre en premier *)
+				   else Some (x,((xf,(yt-hm))),((+.5.0),(-.10.0)))
+				 end
+			       else
+				 begin
+				   (* reste à differencier cas 7 et cas 3 *)
+				   if ym >= (yt + ht)
+				   then
+				     begin
+				       (* cas 7 uniquement, necessité de savoir si face 3 ou 4 rencontrée en premier -> Calcul des temps relatif avant collision *)
+				       if ((abs_float (float_of_int (xm - (xt + wt)))/.(float_of_int xd)) > (abs_float (float_of_int (ym - (yt + ht)))/.(float_of_int yd)))
+				       (* face 3 rencontre en premiere *)
+				       then Some (x,(((xt+wt),yf)),((+.5.0),(-.10.0)))
+				       (* face 4 rencoantre en premier *)
+				       else Some (x,((xf,(yt+ht))),((-.5.0),(+.10.0)))
+				     end
+				   (* cas 3 *)
+				   else Some (x,(((xt+wt),yf)),((+.5.0),(-.10.0)))
+				 end
+			     end
+			   (* reste les cas 2 et 4 à traiter pour ce faire il suffit de savoir si l'objet movible était au dessus ou en dessous *)
+			   else
+			     begin
+			       (* normalement le bon test à faire est : (ym + hm) <= yt mais suite à un bug incompris, on a bidouillé*)
+			       if (ym + hm) <= yt
+			       (* cas 2 *)
+			       then Some (x,((xf,(yt-hm))),((+.5.0),(-.10.0)))
+			       (* cas 4 *)
+			       else Some (x,((xf,(yt+ht))),((-.5.0),(+.10.0)))
+			     end
+			 end
+		     end
+		   else subHit s
+		 end
+	     end
 	  |x::s when ((Objet.getGenre x)=(Plateforme)) ->
          (* éléments nécessaire pour les calculs sur le deuxieme objet traité *)
-             let (xt,yt) = Objet.getPos x in
-             let (wt,ht) = Objet.getSize x in
-             let rectTemp = Sdl.Rect.create  xt yt wt ht in
-             (* gestion des collisions pour les plateformes *)
-             if ((Sdl.has_intersection rectObjet rectTemp)&&((ym+hm) <= yt))  then
-               begin
-		 (*calcul du déplacement de notre objet*)
-		 let (xd,yd) = (xf-xm , yf-ym) in
-		 (* Gestion des 3 cas de collisions possibles pour une plateforme (directions) :
-                    -------------------
-                    -     -     -     -
-                    -  5  -  2  -  6  -
-                    -     -     -     -
-                    -------------------
-                    -     -     -     -
-                    -  1  -  0  -  3  -
-                    -     -     -     -
-                    -------------------
-		    les différentes faces du rectangle fixe : LEFT: 1 /UP: 2 /RIGHT: 3 /DOWN: 4 
-		 *)
-		 (* cas 5 et 6, necessité de savoir si face 2 ou 1/3 rencontrée en premier -> Calcul des temps relatif avant collision *)
-		 if (((abs_float (float_of_int (xt - (xm + wm)))/.float_of_int xd)) < (abs_float (float_of_int (yt - (ym + hm)))/.(float_of_int yd)))
-		 (* face 2 rencontre en premier *)
-		 then Some (x,((xf,(yt-hm))),(xs,0.0))
-		 (* soit cas 2 soit rien *)
-		 else
-		   begin
-                     if(((xm + wm) > xt) && (xm < (xt + wt)))
-                     then Some (x,(xf,(yt-hm)),(xs,0.0))
-                     else subHit s
-		   end
-               end
-             else subHit s
+             begin
+	       (* éléments nécessaire pour les calculs sur le deuxieme objet traité *)
+               let (xt,yt) = Objet.getPos x in
+               let (wt,ht) = Objet.getSize x in
+               let rectTemp = Sdl.Rect.create  xt yt wt ht in
+	       (* Etape 1 : on vérifie que l'objet traité n'est pas déjà DANS l'objet en cours, si c'est le cas
+		  alors on gère cette collision en priorité *)
+	       if (Sdl.has_intersection rectPres rectTemp)
+	       (* Si l'objet traité est à l'interieur de l'objet en cours, alors on doit savoir d'où il vient
+		  Pour ça on check d'abord l'axe verticale, puis horizontale, et ensuite on détermine avec
+		  un calcul de temps relatif d'où vient l'objet traité par rapport à l'objet en cours
+		  cad, par où il est rentré dans l'objet *)
+	       (*
+		              Face 2
+		    .........................
+		    .           .           .
+		    .           .           .
+		    .   cas 1   .   cas 3   .
+		 F  .           .           . F
+		 a  .           .           . a
+		 c  ......................... c
+		 e  .           .           . e
+		    .           .           .
+		 1  .   cas 2   .   cas 4   . 3
+		    .           .           .
+		    .           .           .
+		    .........................
+		              Face 4
+	       *)
+	       then
+		 begin
+		   if (xs > 0.0) 
+		   then
+		     begin
+		       if (ys > 0.0)
+		       (* cas 1 *)
+		       then
+			 begin
+			   (* calcul des distances necessaire aux calculs qui vont suivre *)
+			   let (disX,disY) = (abs((xm+wm)-xt),abs((ym+hm)-yt)) in
+			   (* maintenant qu'on à les distance on effectue un calcul de temps relatif, afin de
+			      determiner par quelle face de l'objet, l'objet qu'on traite est rentré *)
+			   if (abs_float((float_of_int disX)/.xs)) >= (abs_float((float_of_int disY)/.ys))
+			   (* Face 2 *)
+			   then Some (x,((xf,(yt-hm))),(xs,0.0))
+			   (* Face 1 *)
+			   else subHit s
+			 end
+		       (*cas 2*)
+		       else
+			 begin
+			   (* calcul des distances necessaire aux calculs qui vont suivre *)
+			   let (disX,disY) = (abs(((xm+wm)-xt)-(xt+wt)),abs((ym+hm)-(yt+ht))) in
+			   (* maintenant qu'on à les distance on effectue un calcul de temps relatif, afin de
+			      determiner par quelle face de l'objet, l'objet qu'on traite est rentré *)
+			   if (abs_float((float_of_int disX)/.xs)) >= (abs_float((float_of_int disY)/.ys))
+			   (* Face 4 *)
+			   then subHit s
+			   (* Face 1 *)
+			   else subHit s
+			 end
+		     end
+		   else
+		     begin
+		       if (ys > 0.0)
+		       (* cas 3 *)
+		       then
+			 begin
+			   (* calcul des distances necessaire aux calculs qui vont suivre *)
+			   let (disX,disY) = (abs((xm+wm)-(xt+wt)),abs((ym+hm)-yt)) in
+			   (* maintenant qu'on à les distance on effectue un calcul de temps relatif, afin de
+			      determiner par quelle face de l'objet, l'objet qu'on traite est rentré *)
+			   if (abs_float((float_of_int disX)/.xs)) >= (abs_float((float_of_int disY)/.ys))
+			   (* Face 2 *)
+			   then Some (x,((xf,(yt-hm))),(xs,0.0))
+			   (* Face 3 *)
+			   else subHit s
+			 end
+		       (*cas 4*)
+		       else
+			 begin
+			   (* calcul des distances necessaire aux calculs qui vont suivre *)
+			   let (disX,disY) = (abs((xm+wm)-(xt+wt)),abs((ym+hm)-(yt+ht))) in
+			   (* maintenant qu'on à les distance on effectue un calcul de temps relatif, afin de
+			      determiner par quelle face de l'objet, l'objet qu'on traite est rentré *)
+			   if (abs_float((float_of_int disX)/.xs)) >= (abs_float((float_of_int disY)/.ys))
+			   (* Face 4 *)
+			   then subHit s
+			   (* Face 3 *)
+			   else subHit s
+			 end
+		     end
+		 end
+	       else
+		 begin
+		   if ((Sdl.has_intersection rectObjet rectTemp)&&((ym+hm) <= yt))  then
+		     begin
+		       (*calcul du déplacement de notre objet*)
+		       let (xd,yd) = (xf-xm , yf-ym) in
+		       (* Gestion des 3 cas de collisions possibles pour une plateforme (directions) :
+			  -------------------
+			  -     -     -     -
+			  -  5  -  2  -  6  -
+			  -     -     -     -
+			  -------------------
+			  -     -     -     -
+			  -  1  -  0  -  3  -
+			  -     -     -     -
+			  -------------------
+			  les différentes faces du rectangle fixe : LEFT: 1 /UP: 2 /RIGHT: 3 /DOWN: 4 
+		       *)
+		       (* cas 5 et 6, necessité de savoir si face 2 ou 1/3 rencontrée en premier -> Calcul des temps relatif avant collision *)
+		       if (((abs_float (float_of_int (xt - (xm + wm)))/.float_of_int xd)) < (abs_float (float_of_int (yt - (ym + hm)))/.(float_of_int yd)))
+		       (* face 2 rencontre en premier *)
+		       then Some (x,((xf,(yt-hm))),(xs,0.0))
+		       (* soit cas 2 soit rien *)
+		       else
+			 begin
+			   if(((xm + wm) > xt) && (xm < (xt + wt)))
+			   then Some (x,(xf,(yt-hm)),(xs,0.0))
+			   else subHit s
+			 end
+		     end
+		   else subHit s
+		 end
+	     end
 	  |x::s -> 
-             (* éléments nécessaire pour les calculs sur le deuxieme objet traité *)
-             let (xt,yt) = Objet.getPos x in
-             let (wt,ht) = Objet.getSize x in
-             let rectTemp = Sdl.Rect.create  xt yt wt ht in
-             (* gestion des collisions pour les objets autres que les plateformes/ennemis *)
-             if Sdl.has_intersection rectObjet rectTemp
-             then
-               begin
-		 (*calcul du déplacement de notre objet*)
-		 let (xd,yd) = (xf-xm , yf-ym) in
-		 (*
-		   Gestion des 8 cas de collisions possibles (directions) :
-		   -------------------
-		   -     -     -     -
-		   -  5  -  2  -  6  -
-		   -     -     -     -
-		   -------------------
-		   -     -     -     -
-		   -  1  -  0  -  3  -
-		   -     -     -     -
-		   -------------------
-		   -     -     -     -
-		   -  8  -  4  -  7  -
-		   -     -     -     -
-		   -------------------
-		   les différentes faces du rectangle fixe : LEFT: 1 /UP: 2 /RIGHT: 3 /DOWN: 4 
-		 *)
-		 (* notre objet en mouvement était t'il à droite où à gauche de l'objet avec lequel il entre en collision *)
-		 if xd>0
-		 then
-		   begin
-                     (* si il est à gauche, est-il dans les cas 5/1/8 ou alors dans les cas 2/4 *)
-                     if (xm + wm) <= xt
-                     then
-                       begin
-			 (*dans le cadres des cas 5/1/8, il faut maintenant savoir précisément les différencier *)
-			 if (ym + hm) < yt
-			 then
-			   begin
-                             (* cas 5 uniquement, necessité de savoir si face 1 ou 2 rencontrée en premier -> Calcul des temps relatif avant collision *)
-                             if ((abs_float (float_of_int (xt - (xm + wm)))/.(float_of_int xd)) > (abs_float (float_of_int (yt - (ym + hm)))/.(float_of_int yd)))
-                             (* face 1 rencontre en premiere *)
-                             then Some (x,(((xt-wm),yf)),(0.0,ys))
-                             (* face 2 rencontre en premier *)
-                             else Some (x,((xf,(yt-hm))),(xs,0.0))
-			   end
-			 else
-			   begin
-                             (* reste à differencier cas 8 et cas 1 *)
-                             if ym > (yt + ht)
-                             then
-                               begin
-				 (* cas 8 uniquement, necessité de savoir si face 1 ou 4 rencontrée en premier -> Calcul des temps relatif avant collision *)
-				 if ((abs_float (float_of_int (xt - (xm + wm)))/.(float_of_int xd)) > (abs_float (float_of_int (ym - (yt + ht)))/.(float_of_int yd)))
-				 (* face 1 rencontre en premiere *)
-				 then Some (x,(((xt-wm),yf)),(0.0,ys))
-				 (* face 4 rencontre en premier *)
-				 else Some (x,((xf,(yt+ht))),(xs,0.0))
-                               end
-                             (* cas 1 *)
-                             else Some (x,(((xt-wm),yf)),(0.0,ys))
-			   end
-                       end
-                     (* reste les cas 2 et 4 à traiter pour ce faire il suffit de savoir si l'objet movible était au dessus ou en dessous *)
-                     else
-                       begin
-			 if (ym + hm) <= yt
-			 (* cas 2 *)
-			 then Some (x,((xf,(yt-hm))),(xs,0.0))
-			 (* cas 4 *)
-			 else Some (x,((xf,(yt+ht))),(xs,0.0))
-                       end
-		   end
-		 else
-		   begin
-                     (* si il est à droite, est-il dans les cas 6/3/7 ou alors dans les cas 2/4 *)
-                     if xm >= (xt + wt)
-                     then
-                       begin
-			 (*dans le cadres des cas 6/3/7, il faut maintenant savoir précisément les différencier *)
-			 if (ym + hm) < yt
-			 then
-			   begin
-                             (* cas 6 uniquement, necessité de savoir si face 3 ou 2 rencontrée en premier -> Calcul des temps relatif avant collision *)
-                             if ((abs_float (float_of_int (xm - (xt + wt)))/.(float_of_int xd)) > (abs_float (float_of_int (yt - (ym + hm)))/.(float_of_int yd)))
-                             (* face 3 rencontre en premiere *)
-                             then Some (x,(((xt+wt),yf)),(0.0,ys))
-                             (* face 2 rencontre en premier *)
-                             else Some (x,((xf,(yt-hm))),(xs,0.0))
-			   end
-			 else
-			   begin
-                             (* reste à differencier cas 7 et cas 3 *)
-                             if ym > (yt + ht)
-                             then
-                               begin
-				 (* cas 7 uniquement, necessité de savoir si face 3 ou 4 rencontrée en premier -> Calcul des temps relatif avant collision *)
-				 if ((abs_float (float_of_int (xm - (xt + wt)))/.(float_of_int xd)) > (abs_float (float_of_int (ym - (yt + ht)))/.(float_of_int yd)))
-				 (* face 3 rencontre en premiere *)
-				 then Some (x,(((xt+wt),yf)),(0.0,ys))
-				 (* face 4 rencoantre en premier *)
-				 else Some (x,((xf,(yt+ht))),(xs,0.0))
-                               end
-                             (* cas 3 *)
-                             else Some (x,(((xt+wt),yf)),(0.0,ys))
-			   end
-                       end
-                     (* reste les cas 2 et 4 à traiter pour ce faire il suffit de savoir si l'objet movible était au dessus ou en dessous *)
-                     else
-                       begin
-			 if (ym + hm) <= yt
-			 (* cas 2 *)
-			 then Some (x,((xf,(yt-hm))),(xs,0.0))
-			 (* cas 4 *)
-			 else Some (x,((xf,(yt+ht))),(xs,0.0))
-                       end
-		   end
-               end
-             else subHit s
+             begin
+	       (* éléments nécessaire pour les calculs sur le deuxieme objet traité *)
+               let (xt,yt) = Objet.getPos x in
+               let (wt,ht) = Objet.getSize x in
+               let rectTemp = Sdl.Rect.create  xt yt wt ht in
+	       (* Etape 1 : on vérifie que l'objet traité n'est pas déjà DANS l'objet en cours, si c'est le cas
+		  alors on gère cette collision en priorité *)
+	       if (Sdl.has_intersection rectPres rectTemp)
+	       (* Si l'objet traité est à l'interieur de l'objet en cours, alors on doit savoir d'où il vient
+		  Pour ça on check d'abord l'axe verticale, puis horizontale, et ensuite on détermine avec
+		  un calcul de temps relatif d'où vient l'objet traité par rapport à l'objet en cours
+		  cad, par où il est rentré dans l'objet *)
+	       (*
+		              Face 2
+		    .........................
+		    .           .           .
+		    .           .           .
+		    .   cas 1   .   cas 3   .
+		 F  .           .           . F
+		 a  .           .           . a
+		 c  ......................... c
+		 e  .           .           . e
+		    .           .           .
+		 1  .   cas 2   .   cas 4   . 3
+		    .           .           .
+		    .           .           .
+		    .........................
+		              Face 4
+	       *)
+	       then
+		 begin
+		   if (xs > 0.0) 
+		   then
+		     begin
+		       if (ys > 0.0)
+		       (* cas 1 *)
+		       then
+			 begin
+			   (* calcul des distances necessaire aux calculs qui vont suivre *)
+			   let (disX,disY) = (abs((xm+wm)-xt),abs((ym+hm)-yt)) in
+			   (* maintenant qu'on à les distance on effectue un calcul de temps relatif, afin de
+			      determiner par quelle face de l'objet, l'objet qu'on traite est rentré *)
+			   if (abs_float((float_of_int disX)/.xs)) >= (abs_float((float_of_int disY)/.ys))
+			   (* Face 2 *)
+			   then Some (x,((xm,(yt-hm))),(xs,0.0))
+			   (* Face 1 *)
+			   else Some (x,(((xt-wm),ym)),(0.0,ys))
+			 end
+		       (*cas 2*)
+		       else
+			 begin
+			   (* calcul des distances necessaire aux calculs qui vont suivre *)
+			   let (disX,disY) = (abs(((xm+wm)-xt)-(xt+wt)),abs((ym+hm)-(yt+ht))) in
+			   (* maintenant qu'on à les distance on effectue un calcul de temps relatif, afin de
+			      determiner par quelle face de l'objet, l'objet qu'on traite est rentré *)
+			   if (abs_float((float_of_int disX)/.xs)) >= (abs_float((float_of_int disY)/.ys))
+			   (* Face 4 *)
+			   then Some (x,((xm,(yt+ht))),(xs,0.0))
+			   (* Face 1 *)
+			   else Some (x,(((xt-wm),ym)),(0.0,ys))
+			 end
+		     end
+		   else
+		     begin
+		       if (ys > 0.0)
+		       (* cas 3 *)
+		       then
+			 begin
+			   (* calcul des distances necessaire aux calculs qui vont suivre *)
+			   let (disX,disY) = (abs((xm+wm)-(xt+wt)),abs((ym+hm)-yt)) in
+			   (* maintenant qu'on à les distance on effectue un calcul de temps relatif, afin de
+			      determiner par quelle face de l'objet, l'objet qu'on traite est rentré *)
+			   if (abs_float((float_of_int disX)/.xs)) >= (abs_float((float_of_int disY)/.ys))
+			   (* Face 2 *)
+			   then Some (x,((xm,(yt-hm))),(xs,0.0))
+			   (* Face 3 *)
+			   else Some (x,(((xt+wt),ym)),(0.0,ys))
+			 end
+		       (*cas 4*)
+		       else
+			 begin
+			   (* calcul des distances necessaire aux calculs qui vont suivre *)
+			   let (disX,disY) = (abs((xm+wm)-(xt+wt)),abs((ym+hm)-(yt+ht))) in
+			   (* maintenant qu'on à les distance on effectue un calcul de temps relatif, afin de
+			      determiner par quelle face de l'objet, l'objet qu'on traite est rentré *)
+			   if (abs_float((float_of_int disX)/.xs)) >= (abs_float((float_of_int disY)/.ys))
+			   (* Face 4 *)
+			   then Some (x,((xm,(yt+ht))),(xs,0.0))
+			   (* Face 3 *)
+			   else Some (x,(((xt+wt),ym)),(0.0,ys))
+			 end
+		     end
+		 end
+	       else
+		 begin
+		   if Sdl.has_intersection rectObjet rectTemp
+		   then
+		     begin
+		       (*calcul du déplacement de notre objet*)
+		       let (xd,yd) = (xf-xm , yf-ym) in
+		       (*
+			 Gestion des 8 cas de collisions possibles (directions) :
+			 -------------------
+			 -     -     -     -
+			 -  5  -  2  -  6  -
+			 -     -     -     -
+			 -------------------
+			 -     -     -     -
+			 -  1  -  0  -  3  -
+			 -     -     -     -
+			 -------------------
+			 -     -     -     -
+			 -  8  -  4  -  7  -
+			 -     -     -     -
+			 -------------------
+			 les différentes faces du rectangle fixe : LEFT: 1 /UP: 2 /RIGHT: 3 /DOWN: 4 
+		       *)
+		       (* notre objet en mouvement était t'il à droite où à gauche de l'objet avec lequel il entre en collision *)
+		       if xd>0
+		       then
+			 begin
+			   (* si il est à gauche, est-il dans les cas 5/1/8 ou alors dans les cas 2/4 *)
+			   if (xm + wm) <= xt
+			   then
+			     begin
+			       (*dans le cadres des cas 5/1/8, il faut maintenant savoir précisément les différencier *)
+			       if (ym + hm) < yt
+			       then
+				 begin
+				   (* cas 5 uniquement, necessité de savoir si face 1 ou 2 rencontrée en premier -> Calcul des temps relatif avant collision *)
+				   if ((abs_float (float_of_int (xt - (xm + wm)))/.(float_of_int xd)) > (abs_float (float_of_int (yt - (ym + hm)))/.(float_of_int yd)))
+				   (* face 1 rencontre en premiere *)
+				   then Some (x,(((xt-wm),yf)),(0.0,ys))
+				   (* face 2 rencontre en premier *)
+				   else Some (x,((xf,(yt-hm))),(xs,0.0))
+				 end
+			       else
+				 begin
+				   (* reste à differencier cas 8 et cas 1 *)
+				   if ym > (yt + ht)
+				   then
+				     begin
+				       (* cas 8 uniquement, necessité de savoir si face 1 ou 4 rencontrée en premier -> Calcul des temps relatif avant collision *)
+				       if ((abs_float (float_of_int (xt - (xm + wm)))/.(float_of_int xd)) > (abs_float (float_of_int (ym - (yt + ht)))/.(float_of_int yd)))
+				       (* face 1 rencontre en premiere *)
+				       then Some (x,(((xt-wm),yf)),(0.0,ys))
+				       (* face 4 rencontre en premier *)
+				       else Some (x,((xf,(yt+ht))),(xs,0.0))
+				     end
+				   (* cas 1 *)
+				   else Some (x,(((xt-wm),yf)),(0.0,ys))
+				 end
+			     end
+			   (* reste les cas 2 et 4 à traiter pour ce faire il suffit de savoir si l'objet movible était au dessus ou en dessous *)
+			   else
+			     begin
+			       if (ym + hm) <= yt
+			       (* cas 2 *)
+			       then Some (x,((xf,(yt-hm))),(xs,0.0))
+			       (* cas 4 *)
+			       else Some (x,((xf,(yt+ht))),(xs,0.0))
+			     end
+			 end
+		       else
+			 begin
+			   (* si il est à droite, est-il dans les cas 6/3/7 ou alors dans les cas 2/4 *)
+			   if xm >= (xt + wt)
+			   then
+			     begin
+			       (*dans le cadres des cas 6/3/7, il faut maintenant savoir précisément les différencier *)
+			       if (ym + hm) < yt
+			       then
+				 begin
+				   (* cas 6 uniquement, necessité de savoir si face 3 ou 2 rencontrée en premier -> Calcul des temps relatif avant collision *)
+				   if ((abs_float (float_of_int (xm - (xt + wt)))/.(float_of_int xd)) > (abs_float (float_of_int (yt - (ym + hm)))/.(float_of_int yd)))
+				   (* face 3 rencontre en premiere *)
+				   then Some (x,(((xt+wt),yf)),(0.0,ys))
+				   (* face 2 rencontre en premier *)
+				   else Some (x,((xf,(yt-hm))),(xs,0.0))
+				 end
+			       else
+				 begin
+				   (* reste à differencier cas 7 et cas 3 *)
+				   if ym > (yt + ht)
+				   then
+				     begin
+				       (* cas 7 uniquement, necessité de savoir si face 3 ou 4 rencontrée en premier -> Calcul des temps relatif avant collision *)
+				       if ((abs_float (float_of_int (xm - (xt + wt)))/.(float_of_int xd)) > (abs_float (float_of_int (ym - (yt + ht)))/.(float_of_int yd)))
+				       (* face 3 rencontre en premiere *)
+				       then Some (x,(((xt+wt),yf)),(0.0,ys))
+				       (* face 4 rencoantre en premier *)
+				       else Some (x,((xf,(yt+ht))),(xs,0.0))
+				     end
+				   (* cas 3 *)
+				   else Some (x,(((xt+wt),yf)),(0.0,ys))
+				 end
+			     end
+			   (* reste les cas 2 et 4 à traiter pour ce faire il suffit de savoir si l'objet movible était au dessus ou en dessous *)
+			   else
+			     begin
+			       if (ym + hm) <= yt
+			       (* cas 2 *)
+			       then Some (x,((xf,(yt-hm))),(xs,0.0))
+			       (* cas 4 *)
+			       else Some (x,((xf,(yt+ht))),(xs,0.0))
+			     end
+			 end
+		     end
+		   else subHit s
+		 end
+	     end
 	end
     in
     (* on veut que les ennemis soit les premiers traités *)
