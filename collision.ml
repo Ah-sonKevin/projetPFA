@@ -230,24 +230,6 @@ module Collision : Collision = struct
     let rectObjetPre = Sdl.Rect.create xm ym wm hm in
     (* création d'un rectangle correspondant à l'objet traité dans le "future" *)
     let rectObjet = Sdl.Rect.create xf yf wm hm in
-    (* méthode de calcul des hit box *)
-    let rec subHit list =
-      (* calcul des collisions avec les bords de la scene, on regarde si l'objet est "sorti" de la scene*)
-      if (((xf-wm) < 0) || ((yf-hm) < 0) || (xf>sizeX) || (yf>sizeY))
-      then
-	begin
-	  Some (obj,(0,0),(1000.0,0.0))
-	end    (* éléments nécessaire pour les calculs sur l'objet traité *)
-    let (xm,ym) = Objet.getPos obj in
-    let (wm,hm) = Objet.getSize obj in
-    let (xs,ys) = Objet.getSpeed obj in
-    (* calcul de la position future *)
-    let (xf,yf) = nextP in
-    (* creation d'un rectangle correspondant à l'objet traité maintenant *)
-    let rectObjetPre = Sdl.Rect.create xm ym wm hm in
-    (* création d'un rectangle correspondant à l'objet traité dans le "future" *)
-    let rectObjet = Sdl.Rect.create xf yf wm hm in
-    (* méthode de calcul des hit box *)
     let rec subHit list =
       (* calcul des collisions avec les bords de la scene, on regarde si l'objet est "sorti" de la scene*)
       if (((xf-wm) < 0) || ((yf-hm) < 0) || (xf>sizeX) || (yf>sizeY))
