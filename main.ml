@@ -100,8 +100,8 @@ let jeu () =
                          "Image/samus/Samus_saut/Samus_saut2_16_16.bmp";
                          "Image/samus/Samus_saut/Samus_saut1_16_16.bmp"|])
                        render in
-	  let e1 = Objet.create Ennemi (200,200) (2.0,2.0) (10.0,00.0) 200 ([||], [|"Image/ennemies/ennemi_test_24_14.bmp"|] ,[||],[||]) render in
-	  let e2 = Objet.create Ennemi (500,298) (2.0,0.0) (5.0,10.0) 200 ([||], [|"Image/ennemies/ennemi_test_24_14.bmp"|] ,[||],[||]) render in
+	  let e1 = Objet.create Ennemi (200,150) (2.0,2.0) (10.0,00.0) 200 ([||], [|"Image/ennemies/ennemi_test_24_14.bmp"|] ,[||],[||]) render in
+	  let e2 = Objet.create Ennemi (500,50) (2.0,0.0) (5.0,10.0) 200 ([||], [|"Image/ennemies/ennemi_test_24_14.bmp"|] ,[||],[||]) render in
           let sprite     = Objet.create_immobile Wall (200,500) [|"Image/sprite_obstacle.bmp"|] render in
           let plateform  = Objet.create_immobile Plateforme (600,500) [|"Image/Plateforme_700_5.bmp"|] render in
           let background = Objet.create_immobile Background (0,0) [|"Image/Background_2.bmp"|] render in
