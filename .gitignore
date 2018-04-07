@@ -7,6 +7,12 @@
 *.cmx
 *.cmxs
 *.cmxa
+*#
+#*
+~*
+*~
+_tags
+.merlin
 
 # ocamlbuild working directory
 _build/
