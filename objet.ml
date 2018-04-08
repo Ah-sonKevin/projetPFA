@@ -2,7 +2,7 @@ open Tsdl
 open Anim
 
 module type Objet = sig
-  type genre_objet = Personnage|Ennemi|Plateforme|Wall|Door|Background|Projectile
+  type genre_objet = Personnage|Ennemi|Plateforme|Wall|Door of string |Background|Projectile
   type objet
   val create : genre_objet -> int*int -> float*float -> float*float -> int ->(string array *string array *string array * string array) -> Sdl.renderer -> objet
   val create_immobile : genre_objet -> int*int -> string array -> Sdl.renderer -> objet
@@ -25,14 +25,13 @@ module type Objet = sig
   val changeFrame : objet -> Anim.direction -> objet
   val setSize : objet -> int * int -> objet
   val getBaseSize : objet -> int*int
-
 end
 
 module Objet : Objet = struct
-  type genre_objet = Personnage|Ennemi|Plateforme|Wall|Door|Background|Projectile
+  type genre_objet = Personnage|Ennemi|Plateforme|Wall|Door of string|Background|Projectile
   type objet = {genre : genre_objet; position : int*int; can_jump : bool; vitesse : float * float ;
                 maxSpeed : float*float; pv : int;canBeDmg : bool*int  ;size : int*int; baseSize : int*int ; texture : Anim.anim }
-  let create genre_o pos vit maxvit hp  (textG, textM, textD, textS) renderer  =
+  let create genre_o  pos vit maxvit hp (textG, textD, textS , textM)  renderer  =
     let sizeT t=
       match Sdl.query_texture t with 
       |Error (`Msg e) -> Sdl.log "Init load picture error: %s" e; exit 1
@@ -50,7 +49,7 @@ module Objet : Objet = struct
      size =sizeT (Anim.getTexture textu) ;
      baseSize = sizeT (Anim.getTexture textu) ;
       }
-  let create_immobile genre_o pos textM render =
+  let create_immobile genre_o pos textM  render =
     let sizeT t =
       match Sdl.query_texture t with 
       |Error (`Msg e) -> Sdl.log "Init load picture error: %s" e; exit 1

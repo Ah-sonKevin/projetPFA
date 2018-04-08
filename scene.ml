@@ -3,10 +3,11 @@ open Objet
 open Anim
 open Collision
 open Camera
+open Lexer 
 
 module type Scene = sig
   type scene 
-  val create : Objet.objet list -> float -> Objet.objet -> Camera.camera ->  Sdl.renderer -> scene
+  val create : float -> Objet.objet list ->  Objet.objet -> Camera.camera ->  Sdl.renderer -> scene
   val getEntitie : scene -> Objet.objet list
   val getTexture : scene -> Sdl.texture list
   val getSize : scene -> (int*int)
@@ -26,15 +27,40 @@ end
 module Scene : Scene =  struct
   type scene = {entities:Objet.objet list ; gravitie:float ; background : Objet.objet ; cam : Camera.camera ; renderer : Sdl.renderer}
 
-    exception NoPerso
+  exception NoPerso
+  exception ErreurScene
+
     
-  let create objs grav back camera render = {entities = objs ; gravitie = grav ; background = back ; cam = camera ;renderer = render}
+  let create grav objs back  camera render = {entities = objs ; gravitie = grav ; background = back ; cam = camera ;renderer = render}
 
   let getEntitie scene = scene.entities
-
   let getSize scene = Objet.getSize scene.background 
-
   let addEntitie scene objet = {scene with entities =  (objet::scene.entities)}
+
+
+ 
+let genererScene t scene =
+  scene
+   (* let (g,list) = Lexer.lex t scene.renderer in
+    let rec sub1 l = 
+      match l with 
+      |[] -> raise ErreurScene 
+      |x::s when (Objet.getGenre x) = Background -> x 
+      |x::s -> sub1 s
+    in
+    let rec sub2 l = 
+      match l with 
+      |[] -> raise ErreurScene 
+      |x::s when (Objet.getGenre x) = Personnage -> x 
+      |x::s -> sub2 s
+    in
+    let b = sub1 list in
+    let p = sub2 list in
+    {entities = list; gravitie = g; background = b;
+     cam = Camera.create (Objet.getPos p) (Objet.getSize b) (Camera.getWindowSize scene.cam);
+     renderer = scene.renderer}*)
+
+
 
   let kickDead scene =
     let rec sub_kick list listRes =
@@ -104,7 +130,7 @@ module Scene : Scene =  struct
    
    let rec moveAll_sub listObjet listRes cam =
      match listObjet with
-     |[]-> (listRes,cam)
+     |[]->  {scene with entities = listRes ; cam = cam }
      (* traitement des déplacement / collision pour un projectile *)
      |x::s when ((Objet.getGenre x)=(Projectile)) ->
 	begin
@@ -145,12 +171,15 @@ module Scene : Scene =  struct
 	  |Some (obj,(xNew,yNew),(xsNew,ysNew)) when (obj = x) ->
 	     (* on tue le "x" en cours de traitement*)
 		 moveAll_sub s ((Objet.changePV x (-Objet.getPV x))::listRes) cam
-          |Some (obj,(xNew,yNew),(xsNew,ysNew)) when ((Objet.getGenre obj)=(Ennemi))->
-	     let objTemp = (Objet.changePV (Objet.allowJump (Objet.move x (xNew,yNew))) (-30)) in
-	     moveAll_sub s ((Objet.setSpeed (Objet.resetSpeed objTemp) ((0.0 +. xsNew),(scene.gravitie +. ysNew)))::listRes) temp
-	  |Some (obj,(xNew,yNew),(xsNew,ysNew)) ->
-	     let objTemp = Objet.allowJump (Objet.move x (xNew,yNew)) in
-	     moveAll_sub s ((Objet.setSpeed (Objet.resetSpeed objTemp) ((0.0 +. xsNew),(scene.gravitie +. ysNew)))::listRes) temp
+          |Some (obj,(xNew,yNew),(xsNew,ysNew)) ->
+	     match ((Objet.getGenre obj)) with
+	     |Ennemi ->
+		let objTemp = (Objet.changePV (Objet.allowJump (Objet.move x (xNew,yNew))) (-30)) in
+		moveAll_sub s ((Objet.setSpeed (Objet.resetSpeed objTemp) ((0.0 +. xsNew),(scene.gravitie +. ysNew)))::listRes) temp
+	     |Door t -> (*genererScene t*) scene 
+	     |_ ->
+		let objTemp = Objet.allowJump (Objet.move x (xNew,yNew)) in
+		moveAll_sub s ((Objet.setSpeed (Objet.resetSpeed objTemp) ((0.0 +. xsNew),(scene.gravitie +. ysNew)))::listRes) temp
 	end
      (* traitement des déplacements / collisions pour les ennemis*)
      |x::s when ((Objet.getGenre x)=(Ennemi)) ->
@@ -179,11 +208,9 @@ module Scene : Scene =  struct
       |x::s when ((Objet.getGenre x)=(Personnage)) -> sort s list_proj (x::list_perso) list_enne list_others
       |x::s when ((Objet.getGenre x)=(Ennemi))     -> sort s list_proj list_perso (x::list_enne) list_others
       |x::s -> sort s list_proj list_perso list_enne (x::list_others)
-    in
-   
-   let (temp,tempCam) = moveAll_sub (sort scene.entities [] [] [] []) [] scene.cam in 
-   let sceneTemp = {scene with entities = temp; cam = tempCam}in
-   {sceneTemp with entities = changeAnim sceneTemp.entities}
+    in   
+   let temp = (moveAll_sub (sort scene.entities [] [] [] []) [] scene.cam) in 
+   {temp with entities = changeAnim temp.entities}
 
  let shoot scene (x,y) clock =
    let rec getPosPerso list =

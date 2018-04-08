@@ -65,7 +65,7 @@ let jeu () =
         | Ok render ->
           Sdl.render_present render;
           
-          (*charegement des éléments de jeu*)
+          (*chargement des éléments de jeu*)
           let perso = Objet.create Personnage (200,100) (0.0,5.0) (4.0,5.0) 100 
                        ( [|"Image/samus/Samus_left/Samus_left_walk/Samus_left_walk1_25_38.bmp";
                           "Image/samus/Samus_left/Samus_left_walk/Samus_left_walk2_25_38.bmp";
@@ -102,12 +102,14 @@ let jeu () =
                        render in
 	  let e1 = Objet.create Ennemi (200,150) (2.0,2.0) (10.0,00.0) 200 ([||], [|"Image/ennemies/ennemi_test_24_14.bmp"|] ,[||],[||]) render in
 	  let e2 = Objet.create Ennemi (500,50) (2.0,0.0) (5.0,10.0) 200 ([||], [|"Image/ennemies/ennemi_test_24_14.bmp"|] ,[||],[||]) render in
-          let sprite     = Objet.create_immobile Wall (200,500) [|"Image/sprite_obstacle.bmp"|] render in
+	  let sprite     = Objet.create_immobile Wall (300,600) [|"Image/sprite_obstacle.bmp"|] render in
           let plateform  = Objet.create_immobile Plateforme (600,500) [|"Image/Plateforme_700_5.bmp"|] render in
           let background = Objet.create_immobile Background (0,0) [|"Image/Background_2.bmp"|] render in
           let sol        = Objet.create_immobile Plateforme (-100,668) [|"Image/Plateforme.bmp"|] render in
-          let cam = Camera.create (Objet.getPos perso) (Objet.getSize background) (Sdl.get_window_size window) in
-          let scene = Scene.create (perso::plateform::sprite::sol::e1::e2::[]) 0.15 background cam render in
+	  let porte      = Objet.create_immobile (Door "Image/Menu_backscreen_1160_870.bmp") (400,500) [|"Image/porte.bmp"|] render in 
+          let cam = Camera.create (100,100) (500,500) (Sdl.get_window_size window) in	  
+          let scene = Scene.create  0.15 (perso::plateform::sprite::sol::e1::e2::porte :: []) background cam render in
+          (*let (x,y)= Lexer.lex "scene1.txt" render in *)
 	  
          
           (* gestion du jeu une fois lancé *)

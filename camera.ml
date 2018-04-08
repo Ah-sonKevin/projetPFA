@@ -6,6 +6,7 @@ module type Camera = sig
   val convertPosObjet : (int * int) -> camera -> (int * int )
   val convertPosBackground : camera -> (int * int )
   val move :  (int * int) -> camera -> camera
+  val getWindowSize : camera -> (int * int)
 end
 
 module Camera : Camera = struct 
@@ -49,4 +50,6 @@ module Camera : Camera = struct
     in
     (-xf,-yf) 
 
+  let getWindowSize cam = cam.windowSize
+      
 end
