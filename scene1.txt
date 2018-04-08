@@ -3,8 +3,8 @@ Scene 1
 Gravity 0.15
 
 Genre Personnage
-Position (200,100)
-Vitesse (0.0,0.0)
+Position (500,500)
+Vitesse (2.0,2.0)
 VitesseMax (10.0,10.0)
 PV 100
 Animation
@@ -40,3 +40,27 @@ Image/samus/Samus_saut/Samus_saut4_16_16.bmp
 Image/samus/Samus_saut/Samus_saut3_16_16.bmp
 Image/samus/Samus_saut/Samus_saut2_16_16.bmp
 Image/samus/Samus_saut/Samus_saut1_16_16.bmp
+
+Genre Background
+Position (0,0)
+Vitesse (0.0,0.0)
+VitesseMax (0.0,10.0)
+PV 1000
+Animation
+no
+Image/Background_2.bmp
+
+no
+no
+
+Genre Plateforme
+Position (0,600)
+Vitesse (0.0,0.0)
+VitesseMax (0.0,10.0)
+PV 1000
+Animation
+no
+Image/Plateforme.bmp
+
+no
+no

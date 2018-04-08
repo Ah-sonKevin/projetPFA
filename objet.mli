@@ -25,6 +25,7 @@ module type Objet = sig
   val changeFrame : objet -> Anim.direction -> objet
   val setSize : objet -> int * int -> objet
   val getBaseSize : objet -> int*int
+  val print : objet -> unit
 
 end
 

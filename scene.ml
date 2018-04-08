@@ -3,11 +3,10 @@ open Objet
 open Anim
 open Collision
 open Camera
-open Lexer 
 
 module type Scene = sig
   type scene 
-  val create : float -> Objet.objet list ->  Objet.objet -> Camera.camera ->  Sdl.renderer -> scene
+  val create : Objet.objet list -> float -> Objet.objet -> Camera.camera ->  Sdl.renderer -> scene
   val getEntitie : scene -> Objet.objet list
   val getTexture : scene -> Sdl.texture list
   val getSize : scene -> (int*int)
@@ -29,38 +28,20 @@ module Scene : Scene =  struct
 
   exception NoPerso
   exception ErreurScene
-
-    
-  let create grav objs back  camera render = {entities = objs ; gravitie = grav ; background = back ; cam = camera ;renderer = render}
-
+              
+  let create objs grav back camera render = {entities = objs ; gravitie = grav ; background = back ; cam = camera ;renderer = render}
+                                              
   let getEntitie scene = scene.entities
+                           
   let getSize scene = Objet.getSize scene.background 
+
   let addEntitie scene objet = {scene with entities =  (objet::scene.entities)}
 
-
- 
-let genererScene t scene =
-  scene
-   (* let (g,list) = Lexer.lex t scene.renderer in
-    let rec sub1 l = 
-      match l with 
-      |[] -> raise ErreurScene 
-      |x::s when (Objet.getGenre x) = Background -> x 
-      |x::s -> sub1 s
-    in
-    let rec sub2 l = 
-      match l with 
-      |[] -> raise ErreurScene 
-      |x::s when (Objet.getGenre x) = Personnage -> x 
-      |x::s -> sub2 s
-    in
-    let b = sub1 list in
-    let p = sub2 list in
-    {entities = list; gravitie = g; background = b;
-     cam = Camera.create (Objet.getPos p) (Objet.getSize b) (Camera.getWindowSize scene.cam);
-     renderer = scene.renderer}*)
-
-
+  let genererScene t scene  =
+    let (l,g,b,p) = Lexer.lex t scene.renderer  in
+    { entities =l; gravitie =  g; background = b;
+       cam =( Camera.create (Objet.getPos p) (Objet.getSize b) (Camera.getWindowSize scene.cam));
+       renderer = scene.renderer}
 
   let kickDead scene =
     let rec sub_kick list listRes =
@@ -83,7 +64,7 @@ let genererScene t scene =
     in 
     getPers_rec scene.entities
                 
-  let continue scene = (Objet.getPV (getPers scene))>0 
+  let continue scene =(Objet.getPV (getPers scene))>0 
   let suicide scene =
     let rec sub l acc = 
       match l with
@@ -176,8 +157,8 @@ let genererScene t scene =
 	     |Ennemi ->
 		let objTemp = (Objet.changePV (Objet.allowJump (Objet.move x (xNew,yNew))) (-30)) in
 		moveAll_sub s ((Objet.setSpeed (Objet.resetSpeed objTemp) ((0.0 +. xsNew),(scene.gravitie +. ysNew)))::listRes) temp
-	     |Door t -> (*genererScene t*) scene 
-	     |_ ->
+	     |Door t -> genererScene t scene 	
+	     |_ -> 
 		let objTemp = Objet.allowJump (Objet.move x (xNew,yNew)) in
 		moveAll_sub s ((Objet.setSpeed (Objet.resetSpeed objTemp) ((0.0 +. xsNew),(scene.gravitie +. ysNew)))::listRes) temp
 	end

@@ -17,6 +17,7 @@ module Camera : Camera = struct
      windowSize=sizeW  }
 
   let move (x,y) cam = { cam with posCamera = (x,y)}
+  let getWindowSize cam = cam.windowSize
   let convertPosObjet (x,y) cam =
     let (xw,yw) = cam.windowSize in 
     let (xPer,yPer) = cam.posCamera in 
@@ -50,6 +51,4 @@ module Camera : Camera = struct
     in
     (-xf,-yf) 
 
-  let getWindowSize cam = cam.windowSize
-      
 end

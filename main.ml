@@ -3,6 +3,7 @@ open Objet
 open Scene
 open Camera
 open Menu
+exception ErreurScene
 
 let my_exit (window,renderer) scene =
   Scene.closeScene scene;
@@ -64,71 +65,33 @@ let jeu () =
         | Error (`Msg e) -> Sdl.log "Init render error: %s" e; exit 1
         | Ok render ->
           Sdl.render_present render;
-          
-          (*chargement des éléments de jeu*)
-          let perso = Objet.create Personnage (200,100) (0.0,5.0) (4.0,5.0) 100 
-                       ( [|"Image/samus/Samus_left/Samus_left_walk/Samus_left_walk1_25_38.bmp";
-                          "Image/samus/Samus_left/Samus_left_walk/Samus_left_walk2_25_38.bmp";
-                          "Image/samus/Samus_left/Samus_left_walk/Samus_left_walk3_21_38.bmp";
-                          "Image/samus/Samus_left/Samus_left_walk/Samus_left_walk4_20_39.bmp";
-                          "Image/samus/Samus_left/Samus_left_walk/Samus_left_walk5_20_38.bmp";
-                          "Image/samus/Samus_left/Samus_left_walk/Samus_left_walk6_26_38.bmp";
-                          "Image/samus/Samus_left/Samus_left_walk/Samus_left_walk7_25_38.bmp";
-                          "Image/samus/Samus_left/Samus_left_walk/Samus_left_walk8_23_38.bmp";
-                          "Image/samus/Samus_left/Samus_left_walk/Samus_left_walk9_21_38.bmp";
-                          "Image/samus/Samus_left/Samus_left_walk/Samus_left_walk10_18_38.bmp"
-                        |], 
-                        [|"Image/samus/Samus_face_23_40.bmp"|] ,
-                        [|
-                          "Image/samus/Samus_right/Samus_right_walk/Samus_right_walk1_19_38.bmp";
-                          "Image/samus/Samus_right/Samus_right_walk/Samus_right_walk2_21_38.bmp";
-                          "Image/samus/Samus_right/Samus_right_walk/Samus_right_walk3_23_38.bmp";
-                          "Image/samus/Samus_right/Samus_right_walk/Samus_right_walk4_25_38.bmp";
-                          "Image/samus/Samus_right/Samus_right_walk/Samus_right_walk5_26_38.bmp";
-                          "Image/samus/Samus_right/Samus_right_walk/Samus_right_walk6_20_38.bmp";
-                          "Image/samus/Samus_right/Samus_right_walk/Samus_right_walk7_20_39.bmp";
-                          "Image/samus/Samus_right/Samus_right_walk/Samus_right_walk8_21_38.bmp";
-                          "Image/samus/Samus_right/Samus_right_walk/Samus_right_walk9_25_38.bmp";
-                          "Image/samus/Samus_right/Samus_right_walk/Samus_right_walk10_18_38.bmp"
-                        |],
-                        [|"Image/samus/Samus_saut/Samus_saut8_16_16.bmp";
-                         "Image/samus/Samus_saut/Samus_saut7_16_16.bmp";
-                         "Image/samus/Samus_saut/Samus_saut6_16_16.bmp";
-                         "Image/samus/Samus_saut/Samus_saut5_16_16.bmp";
-                         "Image/samus/Samus_saut/Samus_saut4_16_16.bmp";
-                         "Image/samus/Samus_saut/Samus_saut3_16_16.bmp";
-                         "Image/samus/Samus_saut/Samus_saut2_16_16.bmp";
-                         "Image/samus/Samus_saut/Samus_saut1_16_16.bmp"|])
-                       render in
-	  let e1 = Objet.create Ennemi (200,150) (2.0,2.0) (10.0,00.0) 200 ([||], [|"Image/ennemies/ennemi_test_24_14.bmp"|] ,[||],[||]) render in
-	  let e2 = Objet.create Ennemi (500,50) (2.0,0.0) (5.0,10.0) 200 ([||], [|"Image/ennemies/ennemi_test_24_14.bmp"|] ,[||],[||]) render in
-	  let sprite     = Objet.create_immobile Wall (300,600) [|"Image/sprite_obstacle.bmp"|] render in
-          let plateform  = Objet.create_immobile Plateforme (600,500) [|"Image/Plateforme_700_5.bmp"|] render in
-          let background = Objet.create_immobile Background (0,0) [|"Image/Background_2.bmp"|] render in
-          let sol        = Objet.create_immobile Plateforme (-100,668) [|"Image/Plateforme.bmp"|] render in
-	  let porte      = Objet.create_immobile (Door "Image/Menu_backscreen_1160_870.bmp") (400,500) [|"Image/porte.bmp"|] render in 
-          let cam = Camera.create (100,100) (500,500) (Sdl.get_window_size window) in	  
-          let scene = Scene.create  0.15 (perso::plateform::sprite::sol::e1::e2::porte :: []) background cam render in
-          (*let (x,y)= Lexer.lex "scene1.txt" render in *)
-	  
-         
-          (* gestion du jeu une fois lancé *)
-          let event = Sdl.Event.create() in     
-          let rec menu window renderer = 
-            Menu.startMenu window renderer;
-            let rec game scene window renderer clock =
-              Sdl.delay 17l;
-              let sceneEvent = evenement event (window,renderer) scene clock in
-              let sceneMove = Scene.moveAll sceneEvent in
-	      let sceneActive = Scene.kickDead sceneMove in
+
+
+          let genererScene t render  =
+            let (l,g,b,p) = Lexer.lex t render in
+            (Scene.create l g b
+               ( Camera.create (Objet.getPos p) (Objet.getSize b) (Sdl.get_window_size window))
+               render)
+            in
+            let scene = genererScene "scene1.txt" render in 
+
+            (* gestion du jeu une fois lancé *)
+            let event = Sdl.Event.create() in     
+            let rec menu window renderer = 
+              Menu.startMenu window renderer;
+              let rec game scene window renderer clock =
+                Sdl.delay 17l;
+                let sceneEvent = evenement event (window,renderer) scene clock in
+                let sceneMove = Scene.moveAll sceneEvent in
+	        let sceneActive = Scene.kickDead sceneMove in
               Scene.refresh scene sceneActive;
               if Scene.continue sceneActive then 
                 game sceneActive window renderer ((clock+1) mod 5)
               else ()
-            in
-            game scene window render 0;
-            menu window renderer 
-          in menu window render
+              in
+              game scene window render 0;
+              menu window renderer 
+            in menu window render
                
 let main () = jeu ()
 

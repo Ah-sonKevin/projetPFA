@@ -5,7 +5,7 @@ open Camera
 
 module type Scene = sig
   type scene
-  val create : float ->  Objet.objet list -> Objet.objet -> Camera.camera -> Sdl.renderer -> scene
+  val create : Objet.objet list -> float -> Objet.objet -> Camera.camera -> Sdl.renderer -> scene
   val getEntitie : scene -> Objet.objet list
   val getTexture : scene -> Sdl.texture list
   val getSize : scene -> (int*int)
