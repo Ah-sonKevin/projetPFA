@@ -4,7 +4,7 @@ open Anim
 module type Objet = sig
   type genre_objet = Personnage|Ennemi|Plateforme|Wall|Door of string |Background|Projectile
   type objet
-  val create : genre_objet -> int*int -> float*float -> float*float -> int ->(string array *string array *string array * string array) -> Sdl.renderer -> objet
+  val create : genre_objet -> int*int -> float*float -> float*float -> int -> Anim.anim -> Sdl.renderer -> objet
   val create_immobile : genre_objet -> int*int -> string array -> Sdl.renderer -> objet
   val move : objet -> (int*int) -> objet
   val changePV : objet -> int -> objet
@@ -25,20 +25,21 @@ module type Objet = sig
   val changeFrame : objet -> Anim.direction -> objet
   val setSize : objet -> int * int -> objet
   val getBaseSize : objet -> int*int
-  val print : objet -> unit 
+  val print : objet -> unit
+  val getMaxSpeed : objet -> float * float
+  val getAnim : objet -> Anim.anim
 end
-
+ 
 module Objet : Objet = struct
   type genre_objet = Personnage|Ennemi|Plateforme|Wall|Door of string|Background|Projectile
   type objet = {genre : genre_objet; position : int*int; can_jump : bool; vitesse : float * float ;
                 maxSpeed : float*float; pv : int;canBeDmg : bool*int  ;size : int*int; baseSize : int*int ; texture : Anim.anim }
-  let create genre_o pos vit maxvit hp  (textG, textM, textD, textS) renderer  =
+  let create genre_o pos vit maxvit hp textu renderer  =
     let sizeT t=
       match Sdl.query_texture t with 
       |Error (`Msg e) -> Sdl.log "Init load picture error: %s" e; exit 1
       |Ok (_,_,y) -> y
     in
-    let textu =  Anim.create textG textM textD textS renderer in 
     {genre = genre_o;
      position = pos;
      can_jump = true;
@@ -122,8 +123,10 @@ module Objet : Objet = struct
     |y when (y<0) -> {obj with canBeDmg = (false,(-1))}
     |_            -> obj
   let getSpeed obj = obj.vitesse
+  let getMaxSpeed obj = obj.maxSpeed
   let dmgObjet obj = {obj with pv = obj.pv - 20}    
-  let getPV  obj = obj.pv    
+  let getPV  obj = obj.pv
+  let getAnim obj = obj.texture 
   let getTexture obj =  Anim.getTexture obj.texture
   let isMovable obj = if (obj.genre = Personnage) || (obj.genre = Ennemi) || (obj.genre = Projectile) then true else false
   let changeFrame obj dir = {obj with texture = Anim.changeFrame obj.texture dir}

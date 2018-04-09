@@ -4,7 +4,7 @@ open Anim
 module type Objet = sig
   type genre_objet = Personnage|Ennemi|Plateforme|Wall|Door of string |Background|Projectile
   type objet
-  val create : genre_objet -> int*int -> float*float -> float*float -> int ->(string array *string array *string array * string array) -> Sdl.renderer -> objet
+  val create : genre_objet -> int*int -> float*float -> float*float -> int -> Anim.anim -> Sdl.renderer -> objet
   val create_immobile : genre_objet -> int*int -> string array -> Sdl.renderer -> objet
   val move : objet -> (int*int) -> objet
   val changePV : objet -> int -> objet
@@ -26,6 +26,8 @@ module type Objet = sig
   val setSize : objet -> int * int -> objet
   val getBaseSize : objet -> int*int
   val print : objet -> unit
+  val getMaxSpeed : objet -> float * float
+  val getAnim : objet ->Anim.anim
 
 end
 

@@ -1,0 +1,32 @@
+Scene 2
+
+Gravity 0.15
+
+Background Image/Menu_backscreen_1200_900.bmp
+
+Genre Personnage
+Position (500,300)
+
+Genre Plateforme
+Position (0,600)
+Vitesse (0.0,0.0)
+VitesseMax (0.0,0.0)
+PV 1000
+Animation
+no
+Image/Plateforme.bmp
+
+no
+no
+
+Genre Door scene2.txt
+Position (500,500)
+Vitesse (0.0,0.0)
+VitesseMax (0.0,0.0)
+PV 1000
+Animation
+no
+Image/porte.bmp
+
+no
+no

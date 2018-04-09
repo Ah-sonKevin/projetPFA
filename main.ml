@@ -67,13 +67,13 @@ let jeu () =
           Sdl.render_present render;
 
 
-          let genererScene t render  =
-            let (l,g,b,p) = Lexer.lex t render in
+          let genererScene t pers render  =
+            let (l,g,b,p) = Lexer.lex t pers render in
             (Scene.create l g b
                ( Camera.create (Objet.getPos p) (Objet.getSize b) (Sdl.get_window_size window))
                render)
             in
-            let scene = genererScene "scene1.txt" render in 
+            let scene = genererScene "scene1.txt" None render in 
 
             (* gestion du jeu une fois lancé *)
             let event = Sdl.Event.create() in     

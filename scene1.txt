@@ -2,8 +2,10 @@ Scene 1
 
 Gravity 0.15
 
+Background Image/Background_2.bmp
+
 Genre Personnage
-Position (500,500)
+Position (100,300)
 Vitesse (2.0,2.0)
 VitesseMax (10.0,10.0)
 PV 100
@@ -41,26 +43,26 @@ Image/samus/Samus_saut/Samus_saut3_16_16.bmp
 Image/samus/Samus_saut/Samus_saut2_16_16.bmp
 Image/samus/Samus_saut/Samus_saut1_16_16.bmp
 
-Genre Background
-Position (0,0)
-Vitesse (0.0,0.0)
-VitesseMax (0.0,10.0)
-PV 1000
-Animation
-no
-Image/Background_2.bmp
-
-no
-no
-
 Genre Plateforme
 Position (0,600)
 Vitesse (0.0,0.0)
-VitesseMax (0.0,10.0)
+VitesseMax (0.0,0.0)
 PV 1000
 Animation
 no
 Image/Plateforme.bmp
+
+no
+no
+
+Genre Door scene2.txt
+Position (500,500)
+Vitesse (0.0,0.0)
+VitesseMax (0.0,0.0)
+PV 1000
+Animation
+no
+Image/porte.bmp
 
 no
 no
