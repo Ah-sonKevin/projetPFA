@@ -22,10 +22,8 @@ module Anim : Anim = struct
 	 match Sdl.create_texture_from_surface renderer surface_temp with
 	 | Error (`Msg e) -> Sdl.log "Init surface to texture error: %s" e; exit 1
 	 | Ok name -> Sdl.free_surface surface_temp;name
-    in
-    
-      if (((Array.length g) = 0)&&((Array.length d) = 0)) then
-	begin
+    in    
+      let animBool = if (((Array.length g) = 0)&&((Array.length d) = 0)) then false else true in 
 	  {
 	  gauche = (Array.init (Array.length g) (fun i -> loadTexture g.(i)));
 	  milieu = (Array.init (Array.length m) (fun i -> loadTexture m.(i)));
@@ -33,21 +31,9 @@ module Anim : Anim = struct
 	  saut   = (Array.init (Array.length s) (fun i -> loadTexture s.(i)));
 	  frame = 0;
 	  dir = Milieu;
-	  animated = false
+	  animated = animBool
 	  }
-	end
-      else
-	begin
-	  {
-	  gauche = (Array.init (Array.length g) (fun i -> loadTexture g.(i)));
-	  milieu = (Array.init (Array.length m) (fun i -> loadTexture m.(i)));
-	  droite = (Array.init (Array.length d) (fun i -> loadTexture d.(i)));
-	  saut   = (Array.init (Array.length s) (fun i -> loadTexture s.(i)));
-	  frame = 0;
-	  dir = Milieu;
-	  animated = true
-	  }
-	end
+
 
   let getFrame ani = ani.frame
   let changeDir ani newDir =  {ani with dir = newDir; frame = 0 }

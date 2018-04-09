@@ -5,7 +5,6 @@ module type Objet = sig
   type genre_objet = Personnage|Ennemi|Plateforme|Wall|Door of string |Background|Projectile
   type objet
   val create : genre_objet -> int*int -> float*float -> float*float -> int -> Anim.anim -> Sdl.renderer -> objet
-  val create_immobile : genre_objet -> int*int -> string array -> Sdl.renderer -> objet
   val move : objet -> (int*int) -> objet
   val changePV : objet -> int -> objet
   val setSpeed : objet -> (float*float) -> objet
@@ -28,6 +27,7 @@ module type Objet = sig
   val print : objet -> unit
   val getMaxSpeed : objet -> float * float
   val getAnim : objet ->Anim.anim
+  val kill : objet -> objet
 
 end
 

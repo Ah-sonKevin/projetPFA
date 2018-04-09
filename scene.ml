@@ -12,7 +12,6 @@ module type Scene = sig
   val getSize : scene -> (int*int)
   val addEntitie : scene -> Objet.objet -> scene
   val kickDead : scene -> scene
-  val generateScene : scene -> Objet.objet list -> scene
   val loadPicture : Sdl.renderer -> (int*int) -> (int*int) -> Sdl.texture -> unit
   val refresh : scene -> scene -> unit
   val closeScene : scene -> unit
@@ -49,22 +48,16 @@ module Scene : Scene =  struct
   let genererScene t pers scene  =
     let (l,g,b,p) = Lexer.lex t (Some pers ) scene.renderer  in
     {entities = l  ; gravitie =  g; background = b;
-       cam =( Camera.create (Objet.getPos p) (Objet.getSize b) (Camera.getWindowSize scene.cam));
-       renderer = scene.renderer}
+     cam =( Camera.create (Objet.getPos p) (Objet.getSize b) (Camera.getWindowSize scene.cam));
+     renderer = scene.renderer}
+      
+  let kickDead scene = 
+    {scene with entities = List.fold_left (fun acc x ->  if ((Objet.getPV x) < 1) then acc else (x::acc)) [] scene.entities }
+  let continue scene =(Objet.getPV (getPers scene))>0
 
-  let kickDead scene = List.fold_left (fun acc x ->  (if (Objet.getPV x) < 1) then acc else (x::acc)) [] scene.entities
-
-    
- 
-                
-  let continue scene =(Objet.getPV (getPers scene))>0 
   let suicide scene =
-    let rec sub l acc = 
-      match l with
-      |[] -> {scene with entities = acc }
-      |x::s when (Objet.getGenre x) = Personnage -> sub s ((Objet.changePV x (-(Objet.getPV x)))::acc)
-      |x::s->sub s (x::acc)
-    in sub scene.entities []
+    {scene with entities = List.map (fun  x -> if (Objet.getGenre x) = Personnage then  Objet.kill x else x) scene.entities }
+
 
   let nextPos obj scene = 
     let (xs,ys) = Objet.getSpeed obj in
@@ -73,27 +66,17 @@ module Scene : Scene =  struct
     ((xs_int + xp) , ((int_of_float(ceil(scene.gravitie/.2.) +. ys) + yp)))
  
   let changeAnim l = 
-    let rec changeAnimRec l res = 
-      match l with
-      |[]->res 
-      |x::s -> 
-         let (xs,ys) = Objet.getSpeed x in 
-         let dir =
-           if Objet.canJump x then
-	     let _ = Printf.printf "%f\n" xs in 
-             if xs > 1.0 then Anim.Droite else if xs < -1.0 then  Anim.Gauche else Milieu
-             else Anim.Saut
-         in let size  = if Objet.getGenre x = Personnage then 
-             if (dir = Anim.Saut) then (16,16) 
-             else (23,40)
-           else
-             Objet.getSize x
-            in changeAnimRec s ((Objet.setSize (Objet.changeFrame x dir) size)::res)
-    in changeAnimRec l []
-    
+    List.map 
+      (fun x -> 
+        let (xs,ys) = Objet.getSpeed x in 
+        let dir =
+          if Objet.canJump x then
+            if xs > 1.0 then Anim.Droite else if xs < -1.0 then  Anim.Gauche else Milieu
+          else Anim.Saut
+        in Objet.changeFrame x dir) l 
+           
   (* gestion des déplacements *)
  let moveAll scene =
-
    let (sizeX,sizeY) = getSize scene in
    (* méthode pour obtenir la liste des objets de la liste en @param avec l'objet traité modifié (qui a perdu 20 PV) *)
    let rec damageObjet obj list reslist=
@@ -174,7 +157,6 @@ module Scene : Scene =  struct
      (* Ne rien faire pour les autres objets *)
      |x2::s -> moveAll_sub s (x2::listRes) cam
    in
-
    (* on met les projectiles de façon à ce qu'ils soient traiter avant toutes autres entitées, puis le personnage, puis le reste*)
     let rec sort list_iter list_proj list_perso list_enne list_others =
       match list_iter with
@@ -218,21 +200,20 @@ module Scene : Scene =  struct
         
  (* gestion des déplacements *)
  let movePersonnage scene (xs,ys)=
-   let rec changePerso listObjet listRes =
-     match listObjet with
-     |[] -> listRes
-     |x::s when ((Objet.getGenre x) = Personnage) ->
-	if ys < 0.0
-	    then
-	      begin
-		if (Objet.canJump x = false)
-		then changePerso s ((Objet.dmgGesture (Objet.setSpeed x (xs,0.0)))::listRes)
-		else changePerso s ((Objet.dmgGesture (Objet.forbidJump (Objet.setSpeed x (xs,ys))))::listRes)
-	      end
-	    else changePerso s ((Objet.dmgGesture (Objet.setSpeed x (xs,ys)))::listRes)
-     |x::s -> changePerso s (x::listRes)
-   in
-   {scene with entities = (changePerso scene.entities [] ) }
+   let l = List.map 
+     (fun x ->
+       if (Objet.getGenre x) = Personnage then
+ 	 if ys < 0.0  then
+           if not (Objet.canJump x) then 
+             (Objet.dmgGesture (Objet.setSpeed x (xs,0.0)))
+	   else 
+             Objet.dmgGesture (Objet.forbidJump (Objet.setSpeed x (xs,ys)))
+	 else 
+           Objet.dmgGesture (Objet.setSpeed x (xs,ys))
+       else
+         x
+     ) scene.entities
+   in {scene with entities = l}
      
  let loadPicture renderer (x1,y1) (w,h) texture =
    let frag_rect = Sdl.Rect.create 0 0 w h in
@@ -240,8 +221,7 @@ module Scene : Scene =  struct
    match Sdl.render_copy ~dst:position_background ~src:frag_rect renderer texture with
    |Error (`Msg e) -> Sdl.log "Init texture on screen error: %s" e; exit 1
    |Ok () -> ()
-      
-      
+
  let refresh sceneOld sceneNew =
    let rec refresh_sub list =
      match list with
@@ -278,23 +258,8 @@ module Scene : Scene =  struct
      
  let getGravitie scene = scene.gravitie
      
- let generateScene scene objetList =
-   let rec sub list res =
-     match list with
-     |[] -> res
-     |x::s -> sub s (addEntitie res x)
-   in
-   sub objetList scene
-     
  let closeScene scene =
-   let rec close_sub list =
-     match list with
-     |[] -> Sdl.destroy_texture (Objet.getTexture scene.background);
-     |x::s ->
-        begin
-          Sdl.destroy_texture (Objet.getTexture x);
-          close_sub s
-         end
-   in
-    close_sub scene.entities
+   List.iter (fun x -> Sdl.destroy_texture (Objet.getTexture x)) scene.entities;
+   Sdl.destroy_texture (Objet.getTexture scene.background)
+
 end

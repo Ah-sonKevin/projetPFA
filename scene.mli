@@ -11,7 +11,6 @@ module type Scene = sig
   val getSize : scene -> (int*int)
   val addEntitie : scene -> Objet.objet -> scene
   val kickDead : scene -> scene
-  val generateScene : scene -> Objet.objet list -> scene
   val loadPicture : Sdl.renderer -> (int*int) -> (int*int) -> Sdl.texture -> unit
   val refresh : scene -> scene -> unit
   val closeScene : scene -> unit

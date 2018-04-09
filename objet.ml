@@ -5,7 +5,6 @@ module type Objet = sig
   type genre_objet = Personnage|Ennemi|Plateforme|Wall|Door of string |Background|Projectile
   type objet
   val create : genre_objet -> int*int -> float*float -> float*float -> int -> Anim.anim -> Sdl.renderer -> objet
-  val create_immobile : genre_objet -> int*int -> string array -> Sdl.renderer -> objet
   val move : objet -> (int*int) -> objet
   val changePV : objet -> int -> objet
   val setSpeed : objet -> (float*float) -> objet
@@ -15,7 +14,7 @@ module type Objet = sig
   val allowJump : objet -> objet
   val forbidJump : objet -> objet
   val canJump : objet -> bool
-  val dmgGesture : objet -> objet
+  val dmgGesture : objet -> objet (*??*)
   val getSpeed : objet -> float*float
   val dmgObjet : objet -> objet
   val getPV : objet -> int
@@ -28,6 +27,7 @@ module type Objet = sig
   val print : objet -> unit
   val getMaxSpeed : objet -> float * float
   val getAnim : objet -> Anim.anim
+  val kill : objet -> objet
 end
  
 module Objet : Objet = struct
@@ -51,36 +51,18 @@ module Objet : Objet = struct
      size =sizeT (Anim.getTexture textu) ;
      baseSize = sizeT (Anim.getTexture textu) ;
       }
-  let create_immobile genre_o pos textM render =
-    let sizeT t =
-      match Sdl.query_texture t with 
-      |Error (`Msg e) -> Sdl.log "Init load picture error: %s" e; exit 1
-      |Ok (_,_,y) -> y
-    in
-    let textu = Anim.create [||] textM [||] [||] render in 
-    {
-      genre = genre_o;
-      position = pos;
-      can_jump = true;
-      vitesse = (0.0,0.0);
-      maxSpeed = (0.0,0.0);
-      pv = 10000;
-      canBeDmg = if ((genre_o = Personnage) || (genre_o = Ennemi)) then (true,0) else (false,(-1));
-      texture = textu ;
-      size =sizeT (Anim.getTexture textu) ;
-      baseSize = sizeT (Anim.getTexture textu) ;	
-    }
 
-      let print obj = 
-        let (x,y) = obj.position in 
-        let (xs,ys) = obj.vitesse in
-        let (xsm,ysm) = obj.maxSpeed in
-        let pv = obj.pv in
-        Printf.printf "Pos : %d %d \n Speed : %f %f \n MaxSpeed : %f %f \n PV : %d \n\n" x y xs ys xsm ysm pv 
-
-
+  let print obj = 
+    let (x,y) = obj.position in 
+    let (xs,ys) = obj.vitesse in
+    let (xsm,ysm) = obj.maxSpeed in
+    let pv = obj.pv in
+    Printf.printf "Pos : %d %d \n Speed : %f %f \n MaxSpeed : %f %f \n PV : %d \n\n" x y xs ys xsm ysm pv 
+                  
+  let kill obj = {obj with pv = 0}
+                   
   let getBaseSize obj = obj.baseSize
-          
+                          
   let setSpeed obj (x,y) =
     let (x1,y1) = obj.vitesse in
     let (msx,msy) = obj.maxSpeed in
