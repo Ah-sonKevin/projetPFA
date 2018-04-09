@@ -16,7 +16,7 @@ module type Scene = sig
   val refresh : scene -> scene -> unit
   val closeScene : scene -> unit
   val moveAll : scene -> scene
-  val movePersonnage : scene -> (float*float) -> scene
+  val movePersonnage : scene -> (float*float) -> scene *scene
   val continue : scene -> bool
   val suicide : scene -> scene
   val shoot : scene -> (int*int) -> int -> scene
