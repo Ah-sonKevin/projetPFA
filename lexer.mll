@@ -147,7 +147,7 @@ let lex file pers r =
       match l with 
           |[] -> print_string "noPerso";raise ErreurScene 
           |x::s when (Objet.getGenre x) = Personnage -> x 
-	      |x::s -> sub2 s
+	  |x::s -> sub2 s
     in
     let f = open_in file
     in let (grav,back,list) = sceneText pers r (Lexing.from_channel f) in 
