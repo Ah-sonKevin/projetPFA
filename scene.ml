@@ -40,29 +40,20 @@ module Scene : Scene =  struct
   let getPers scene = 
     let rec getPers_rec l =
       match l with 
-      |[]-> failwith "No Perso"
-      |x::s-> 
-         if ((Objet.getGenre x) = Personnage) then 
-          x 
-         else
-           getPers_rec s
+      |[]-> raise NoPerso
+      |x::s when ((Objet.getGenre x) = Personnage) -> x
+      |x::s -> getPers_rec s
     in 
     getPers_rec scene.entities
 
   let genererScene t pers scene  =
     let (l,g,b,p) = Lexer.lex t (Some pers ) scene.renderer  in
-    { entities = l  ; gravitie =  g; background = b;
+    {entities = l  ; gravitie =  g; background = b;
        cam =( Camera.create (Objet.getPos p) (Objet.getSize b) (Camera.getWindowSize scene.cam));
        renderer = scene.renderer}
 
-  let kickDead scene =
-    let rec sub_kick list listRes =
-	match list with
-	|[] -> {scene with entities = listRes}
-	|x::s when (((Objet.getPV x) < 1) && (Objet.getGenre x != Personnage)) -> sub_kick s listRes
-	|x::s -> sub_kick s (x::listRes)
-    in
-    sub_kick scene.entities []
+  let kickDead scene = List.fold_left (fun acc x ->  (if (Objet.getPV x) < 1) then acc else (x::acc)) [] scene.entities
+
     
  
                 
