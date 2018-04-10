@@ -1,8 +1,11 @@
 open Tsdl
 open Objet
 open Scene
-open Camera
+open Camera 
 open Menu
+open Tsdl_mixer
+open Sound
+
 exception ErreurScene
 
 let my_exit (window,renderer) scene =
@@ -48,7 +51,8 @@ let evenement e exit_arg scene clock =
     let y = float_of_int (-20 * tab.{(Sdl.get_scancode_from_key Sdl.K.up )}) in
     let xt = (tab.{(Sdl.get_scancode_from_key Sdl.K.d)})-(tab.{(Sdl.get_scancode_from_key Sdl.K.q)}) in
     let yt = (tab.{(Sdl.get_scancode_from_key Sdl.K.s)})-(tab.{(Sdl.get_scancode_from_key Sdl.K.z)}) in
-    let temp2 = Scene.shoot temp1 (xt,yt) clock in
+    
+    let temp2 =  if ((xt != 0)||(yt!=0)) then Scene.shoot temp1 (xt,yt) clock else scene in
     Scene.movePersonnage temp2 (x,y)
   end
 
@@ -66,25 +70,26 @@ let jeu () =
         | Ok render ->
           Sdl.render_present render;
 
-
+          let son = Sound.init ()
+          in
           let genererScene t pers render  =
-            let (l,g,b,p) = Lexer.lex t pers render in
+            let (l,g,b,t,p) = Lexer.lex t pers render in
             (Scene.create l g b
-               ( Camera.create (Objet.getPos p) (Objet.getSize b) (Sdl.get_window_size window))
-               render)
+               (Camera.create (Objet.getPos p) (Objet.getSize b) (Sdl.get_window_size window))
+               render son t)
             in
-            let scene = genererScene "scene1.txt" None render in 
-
             (* gestion du jeu une fois lancé *)
             let event = Sdl.Event.create() in     
             let rec menu window renderer = 
-              Menu.startMenu window renderer;
+              Sound.play_mus "Son/kingdomHeartMenuMusic.mp3";
+              Menu.startMenu window renderer son;
+              let scene = genererScene "scene1.txt" None render in 
               let rec game scene window renderer clock =
                 Sdl.delay 17l;
                 let sceneEvent = evenement event (window,renderer) scene clock in
                 let sceneMove = Scene.moveAll sceneEvent in
 	        let sceneActive = Scene.kickDead sceneMove in
-              Scene.refresh scene sceneActive;
+                Scene.refresh scene sceneActive;
               if Scene.continue sceneActive then 
                 game sceneActive window renderer ((clock+1) mod 5)
               else ()

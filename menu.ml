@@ -3,11 +3,12 @@ open Objet
 open Scene
 open Camera
 open Anim
+open Sound
 
 module type Menu = sig 
   val my_exit : Sdl.window * Sdl.renderer -> unit 
-  val evenement : Sdl.window * Sdl.renderer -> bool -> bool option
-  val startMenu : Sdl.window  ->  Sdl.renderer -> unit
+  val evenement : Sdl.window * Sdl.renderer -> bool -> Sound.sound ->  bool option
+  val startMenu : Sdl.window  ->  Sdl.renderer -> Sound.sound ->unit
 end
 
 module Menu = struct
@@ -19,7 +20,7 @@ module Menu = struct
     exit 0
 
   (*le jeu*)
-  let evenement exit_arg bool =
+  let evenement exit_arg bool son=
     Sdl. pump_events ();
     let tab = Sdl.get_keyboard_state () in    
     begin 
@@ -27,18 +28,27 @@ module Menu = struct
         let _ = exit 0 in None
       else
       if ((tab.{(Sdl.get_scancode_from_key Sdl.K.return)} = 1) || ((tab.{(Sdl.get_scancode_from_key Sdl.K.space)} = 1))) then 
-        None
+        begin
+          Sound.play_sound Sound.MenuO son;
+          None
+        end
       else
         if (tab.{(Sdl.get_scancode_from_key Sdl.K.up )} = 1) then 
-           Some true
+          begin
+            Sound.play_sound Sound.MenuC son;
+            Some true
+          end
         else
           if (tab.{(Sdl.get_scancode_from_key Sdl.K.down )} = 1) then 
-            Some false
+            begin
+              Sound.play_sound Sound.MenuC son;
+              Some false
+            end
           else
             Some bool
     end
-
-  let startMenu window render  =
+      
+  let startMenu window render son =
     (*chargement des éléments de jeu*)
     let background = Objet.create Background (0,0) (0.0,0.0) (0.0,0.0) 10000  (Anim.create [||] [|"Image/Menu_backscreen_1200_900.bmp"|]  [||] [||] render ) render in
     let jouer    = Objet.create Wall (200,100) (0.0,0.0) (0.0,0.0) 10000 (Anim.create [||] [|"Image/jouer.bmp"|] [||] [||] render)  render in 
@@ -65,17 +75,16 @@ module Menu = struct
           loadPicture renderer (Objet.getPos tempQuitter) (Objet.getSize tempQuitter) (Objet.getTexture tempQuitter);
           Sdl.render_present renderer
         end
-    in
-    
+    in    
     (* gestion du jeu une fois lancé *)
-    let rec sub window renderer bool =
+    let rec sub window renderer bool son =
       refresh bool renderer;
       Sdl.delay 17l;
-      let temp  = evenement (window,renderer) bool in 
+      let temp  = evenement (window,renderer) bool son in 
       match temp with 
-      |Some b -> sub window renderer b
-      |None when bool = true -> ()
+      |Some b -> sub window renderer b son
+      |None when bool = true ->()
       |None -> exit 0 
-    in sub window render true 
+    in sub window render true son
 
 end

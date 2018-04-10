@@ -16,6 +16,7 @@ let mot = (id | ['.' ',' ';' ':' '(' ')'] | digit | float |espaces)+
 let nomFichier = (['a'-'z' 'A'-'Z' '_' '.' '/'] | digit)+
 let nomFichierBMP = nomFichier '.' "bmp" 
 let nomFichierTXT = nomFichier '.' "txt" 
+let nomFichierMP3 = nomFichier '.' "mp3"
   
 rule sceneText perso r = parse
     |"(*" (mot | espaces)+ "*)" {sceneText perso r lexbuf }
@@ -26,9 +27,17 @@ rule sceneText perso r = parse
 and sceneGrav perso r = parse
     |"Gravity" espaces (float as f) "\n\n"{
       let x = (background r lexbuf) in
+      let t = (theme lexbuf) in 
       let y = (entities perso r lexbuf ) in
-      (float_of_string f, x ,y )
+      (float_of_string f, x ,t,y)
     }
+
+and theme = parse
+  |"Theme" espaces (nomFichierMP3 as t) "\n\n" {t}
+  |_ as c {Printf.printf "Erreur : %c" c;raise Erreur_de_syntaxe}
+  |eof {raise Erreur_de_syntaxe}
+
+
     |_ as c {Printf.printf "Erreur : %c" c;raise Erreur_de_syntaxe}
     |eof {raise Erreur_de_syntaxe}
 	
@@ -150,9 +159,9 @@ let lex file pers r =
 	  |x::s -> sub2 s
     in
     let f = open_in file
-    in let (grav,back,list) = sceneText pers r (Lexing.from_channel f) in 
+    in let (grav,back,t,list) = sceneText pers r (Lexing.from_channel f) in 
        let () = close_in f in 
        let p = sub2 list in 
-       (list,grav,back,p) 
+       (list,grav,back,t,p) 
 }
 	

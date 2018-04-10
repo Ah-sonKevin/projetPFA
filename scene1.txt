@@ -4,6 +4,8 @@ Gravity 0.15
 
 Background Image/Background_2.bmp
 
+Theme Son/theme1.mp3
+
 Genre Personnage
 Position (100,300)
 Vitesse (2.0,2.0)

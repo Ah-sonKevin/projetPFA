@@ -3,10 +3,12 @@ open Objet
 open Anim
 open Collision
 open Camera
+open Sound
+
 
 module type Scene = sig
   type scene 
-  val create : Objet.objet list -> float -> Objet.objet -> Camera.camera ->  Sdl.renderer -> scene
+  val create : Objet.objet list -> float -> Objet.objet -> Camera.camera ->  Sdl.renderer -> Sound.sound-> string -> scene
   val getEntitie : scene -> Objet.objet list
   val getTexture : scene -> Sdl.texture list
   val getSize : scene -> (int*int)
@@ -23,12 +25,15 @@ module type Scene = sig
 end
 
 module Scene : Scene =  struct
-  type scene = {entities:Objet.objet list ; gravitie:float ; background : Objet.objet ; cam : Camera.camera ; renderer : Sdl.renderer}
+  type scene = {entities:Objet.objet list ; gravitie:float ; background : Objet.objet ;
+                cam : Camera.camera ; renderer : Sdl.renderer; son : Sound.sound}
 
   exception NoPerso
   exception ErreurScene
               
-  let create objs grav back camera render = {entities = objs ; gravitie = grav ; background = back ; cam = camera ;renderer = render}
+  let create objs grav back camera render son theme =
+    Sound.play_mus theme;
+    {entities = objs ; gravitie = grav ; background = back ; cam = camera ;renderer = render; son = son}
                                               
   let getEntitie scene = scene.entities
                            
@@ -44,20 +49,14 @@ module Scene : Scene =  struct
       |x::s -> getPers_rec s
     in 
     getPers_rec scene.entities
-
-  let genererScene t pers scene  =
-    let (l,g,b,p) = Lexer.lex t (Some pers ) scene.renderer  in
-    {entities = l  ; gravitie =  g; background = b;
-     cam =( Camera.create (Objet.getPos p) (Objet.getSize b) (Camera.getWindowSize scene.cam));
-     renderer = scene.renderer}
       
   let kickDead scene = 
     {scene with entities = List.fold_left (fun acc x ->  if ((Objet.getPV x) < 1) then acc else (x::acc)) [] scene.entities }
+
   let continue scene =(Objet.getPV (getPers scene))>0
 
   let suicide scene =
     {scene with entities = List.map (fun  x -> if (Objet.getGenre x) = Personnage then  Objet.kill x else x) scene.entities }
-
 
   let nextPos obj scene = 
     let (xs,ys) = Objet.getSpeed obj in
@@ -71,7 +70,7 @@ module Scene : Scene =  struct
         let (xs,ys) = Objet.getSpeed x in 
         let dir =
           if Objet.canJump x then
-            if xs > 1.0 then Anim.Droite else if xs < -1.0 then  Anim.Gauche else Milieu
+            if xs >= 1.0 then Anim.Droite else if xs <= -1.0 then  Anim.Gauche else Milieu
           else Anim.Saut
         in Objet.changeFrame x dir) l 
            
@@ -134,7 +133,10 @@ module Scene : Scene =  struct
 	     |Ennemi ->
 		let objTemp = (Objet.changePV (Objet.allowJump (Objet.move x (xNew,yNew))) (-30)) in
 		moveAll_sub s ((Objet.setSpeed (Objet.resetSpeed objTemp) ((0.0 +. xsNew),(scene.gravitie +. ysNew)))::listRes) temp
-	     |Door t -> genererScene t x scene 	
+	     |Door t -> 
+               let (l,g,b,t,p) = Lexer.lex t (Some x ) scene.renderer  in
+               create l g b (Camera.create (Objet.getPos p) (Objet.getSize b) (Camera.getWindowSize scene.cam))
+                 scene.renderer scene.son t
 	     |_ -> 
 		let objTemp = Objet.allowJump (Objet.move x (xNew,yNew)) in
 		moveAll_sub s ((Objet.setSpeed (Objet.resetSpeed objTemp) ((0.0 +. xsNew),(scene.gravitie +. ysNew)))::listRes) temp
@@ -169,7 +171,7 @@ module Scene : Scene =  struct
    let temp = (moveAll_sub (sort scene.entities [] [] [] []) [] scene.cam) in 
    {temp with entities = changeAnim temp.entities}
 
- let shoot scene (x,y) clock =
+ let shoot scene (x,y) clock =  
    let rec getPosPerso list =
      try
        match list with
@@ -181,6 +183,7 @@ module Scene : Scene =  struct
    if (clock != 0) then scene
    else
      begin
+       Sound.play_sound Sound.Tir scene.son ;
        let perso = (getPosPerso scene.entities) in
        let (xP,yP) = Objet.getPos perso in
        
@@ -207,7 +210,10 @@ module Scene : Scene =  struct
            if not (Objet.canJump x) then 
              (Objet.dmgGesture (Objet.setSpeed x (xs,0.0)))
 	   else 
-             Objet.dmgGesture (Objet.forbidJump (Objet.setSpeed x (xs,ys)))
+             begin
+               Sound.play_sound Sound.Saut scene.son;
+               Objet.dmgGesture (Objet.forbidJump (Objet.setSpeed x (xs,ys)))
+             end
 	 else 
            Objet.dmgGesture (Objet.setSpeed x (xs,ys))
        else

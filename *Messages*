@@ -1,0 +1,386 @@
+Loading 00debian-vars...done
+Loading /etc/emacs/site-start.d/50autoconf.el (source)...done
+Loading /etc/emacs/site-start.d/50dictionaries-common.el (source)...
+Loading debian-ispell...
+Loading /var/cache/dictionaries-common/emacsen-ispell-default.el (source)...done
+Loading debian-ispell...done
+Loading /var/cache/dictionaries-common/emacsen-ispell-dicts.el (source)...done
+Loading /etc/emacs/site-start.d/50dictionaries-common.el (source)...done
+Loading /etc/emacs/site-start.d/50pylint.el (source)...done
+Loading /etc/emacs/site-start.d/50python-docutils.el (source)...done
+Loading paren...done
+Loading tuareg-site-file...done
+For information about GNU Emacs and the GNU system, type C-h C-a.
+(New file)
+Mark set
+Saving file /home/debian-kevin/projetPFA/sound.mli...
+Wrote /home/debian-kevin/projetPFA/sound.mli
+Wrote /home/debian-kevin/projetPFA/sound.mli No errors
+(No files need saving)
+Compilation exited abnormally with code 10
+(No files need saving)
+Compilation exited abnormally with code 10
+Saving file /home/debian-kevin/projetPFA/sound.ml...
+Wrote /home/debian-kevin/projetPFA/sound.ml
+Wrote /home/debian-kevin/projetPFA/sound.ml (6 pending errors, use C-c C-x to jump)
+(No files need saving)
+Compilation exited abnormally with code 10
+This expression has type
+         int -> Tsdl_mixer.Mixer.chunk -> int -> int Tsdl_mixer.Mixer.result
+       but an expression was expected of type int
+Saving file /home/debian-kevin/projetPFA/sound.ml...
+Wrote /home/debian-kevin/projetPFA/sound.ml
+Wrote /home/debian-kevin/projetPFA/sound.ml (6 pending errors, use C-c C-x to jump)
+Signature mismatch:
+       ...
+       The value `play_sound' is required but not provided
+       File "sound.ml", line 11, characters 2-41: Expected declaration
+user-error: Minibuffer window is not active
+funcall: Buffer is read-only: #<buffer *Messages*>
+Saving file /home/debian-kevin/projetPFA/sound.mli...
+Wrote /home/debian-kevin/projetPFA/sound.mli
+Wrote /home/debian-kevin/projetPFA/sound.mli No errors
+Signature mismatch:
+       ...
+       The value `play_sound' is required but not provided
+       File "sound.ml", line 11, characters 2-41: Expected declaration
+(No changes need to be saved)
+(No changes need to be saved) (6 pending errors, use C-c C-x to jump)
+This expression has type
+         int -> Tsdl_mixer.Mixer.chunk -> int -> int Tsdl_mixer.Mixer.result
+       but an expression was expected of type int
+Signature mismatch:
+       ...
+       The value `play_sound' is required but not provided
+       File "sound.ml", line 11, characters 2-41: Expected declaration
+This expression has type int
+       This is not a function; it cannot be applied.
+Signature mismatch:
+       ...
+       The value `play_sound' is required but not provided
+       File "sound.ml", line 11, characters 2-41: Expected declaration
+Signature mismatch:
+       ...
+       The value `play_sound' is required but not provided
+       File "sound.ml", line 11, characters 2-41: Expected declaration
+Signature mismatch:
+       ...
+       The value `play_sound' is required but not provided
+       File "sound.ml", line 11, characters 2-41: Expected declaration
+Signature mismatch:
+       ...
+       The value `play_sound' is required but not provided
+       File "sound.ml", line 11, characters 2-41: Expected declaration
+Signature mismatch:
+       ...
+       The value `play_sound' is required but not provided
+       File "sound.ml", line 11, characters 2-41: Expected declaration
+Signature mismatch:
+       ...
+       The value `play_sound' is required but not provided
+       File "sound.ml", line 11, characters 2-41: Expected declaration
+Saving file /home/debian-kevin/projetPFA/sound.ml...
+Wrote /home/debian-kevin/projetPFA/sound.ml
+Wrote /home/debian-kevin/projetPFA/sound.ml (5 pending errors, use C-c C-x to jump)
+This expression has type
+         int -> Tsdl_mixer.Mixer.chunk -> int -> int Tsdl_mixer.Mixer.result
+       but an expression was expected of type int
+This expression has type int
+       This is not a function; it cannot be applied.
+This pattern matches values of type ('a, 'b) result
+       but a pattern was expected which matches values of type int
+Undo!
+Auto-saving...done
+Saving file /home/debian-kevin/projetPFA/sound.ml...
+Wrote /home/debian-kevin/projetPFA/sound.ml
+Wrote /home/debian-kevin/projetPFA/sound.ml (6 pending errors, use C-c C-x to jump)
+Signature mismatch:
+       ...
+       The value `play_sound' is required but not provided
+       File "sound.ml", line 11, characters 2-41: Expected declaration
+Signature mismatch:
+       ...
+       The value `play_sound' is required but not provided
+       File "sound.ml", line 11, characters 2-41: Expected declaration
+Saving file /home/debian-kevin/projetPFA/sound.ml...
+Wrote /home/debian-kevin/projetPFA/sound.ml
+Wrote /home/debian-kevin/projetPFA/sound.ml (5 pending errors, use C-c C-x to jump)
+This expression has type
+         int -> Tsdl_mixer.Mixer.chunk -> int -> int Tsdl_mixer.Mixer.result
+       but an expression was expected of type int
+This expression has type int
+       This is not a function; it cannot be applied.
+This pattern matches values of type ('a, 'b) result
+       but a pattern was expected which matches values of type int
+Unbound value e
+This pattern matches values of type ('a, 'b) result
+       but a pattern was expected which matches values of type int
+This expression has type
+         int -> Tsdl_mixer.Mixer.chunk -> int -> int Tsdl_mixer.Mixer.result
+       but an expression was expected of type int
+This expression has type int
+       This is not a function; it cannot be applied.
+Saving file /home/debian-kevin/projetPFA/sound.ml...
+Wrote /home/debian-kevin/projetPFA/sound.ml
+Wrote /home/debian-kevin/projetPFA/sound.ml No errors
+Compilation finished
+End of buffer [4 times]
+Auto-saving...done
+End of buffer [4 times]
+Auto-saving...done
+Auto-saving...done
+Mark set
+Saving file /home/debian-kevin/projetPFA/menu.ml...
+Wrote /home/debian-kevin/projetPFA/menu.ml
+Wrote /home/debian-kevin/projetPFA/menu.ml No errors
+Auto-saving...done
+Overwrite mode enabled
+Beginning of buffer
+Auto-saving...done
+Mark set
+Saving file /home/debian-kevin/projetPFA/main.ml...
+Wrote /home/debian-kevin/projetPFA/main.ml
+Wrote /home/debian-kevin/projetPFA/main.ml (2 pending errors, use C-c C-x to jump)
+<mouse-6> is undefined
+<double-mouse-6> is undefined
+<triple-mouse-6> is undefined [2 times]
+Undo! [10 times]
+Auto-saving...done
+Saving file /home/debian-kevin/projetPFA/main.ml...
+Wrote /home/debian-kevin/projetPFA/main.ml
+Wrote /home/debian-kevin/projetPFA/main.ml (2 pending errors, use C-c C-x to jump)
+Saving file /home/debian-kevin/projetPFA/sound.ml...
+Wrote /home/debian-kevin/projetPFA/sound.ml
+Wrote /home/debian-kevin/projetPFA/sound.ml (2 pending errors, use C-c C-x to jump)
+Overwrite mode disabled
+Mark set
+Saving file /home/debian-kevin/projetPFA/sound.ml...
+Wrote /home/debian-kevin/projetPFA/sound.ml
+Wrote /home/debian-kevin/projetPFA/sound.ml (1 pending errors, use C-c C-x to jump)
+Auto-saving...
+Syntax error after unclosed {, expecting `:'
+Saving file /home/debian-kevin/projetPFA/sound.ml...
+Wrote /home/debian-kevin/projetPFA/sound.ml
+Wrote /home/debian-kevin/projetPFA/sound.ml (2 pending errors, use C-c C-x to jump)
+Some record fields are undefined: soundMenu [4 times]
+Saving file /home/debian-kevin/projetPFA/sound.ml...
+Wrote /home/debian-kevin/projetPFA/sound.ml
+Wrote /home/debian-kevin/projetPFA/sound.ml (1 pending errors, use C-c C-x to jump)
+(No changes need to be saved)
+(No changes need to be saved) (1 pending errors, use C-c C-x to jump)
+This variant pattern is expected to have type effet
+       The constructor Menu does not belong to type effet
+Saving file /home/debian-kevin/projetPFA/sound.ml...
+Wrote /home/debian-kevin/projetPFA/sound.ml
+Wrote /home/debian-kevin/projetPFA/sound.ml No errors
+Tsdl_mixer.Mixer.chunk -> unit
+Saving file /home/debian-kevin/projetPFA/menu.ml...
+Wrote /home/debian-kevin/projetPFA/menu.ml
+Wrote /home/debian-kevin/projetPFA/menu.ml (3 pending errors, use C-c C-x to jump)
+Sound.Sound.effet -> Sound.Sound.sound -> unit
+This expression has type unit but an expression was expected of type
+         'a option
+This expression has type unit but an expression was expected of type
+         'a option
+Sound.Sound.effet -> Sound.Sound.sound -> unit
+This expression has type unit but an expression was expected of type
+         'a option
+This expression has type bool but an expression was expected of type
+         Sound.Sound.sound
+This expression has type bool but an expression was expected of type
+         Sound.Sound.sound
+Auto-saving...
+Mark set
+Auto-saving...done
+Auto-saving...
+Saving file /home/debian-kevin/projetPFA/menu.ml...
+Wrote /home/debian-kevin/projetPFA/menu.ml
+Wrote /home/debian-kevin/projetPFA/menu.ml (4 pending errors, use C-c C-x to jump)
+Unbound constructor Menu
+Unbound value son
+Hint: Did you mean sin?
+Unbound constructor Menu
+Saving file /home/debian-kevin/projetPFA/menu.ml...
+Wrote /home/debian-kevin/projetPFA/menu.ml
+Wrote /home/debian-kevin/projetPFA/menu.ml (4 pending errors, use C-c C-x to jump)
+Unbound value son
+Hint: Did you mean sin?
+Unbound constructor Sound.Menu
+Auto-saving...done
+Auto-saving...done
+Saving file /home/debian-kevin/projetPFA/main.ml...
+Wrote /home/debian-kevin/projetPFA/main.ml
+Wrote /home/debian-kevin/projetPFA/main.ml (2 pending errors, use C-c C-x to jump)
+Saving file /home/debian-kevin/projetPFA/main.ml...
+Wrote /home/debian-kevin/projetPFA/main.ml
+Wrote /home/debian-kevin/projetPFA/main.ml (2 pending errors, use C-c C-x to jump)
+Saving file /home/debian-kevin/projetPFA/scene.ml...
+Wrote /home/debian-kevin/projetPFA/scene.ml
+Wrote /home/debian-kevin/projetPFA/scene.ml (59 pending errors, use C-c C-x to jump)
+Saving file /home/debian-kevin/projetPFA/scene.ml...
+Wrote /home/debian-kevin/projetPFA/scene.ml
+Wrote /home/debian-kevin/projetPFA/scene.ml (2 pending errors, use C-c C-x to jump)
+Saving file /home/debian-kevin/projetPFA/scene.ml...
+Wrote /home/debian-kevin/projetPFA/scene.ml
+Wrote /home/debian-kevin/projetPFA/scene.ml (3 pending errors, use C-c C-x to jump)
+(No changes need to be saved)
+(No changes need to be saved) (3 pending errors, use C-c C-x to jump)
+Signature mismatch:
+       ...
+       Values do not match:
+         val create :
+           Objet.Objet.objet list ->
+           float ->
+           Objet.Objet.objet ->
+           Camera.Camera.camera -> Tsdl.Sdl.renderer -> scene
+       is not included in
+         val create :
+           Objet.Objet.objet list ->
+           float ->
+           Objet.Objet.objet ->
+           Camera.Camera.camera ->
+           Tsdl.Sdl.renderer -> Sound.Sound.sound -> scene
+       File "scene.ml", line 11, characters 2-112: Expected declaration
+       File "scene.ml", line 34, characters 6-12: Actual declaration
+Auto-saving...done
+Saving file /home/debian-kevin/projetPFA/scene.mli...
+Wrote /home/debian-kevin/projetPFA/scene.mli
+Wrote /home/debian-kevin/projetPFA/scene.mli No errors
+Auto-saving...
+End of buffer [2 times]
+(No changes need to be saved)
+(No changes need to be saved) (3 pending errors, use C-c C-x to jump)
+Wrote /home/debian-kevin/projetPFA/*compilation*
+Saving file /home/debian-kevin/projetPFA/scene.ml...
+Wrote /home/debian-kevin/projetPFA/scene.ml
+Wrote /home/debian-kevin/projetPFA/scene.ml (3 pending errors, use C-c C-x to jump)
+Signature mismatch:
+       ...
+       Values do not match:
+         val create :
+           Objet.Objet.objet list ->
+           float ->
+           Objet.Objet.objet ->
+           Camera.Camera.camera -> Tsdl.Sdl.renderer -> scene
+       is not included in
+         val create :
+           Objet.Objet.objet list ->
+           float ->
+           Objet.Objet.objet ->
+           Camera.Camera.camera ->
+           Tsdl.Sdl.renderer -> Sound.Sound.sound -> scene
+       File "scene.ml", line 11, characters 2-112: Expected declaration
+       File "scene.ml", line 34, characters 6-12: Actual declaration
+Signature mismatch:
+       ...
+       Values do not match:
+         val create :
+           Objet.Objet.objet list ->
+           float ->
+           Objet.Objet.objet ->
+           Camera.Camera.camera -> Tsdl.Sdl.renderer -> scene
+       is not included in
+         val create :
+           Objet.Objet.objet list ->
+           float ->
+           Objet.Objet.objet ->
+           Camera.Camera.camera ->
+           Tsdl.Sdl.renderer -> Sound.Sound.sound -> scene
+       File "scene.ml", line 11, characters 2-112: Expected declaration
+       File "scene.ml", line 34, characters 6-12: Actual declaration
+Signature mismatch:
+       ...
+       Values do not match:
+         val create :
+           Objet.Objet.objet list ->
+           float ->
+           Objet.Objet.objet ->
+           Camera.Camera.camera -> Tsdl.Sdl.renderer -> scene
+       is not included in
+         val create :
+           Objet.Objet.objet list ->
+           float ->
+           Objet.Objet.objet ->
+           Camera.Camera.camera ->
+           Tsdl.Sdl.renderer -> Sound.Sound.sound -> scene
+       File "scene.ml", line 11, characters 2-112: Expected declaration
+       File "scene.ml", line 34, characters 6-12: Actual declaration
+Some record fields are undefined: son
+Saving file /home/debian-kevin/projetPFA/scene.ml...
+Wrote /home/debian-kevin/projetPFA/scene.ml
+Wrote /home/debian-kevin/projetPFA/scene.ml (1 pending errors, use C-c C-x to jump)
+Some record fields are undefined: son [2 times]
+Saving file /home/debian-kevin/projetPFA/scene.ml...
+Wrote /home/debian-kevin/projetPFA/scene.ml
+Wrote /home/debian-kevin/projetPFA/scene.ml No errors
+Compilation exited abnormally with code 10
+Unbound constructor Menu
+Beginning of buffer [3 times]
+Auto-saving...done
+Unbound constructor Menu [2 times]
+Saving file /home/debian-kevin/projetPFA/menu.ml...
+Wrote /home/debian-kevin/projetPFA/menu.ml
+Wrote /home/debian-kevin/projetPFA/menu.ml (4 pending errors, use C-c C-x to jump)
+Unbound constructor Sound.Menu
+Sound.Sound.effet -> Sound.Sound.sound -> unit
+Unbound constructor Sound.Menu
+Unbound value son
+Hint: Did you mean sin?
+Saving file /home/debian-kevin/projetPFA/menu.ml...
+Wrote /home/debian-kevin/projetPFA/menu.ml
+Wrote /home/debian-kevin/projetPFA/menu.ml (6 pending errors, use C-c C-x to jump)
+Saving file /home/debian-kevin/projetPFA/menu.ml...
+Wrote /home/debian-kevin/projetPFA/menu.ml
+Wrote /home/debian-kevin/projetPFA/menu.ml (6 pending errors, use C-c C-x to jump)
+Unbound value b
+Saving file /home/debian-kevin/projetPFA/menu.ml...
+Wrote /home/debian-kevin/projetPFA/menu.ml
+Wrote /home/debian-kevin/projetPFA/menu.ml (4 pending errors, use C-c C-x to jump)
+This expression has type bool but an expression was expected of type
+         Sound.Sound.sound
+This expression has type bool but an expression was expected of type
+         Sound.Sound.sound
+Saving file /home/debian-kevin/projetPFA/menu.ml...
+Wrote /home/debian-kevin/projetPFA/menu.ml
+Wrote /home/debian-kevin/projetPFA/menu.ml (2 pending errors, use C-c C-x to jump)
+Unbound constructor Sound.Menu [2 times]
+Saving file /home/debian-kevin/projetPFA/menu.ml...
+Wrote /home/debian-kevin/projetPFA/menu.ml
+Wrote /home/debian-kevin/projetPFA/menu.ml (2 pending errors, use C-c C-x to jump)
+sig
+  val my_exit : Tsdl.Sdl.window * Tsdl.Sdl.renderer -> unit
+  val evenement : Tsdl.Sdl.window * Tsdl.Sdl.renderer -> bool -> bool option
+  val startMenu : Tsdl.Sdl.window -> Tsdl.Sdl.renderer -> unit
+end
+Auto-saving...done
+Beginning of buffer
+Mark set
+Saving file /home/debian-kevin/projetPFA/sound.ml...
+Wrote /home/debian-kevin/projetPFA/sound.ml
+Wrote /home/debian-kevin/projetPFA/sound.ml No errors
+Mark set
+Saving file /home/debian-kevin/projetPFA/sound.mli...
+Wrote /home/debian-kevin/projetPFA/sound.mli
+Wrote /home/debian-kevin/projetPFA/sound.mli No errors
+(No changes need to be saved)
+(No changes need to be saved) (2 pending errors, use C-c C-x to jump)
+Saving file /home/debian-kevin/projetPFA/menu.ml...
+Wrote /home/debian-kevin/projetPFA/menu.ml
+Wrote /home/debian-kevin/projetPFA/menu.ml (2 pending errors, use C-c C-x to jump)
+(No changes need to be saved)
+(No changes need to be saved) No errors
+(No changes need to be saved)
+(No changes need to be saved) No errors
+Sound.Sound.effet
+Saving file /home/debian-kevin/projetPFA/sound.mli...
+Wrote /home/debian-kevin/projetPFA/sound.mli
+Wrote /home/debian-kevin/projetPFA/sound.mli No errors
+Auto-saving...
+Saving file /home/debian-kevin/projetPFA/sound.ml...
+Wrote /home/debian-kevin/projetPFA/sound.ml
+Wrote /home/debian-kevin/projetPFA/sound.ml No errors
+(No changes need to be saved)
+(No changes need to be saved) (2 pending errors, use C-c C-x to jump)
+Saving file /home/debian-kevin/projetPFA/*compilation*...
+Wrote /home/debian-kevin/projetPFA/*compilation*
+Saving file /home/debian-kevin/projetPFA/*Messages*...
