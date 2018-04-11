@@ -4,7 +4,7 @@ Gravity 0.15
 
 Background Image/Menu_backscreen_1200_900.bmp
 
-Theme Son/theme2.mp3
+Theme Son/theme2.wav
 
 Genre Personnage
 Position (500,300)

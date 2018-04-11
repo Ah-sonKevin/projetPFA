@@ -120,6 +120,4 @@ module Objet : Objet = struct
     |Error (`Msg e) -> Sdl.log "Init load picture error: %s" e; exit 1
     |Ok (_,_,(x,y)) -> (x,y)
       
-
-    
 end

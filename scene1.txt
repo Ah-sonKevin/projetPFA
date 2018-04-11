@@ -4,7 +4,7 @@ Gravity 0.15
 
 Background Image/Background_2.bmp
 
-Theme Son/theme1.mp3
+Theme Son/theme1.wav
 
 Genre Personnage
 Position (100,300)

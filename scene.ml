@@ -5,7 +5,6 @@ open Collision
 open Camera
 open Sound
 
-
 module type Scene = sig
   type scene 
   val create : Objet.objet list -> float -> Objet.objet -> Camera.camera ->  Sdl.renderer -> Sound.sound-> string -> scene

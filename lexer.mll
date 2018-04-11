@@ -16,7 +16,7 @@ let mot = (id | ['.' ',' ';' ':' '(' ')'] | digit | float |espaces)+
 let nomFichier = (['a'-'z' 'A'-'Z' '_' '.' '/'] | digit)+
 let nomFichierBMP = nomFichier '.' "bmp" 
 let nomFichierTXT = nomFichier '.' "txt" 
-let nomFichierMP3 = nomFichier '.' "mp3"
+let nomFichierWAV = nomFichier '.' "wav"
   
 rule sceneText perso r = parse
     |"(*" (mot | espaces)+ "*)" {sceneText perso r lexbuf }
@@ -33,7 +33,7 @@ and sceneGrav perso r = parse
     }
 
 and theme = parse
-  |"Theme" espaces (nomFichierMP3 as t) "\n\n" {t}
+  |"Theme" espaces (nomFichierWAV as t) "\n\n" {t}
   |_ as c {Printf.printf "Erreur : %c" c;raise Erreur_de_syntaxe}
   |eof {raise Erreur_de_syntaxe}
 
