@@ -96,8 +96,7 @@ module Objet : Objet = struct
       begin
 	let temp = triggerInv obj in 
 	match obj.genre with
-	|Personnage -> {temp with pv = obj.pv+a}
-	|Ennemi     -> {temp with pv = obj.pv+a }
+	|Personnage | Ennemi -> {temp with pv = obj.pv+a}
 	|_          -> obj
       end
     else obj
