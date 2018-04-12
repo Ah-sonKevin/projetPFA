@@ -81,7 +81,7 @@ let jeu () =
             (* gestion du jeu une fois lancé *)
             let event = Sdl.Event.create() in     
             let rec menu window renderer = 
-              Sound.play_mus "Son/kingdomHeartMenuMusic2.wav";
+              Sound.play_mus "Son/kingdomHeartMenuMusic.wav";
               Menu.startMenu window renderer son;
               let scene = genererScene "scene1.txt" None render in 
               let rec game scene wesyindow renderer =

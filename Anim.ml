@@ -34,7 +34,6 @@ module Anim : Anim = struct
 	  animated = animBool
 	  }
 
-
   let getFrame ani = ani.frame
   let changeDir ani newDir =  {ani with dir = newDir; frame = 0 }
 

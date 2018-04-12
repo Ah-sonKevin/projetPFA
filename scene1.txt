@@ -64,7 +64,7 @@ VitesseMax (0.0,0.0)
 PV 1000
 Animation
 no
-Image/porte.bmp
+Image/porteDroit.bmp
 
 no
 no
