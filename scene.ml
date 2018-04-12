@@ -50,7 +50,7 @@ module Scene : Scene =  struct
     getPers_rec scene.entities
       
   let kickDead scene = 
-    {scene with entities = List.fold_left (fun acc x ->  if ((Objet.getPV x) < 1) then acc else (x::acc)) [] scene.entities }
+    {scene with entities = List.fold_left (fun acc x ->  if (((Objet.getPV x) < 1)&& (Objet.getGenre x)!=Personnage) then acc else (x::acc)) [] scene.entities }
 
   let continue scene =(Objet.getPV (getPers scene))>0
 
@@ -82,7 +82,6 @@ module Scene : Scene =  struct
      |[] -> reslist
      |x::s -> if x = obj then damageObjet obj s ((Objet.changePV x (-20))::reslist) else damageObjet obj s (x::reslist)
    in
-   
    
    let rec moveAll_sub listObjet listRes cam =
      match listObjet with
@@ -117,6 +116,8 @@ module Scene : Scene =  struct
 	end
      (* traitement des déplacements / collisions pour le personnage*)
      |x::s when ((Objet.getGenre x)=(Personnage)) ->
+       print_int (Objet.getPV x);
+       print_newline ();
         begin
 	  let temp = Camera.move (Objet.getPos x) cam in  
           match Collision.hit_boxPerso x (List.append listObjet listRes) (nextPos x scene) (sizeX,sizeY) with
@@ -126,7 +127,7 @@ module Scene : Scene =  struct
 	  (*gestion du cas où le perso/un ennemi est "sortie" de la scene*)
 	  |Some (obj,(xNew,yNew),(xsNew,ysNew)) when (obj = x) ->
 	     (* on tue le "x" en cours de traitement*)
-		 moveAll_sub s ((Objet.changePV x (-Objet.getPV x))::listRes) cam
+		 moveAll_sub s ((Objet.changePV x (-(Objet.getPV x)))::listRes) cam
           |Some (obj,(xNew,yNew),(xsNew,ysNew)) ->
 	     match ((Objet.getGenre obj)) with
 	     |Ennemi ->
@@ -171,35 +172,22 @@ module Scene : Scene =  struct
    {temp with entities = changeAnim temp.entities}
 
  let shoot scene (x,y) clock =  
-   let rec getPosPerso list =
-     try
-       match list with
-       |[] -> raise NoPerso 
-       |x::s when ((Objet.getGenre x)=(Personnage)) -> x
-       |x::s -> getPosPerso s
-     with NoPerso -> failwith "Pas de personnages dans la scene !"
-   in
    if (clock != 0) then scene
    else
      begin
        Sound.play_sound Sound.Tir scene.son ;
-       let perso = (getPosPerso scene.entities) in
+       let perso = (getPers scene) in
        let (xP,yP) = Objet.getPos perso in
-       
-       match (x,y) with
-       (* coordonnée d'apparition des projectile à determiné *)
-       |(0,(-1))   -> addEntitie scene (Objet.create Projectile (xP+11,yP-10) (0.0,(-.8.0))      (8.0,8.0) 10 (Anim.create [||] [|"Image/Samus_proj_10_10.bmp"|] [||] [||] scene.renderer) scene.renderer)
-       |((-1),0)   -> addEntitie scene (Objet.create Projectile (xP-10,yP+13) ((-.8.0),0.0)      (8.0,8.0) 10 (Anim.create [||] [|"Image/Samus_proj_10_10.bmp"|] [||] [||] scene.renderer) scene.renderer)
-       |(0,1)      -> addEntitie scene (Objet.create Projectile (xP+11,yP+40) (0.0,8.0)          (8.0,8.0) 10 (Anim.create [||] [|"Image/Samus_proj_10_10.bmp"|] [||] [||] scene.renderer) scene.renderer)
-       |(1,0)      -> addEntitie scene (Objet.create Projectile (xP+25,yP+13) (8.0,0.0)          (8.0,8.0) 10 (Anim.create [||] [|"Image/Samus_proj_10_10.bmp"|] [||] [||] scene.renderer) scene.renderer)
-       |(1,1)      -> addEntitie scene (Objet.create Projectile (xP+25,yP+40) (8.0,8.0)          (8.0,8.0) 10 (Anim.create [||] [|"Image/Samus_proj_10_10.bmp"|] [||] [||] scene.renderer) scene.renderer)
-       |(1,(-1))   -> addEntitie scene (Objet.create Projectile (xP+25,yP-10) (8.0,(-.8.0))      (8.0,8.0) 10 (Anim.create [||] [|"Image/Samus_proj_10_10.bmp"|] [||] [||] scene.renderer) scene.renderer)
-       |((-1),1)   -> addEntitie scene (Objet.create Projectile (xP-10,yP+40) ((-.8.0),8.0)      (8.0,8.0) 10 (Anim.create [||] [|"Image/Samus_proj_10_10.bmp"|] [||] [||] scene.renderer) scene.renderer)
-       |((-1),(-1))-> addEntitie scene (Objet.create Projectile (xP-10,yP-10) ((-.8.0),(-.8.0))  (8.0,8.0) 10 (Anim.create [||] [|"Image/Samus_proj_10_10.bmp"|] [||] [||] scene.renderer) scene.renderer)
-       |_          -> scene
+       let (xs,ys) = Objet.getSize perso in 
+       let decX = if x = 1 then xs else if x = 0 then xs/2 else 0 in
+       let decY = if y = 1 then ys else if y = 0 then ys/2 else 0 in
+       addEntitie scene (Objet.create Projectile 
+                           (xP+decX+x*10,yP+decY+y*10) 
+                           ((float_of_int x)*.(8.0),(float_of_int y)*.(8.0))  (8.0,8.0) 10 
+                           (Anim.create [||] [|"Image/Samus_proj_10_10.bmp"|] [||] [||] scene.renderer) 
+                           scene.renderer)
      end
-      
-        
+
  (* gestion des déplacements *)
  let movePersonnage scene (xs,ys)=
    let l = List.map 
