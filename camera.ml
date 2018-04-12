@@ -14,10 +14,12 @@ module Camera : Camera = struct
   let create pos sizeBack sizeW =
     {posCamera = pos;
      backgroundSize = sizeBack;
-     windowSize=sizeW  }
+     windowSize=sizeW}
 
   let move (x,y) cam = { cam with posCamera = (x,y)}
   let getWindowSize cam = cam.windowSize
+
+  (* convertie la position de l'objet sur la scene en la position de l'objet sur l'ecran*)
   let convertPosObjet (x,y) cam =
     let (xw,yw) = cam.windowSize in 
     let (xPer,yPer) = cam.posCamera in 

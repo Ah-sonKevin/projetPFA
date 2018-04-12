@@ -1,3 +1,4 @@
+
 open Tsdl
 open Objet
 open Anim
@@ -20,7 +21,9 @@ module type Scene = sig
   val movePersonnage : scene -> (float*float) -> scene
   val continue : scene -> bool
   val suicide : scene -> scene
-  val shoot : scene -> (int*int) -> int -> scene
+  val shoot : Objet.objet -> scene -> (int*int) ->  scene
+  val getPers : scene -> Objet.objet
+  val decreaseClock : scene -> scene
 end
 
 module Scene : Scene =  struct
@@ -34,12 +37,9 @@ module Scene : Scene =  struct
     Sound.play_mus theme;
     {entities = objs ; gravitie = grav ; background = back ; cam = camera ;renderer = render; son = son}
                                               
-  let getEntitie scene = scene.entities
-                           
+  let getEntitie scene = scene.entities                           
   let getSize scene = Objet.getSize scene.background 
-
   let addEntitie scene objet = {scene with entities =  (objet::scene.entities)}
-
   let getPers scene = 
     let rec getPers_rec l =
       match l with 
@@ -49,6 +49,7 @@ module Scene : Scene =  struct
     in 
     getPers_rec scene.entities
       
+  (*On enleve les objet qui sont mort, on conserve le personnage, car la scene a besoin de lui *)
   let kickDead scene = 
     {scene with entities = List.fold_left (fun acc x ->  if (((Objet.getPV x) < 1)&& (Objet.getGenre x)!=Personnage) then acc else (x::acc)) [] scene.entities }
 
@@ -62,7 +63,12 @@ module Scene : Scene =  struct
     let xs_int = int_of_float xs in
     let (xp,yp) = Objet.getPos obj in
     ((xs_int + xp) , ((int_of_float(ceil(scene.gravitie/.2.) +. ys) + yp)))
- 
+
+
+  let decreaseClock scene =
+    {scene with entities = List.map (fun x -> Objet.decreaseClock x) scene.entities}
+      
+  (*Animation du personnage *)
   let changeAnim l = 
     List.map 
       (fun x -> 
@@ -171,21 +177,23 @@ module Scene : Scene =  struct
    let temp = (moveAll_sub (sort scene.entities [] [] [] []) [] scene.cam) in 
    {temp with entities = changeAnim temp.entities}
 
- let shoot scene (x,y) clock =  
-   if (clock != 0) then scene
+ let shoot tireur scene (x,y) = 
+   if (not (Objet.canShoot tireur)) then scene
    else
      begin
        Sound.play_sound Sound.Tir scene.son ;
-       let perso = (getPers scene) in
-       let (xP,yP) = Objet.getPos perso in
-       let (xs,ys) = Objet.getSize perso in 
-       let decX = if x = 1 then xs else if x = 0 then xs/2 else 0 in
+       let (xP,yP) = Objet.getPos tireur in
+       let (xs,ys) = Objet.getSize tireur in
+       (*decalage afin que le tireur ne tire pas dans lui meme*)
+       let decX = if x = 1 then xs else if x = 0 then xs/2 else 0 in       
        let decY = if y = 1 then ys else if y = 0 then ys/2 else 0 in
-       addEntitie scene (Objet.create Projectile 
-                           (xP+decX+x*10,yP+decY+y*10) 
-                           ((float_of_int x)*.(8.0),(float_of_int y)*.(8.0))  (8.0,8.0) 10 
-                           (Anim.create [||] [|"Image/Samus_proj_10_10.bmp"|] [||] [||] scene.renderer) 
-                           scene.renderer)
+       let temp = List.fold_left (fun acc x -> if x = tireur then ((Objet.triggerShoot x)::acc) else (x::acc)) [] scene.entities in
+       let temp2 = {scene with entities = temp } in
+       addEntitie temp2 (Objet.create Projectile 
+                            (xP+decX+x*10,yP+decY+y*10) 
+                            ((float_of_int x)*.(8.0),(float_of_int y)*.(8.0))  (8.0,8.0) 10 
+                            (Anim.create [||] [|"Image/Samus_proj_10_10.bmp"|] [||] [||] scene.renderer) 
+                            scene.renderer)
      end
 
  (* gestion des déplacements *)
@@ -195,14 +203,14 @@ module Scene : Scene =  struct
        if (Objet.getGenre x) = Personnage then
  	 if ys < 0.0  then
            if not (Objet.canJump x) then 
-             (Objet.dmgGesture (Objet.setSpeed x (xs,0.0)))
+             Objet.setSpeed x (xs,0.0)
 	   else 
              begin
                Sound.play_sound Sound.Saut scene.son;
-               Objet.dmgGesture (Objet.forbidJump (Objet.setSpeed x (xs,ys)))
+               Objet.forbidJump (Objet.setSpeed x (xs,ys))
              end
 	 else 
-           Objet.dmgGesture (Objet.setSpeed x (xs,ys))
+           Objet.setSpeed x (xs,ys)
        else
          x
      ) scene.entities

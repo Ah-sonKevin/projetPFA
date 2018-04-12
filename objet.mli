@@ -14,21 +14,22 @@ module type Objet = sig
   val allowJump : objet -> objet
   val forbidJump : objet -> objet
   val canJump : objet -> bool
-  val dmgGesture : objet -> objet
   val getSpeed : objet -> float*float
-  val dmgObjet : objet -> objet
   val getPV : objet -> int
   val getSize : objet -> int*int
   val getTexture : objet -> Sdl.texture
   val isMovable : objet -> bool
   val changeFrame : objet -> Anim.direction -> objet
-  val setSize : objet -> int * int -> objet
   val getBaseSize : objet -> int*int
   val print : objet -> unit
   val getMaxSpeed : objet -> float * float
   val getAnim : objet ->Anim.anim
   val kill : objet -> objet
-
+  val canShoot : objet -> bool
+  val canBeDmg : objet -> bool 
+  val triggerShoot : objet -> objet
+  val triggerInv : objet -> objet
+  val decreaseClock : objet -> objet
 end
 
 module Objet : Objet

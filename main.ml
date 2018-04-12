@@ -16,7 +16,7 @@ let my_exit (window,renderer) scene =
   exit 0
 
 (*le jeu*)
-let evenement e exit_arg scene clock =
+let evenement e exit_arg scene =
   let evenementFenetre e exit_arg = 
   match Sdl.poll_event (Some e) with
   |true->
@@ -33,7 +33,7 @@ let evenement e exit_arg scene clock =
     end
   |false -> ()
   in 
-  (*evenementFenetre e exit_arg;*) 
+  evenementFenetre e exit_arg; 
   Sdl. pump_events ();
   let tab = Sdl.get_keyboard_state () in
   
@@ -52,7 +52,7 @@ let evenement e exit_arg scene clock =
     let xt = (tab.{(Sdl.get_scancode_from_key Sdl.K.d)})-(tab.{(Sdl.get_scancode_from_key Sdl.K.q)}) in
     let yt = (tab.{(Sdl.get_scancode_from_key Sdl.K.s)})-(tab.{(Sdl.get_scancode_from_key Sdl.K.z)}) in
     
-    let temp2 =  if ((xt != 0)||(yt!=0)) then Scene.shoot temp1 (xt,yt) clock else scene in
+    let temp2 =  if ((xt != 0)||(yt!=0)) then Scene.shoot (Scene.getPers scene) temp1 (xt,yt) else scene in
     Scene.movePersonnage temp2 (x,y)
   end
 
@@ -81,20 +81,21 @@ let jeu () =
             (* gestion du jeu une fois lancé *)
             let event = Sdl.Event.create() in     
             let rec menu window renderer = 
-              Sound.play_mus "Son/kingdomHeartMenuMusic.wav";
+              Sound.play_mus "Son/kingdomHeartMenuMusic2.wav";
               Menu.startMenu window renderer son;
               let scene = genererScene "scene1.txt" None render in 
-              let rec game scene window renderer clock =
+              let rec game scene wesyindow renderer =
                 Sdl.delay 17l;
-                let sceneEvent = evenement event (window,renderer) scene clock in
+		let sceneTemp = Scene.decreaseClock scene in 
+                let sceneEvent = evenement event (window,renderer) sceneTemp in
                 let sceneMove = Scene.moveAll sceneEvent in
 	        let sceneActive = Scene.kickDead sceneMove in
                 Scene.refresh scene sceneActive;
               if Scene.continue sceneActive then 
-                game sceneActive window renderer ((clock+1) mod 5)
+                game sceneActive window renderer
               else ()
               in
-              game scene window render 0;
+              game scene window render;
               menu window renderer 
             in menu window render
                

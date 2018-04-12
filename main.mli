@@ -7,7 +7,7 @@ open Scene
 val my_exit : (Sdl.window * Sdl.renderer) ->  Scene.scene -> unit
 
 (* Gestion des entré clavier/souris  *)
-val evenement : Sdl.event -> (Sdl.window * Sdl.renderer) -> Scene.scene -> int -> Scene.scene
+val evenement : Sdl.event -> (Sdl.window * Sdl.renderer) -> Scene.scene ->  Scene.scene
 
 val jeu : unit -> unit
 
