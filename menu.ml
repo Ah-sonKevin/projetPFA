@@ -24,9 +24,6 @@ module Menu = struct
     Sdl. pump_events ();
     let tab = Sdl.get_keyboard_state () in    
     begin 
-      if ((tab.{(Sdl.get_scancode_from_key Sdl.K.q)} = 1)) then
-        let _ = exit 0 in None
-      else
       if ((tab.{(Sdl.get_scancode_from_key Sdl.K.return)} = 1) || ((tab.{(Sdl.get_scancode_from_key Sdl.K.space)} = 1))) then 
         begin
           Sound.play_sound Sound.MenuO son;

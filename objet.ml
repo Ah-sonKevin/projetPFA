@@ -9,8 +9,10 @@ module type Objet = sig
   val changePV : objet -> int -> objet
   val setSpeed : objet -> (float*float) -> objet
   val resetSpeed : objet -> objet
+  val reposition : objet -> int*int -> float*float -> objet
   val getGenre : objet -> genre_objet
   val getPos : objet -> int*int
+  val getOldPos : objet -> int*int
   val allowJump : objet -> objet
   val forbidJump : objet -> objet
   val canJump : objet -> bool
@@ -25,7 +27,7 @@ module type Objet = sig
   val getMaxSpeed : objet -> float * float
   val getAnim : objet -> Anim.anim
   val kill : objet -> objet
-  val  canShoot : objet -> bool
+  val canShoot : objet -> bool
   val canBeDmg : objet -> bool 
   val triggerShoot : objet -> objet
   val triggerInv : objet -> objet
@@ -34,9 +36,7 @@ end
  
 module Objet : Objet = struct
   type genre_objet = Personnage|Ennemi|Plateforme|Wall|Door of string|Background|Projectile
-  type objet = {genre : genre_objet; position : int*int; can_jump : bool; vitesse : float * float ;
-                maxSpeed : float*float; pv : int;baseSize : int*int ; texture : Anim.anim;
-	       clockInv : int; clockShoot : int}
+  type objet = {genre : genre_objet; position : int*int; old_pos : int*int; can_jump : bool; vitesse : float * float ; maxSpeed : float*float; pv : int;baseSize : int*int ; texture : Anim.anim; clockInv : int; clockShoot : int}
     
   let create genre_o pos vit maxvit hp textu renderer  =
     let sizeT t=
@@ -46,6 +46,7 @@ module Objet : Objet = struct
     in
     {genre = genre_o;
      position = pos;
+     old_pos = pos;
      can_jump = true;
      vitesse = vit;
      maxSpeed = maxvit;
@@ -57,9 +58,9 @@ module Objet : Objet = struct
     }
       
   let canShoot p = p.clockShoot = 0
-  let canBeDmg p = p.clockInv =0
+  let canBeDmg p = p.clockInv = 0
   let triggerShoot p = {p with clockShoot = 5}
-  let triggerInv p = {p with clockInv = 5}
+  let triggerInv p = {p with clockInv = 40}
   let decreaseClock p =
     {p with clockShoot = if p.clockShoot > 0 then p.clockShoot -1 else 0;
       clockInv = if p.clockInv > 0 then p.clockInv -1 else 0}
@@ -87,25 +88,28 @@ module Objet : Objet = struct
 
   let resetSpeed obj = {obj with vitesse =(0.0,0.0)}
 
+  let reposition obj (x,y) (xs,ys) = {obj with position = (x,y); vitesse = (xs,ys)}
+
   let isDmgType obj =
-    (((obj.genre) = Personnage) || ((obj.genre) = Ennemi))
+    (((obj.genre) = Personnage) || ((obj.genre) = Ennemi) || ((obj.genre) = Projectile))
     
     
   let changePV obj a =
     if ((isDmgType obj) && (canBeDmg obj)) then
       begin
-	let temp = triggerInv obj in 
 	match obj.genre with
-	|Personnage -> {temp with pv = obj.pv+a}
-	|Ennemi     -> {temp with pv = obj.pv+a }
+	|Personnage -> let temp = triggerInv obj in
+		       {temp with pv = obj.pv+a}
+	|Ennemi     -> {obj with pv = obj.pv+a}
 	|_          -> obj
       end
     else obj
     
-  let move obj (x,y)  = {obj with position = (x,y)}
+  let move obj (x,y)  = {obj with position = (x,y); old_pos = obj.position}
 	
   let getGenre obj = obj.genre      
   let getPos obj = obj.position
+  let getOldPos obj = obj.old_pos
   let allowJump obj = {obj with can_jump = true}
   let forbidJump obj = {obj with can_jump = false}
   let canJump obj = obj.can_jump      
