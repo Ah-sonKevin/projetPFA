@@ -1,0 +1,22 @@
+Scene 2
+
+Gravity 0.05
+
+Background Image/back3.bmp
+
+Theme Son/theme2.wav
+
+Genre Personnage
+Position (500,100)
+
+Genre Door scene3.txt
+Position (500,8000)
+Vitesse (0.0,0.0)
+VitesseMax (0.0,0.0)
+PV 1000
+Animation
+no
+Image/porteDroit.bmp
+
+no
+no
