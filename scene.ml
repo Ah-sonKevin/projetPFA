@@ -83,7 +83,7 @@ module Scene : Scene =  struct
         in Objet.changeFrame x dir) l 
       
   let collision_All scene =
-    let temp = {scene with entities = List.map (fun obj -> (List.fold_left (Collision.collision) obj (getEntitie (removeEntitie scene obj)))) (getEntitie scene)} in
+      
     let out_of_bound obj =
       match obj with
       |o when (Objet.isMovable o = false) -> obj
@@ -96,6 +96,7 @@ module Scene : Scene =  struct
 	 then Objet.kill obj
 	 else obj
     in
+    let temp = {scene with entities = List.map (fun obj -> (List.fold_left (Collision.collision) obj (getEntitie (removeEntitie scene obj)))) (getEntitie scene)} in
     {temp with entities = (List.map (out_of_bound) (getEntitie temp))}
       
   (* gestion des déplacements *)
@@ -123,8 +124,38 @@ module Scene : Scene =  struct
       (* Ne rien faire pour les autres objets *)
       |x2::s -> moveAll_sub s (x2::listRes) cam
     in
-    let temp = (collision_All (moveAll_sub  scene.entities [] scene.cam)) in 
-    {temp with entities = changeAnim temp.entities}
+
+    let doorCollision scene =
+      let perso = getPers scene in
+      let (x1,y1) = Objet.getPos perso in
+      let (w1,h1) = Objet.getBaseSize perso in
+      let rectPerso = Sdl.Rect.create x1 y1 w1 h1 in
+      let rec sub obj list =
+	match list with
+	|[]-> None
+	|d::s ->
+	   match (Objet.getGenre d) with
+	   |Door t ->
+	      let (x,y) = Objet.getPos d in
+	      let (w,h) = Objet.getBaseSize d in
+	      let rectDoor = Sdl.Rect.create x y w h in
+	      if Sdl.has_intersection rectPerso rectDoor
+	      then
+		let (l,g,b,t,p) = Lexer.lex t (Some perso ) scene.renderer  in
+		Some (create l g b (Camera.create (Objet.getPos p) (Objet.getSize b) (Camera.getWindowSize scene.cam)) scene.renderer scene.son t)
+	      else sub obj s
+	   |_ -> sub obj s
+      in
+      sub perso scene.entities
+    in
+
+    
+    let temp1 = (moveAll_sub  scene.entities [] scene.cam) in
+    match doorCollision temp1 with
+    |None ->
+       let temp2 = {temp1 with entities = changeAnim temp1.entities} in
+       collision_All temp2
+    |Some (sc) -> sc 
       
   let shoot tireur scene (x,y) = 
     if (not (Objet.canShoot tireur)) then scene
@@ -132,7 +163,7 @@ module Scene : Scene =  struct
       begin
 	Sound.play_sound Sound.Tir scene.son ;
 	let (xP,yP) = Objet.getPos tireur in
-	let (xs,ys) = Objet.getSize tireur in
+	let (xs,ys) = Objet.getBaseSize tireur in
 	(*decalage afin que le tireur ne tire pas dans lui meme*)
 	let decX = if x = 1 then xs else if x = 0 then xs/2 else 0 in       
 	let decY = if y = 1 then ys else if y = 0 then ys/2 else 0 in
@@ -140,7 +171,7 @@ module Scene : Scene =  struct
 	let temp2 = {scene with entities = temp } in
 	addEntitie temp2 (Objet.create Projectile 
                             (xP+decX+x*10,yP+decY+y*10) 
-                            ((float_of_int x)*.(8.0),(float_of_int y)*.(8.0))  (8.0,8.0) 10 
+                            ((float_of_int x)*.(9.0),(float_of_int y)*.(9.0))  (9.0,9.0) 10 
                             (Anim.create [||] [|"Image/Samus_proj_10_10.bmp"|] [||] [||] scene.renderer) 
                             scene.renderer)
       end
@@ -149,7 +180,7 @@ module Scene : Scene =  struct
   let movePersonnage scene (xs,ys)=
     let l = List.map 
       (fun x ->
-	if (Objet.getGenre x) = Personnage then
+	if (((Objet.getGenre x) = Personnage) && (Objet.canBeDmg x)) then
  	  if ys < 0.0  then
             if not (Objet.canJump x) then 
               Objet.setSpeed x (xs,0.0)

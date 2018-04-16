@@ -45,7 +45,7 @@ module Menu = struct
             Some bool
     end
       
-  let startMenu window render son =   
+  let startMenu window render son =
     (*chargement des éléments de jeu*)
     let background = Objet.create Background (0,0) (0.0,0.0) (0.0,0.0) 10000  (Anim.create [||] [|"Image/Menu_backscreen_1200_900.bmp"|]  [||] [||] render ) render in
     let jouer    = Objet.create Wall (200,100) (0.0,0.0) (0.0,0.0) 10000 (Anim.create [||] [|"Image/jouer.bmp"|] [||] [||] render)  render in 
@@ -85,4 +85,3 @@ module Menu = struct
     in sub window render true son
 
 end
-
