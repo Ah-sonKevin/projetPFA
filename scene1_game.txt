@@ -1,0 +1,59 @@
+Scene 1
+
+Gravity 0.15
+
+Background Image/Background_2.bmp
+
+Theme Son/theme1.wav
+
+Genre Personnage
+Position (500,300)
+
+Genre Wall
+Position (0,600)
+Vitesse (0.0,0.0)
+VitesseMax (0.0,0.0)
+PV 1000
+Animation
+no
+Image/Plateforme.bmp
+
+no
+no
+
+Genre Ennemi
+Position (30,450)
+Vitesse (2.0,0.0)
+VitesseMax (5.0,10.0)
+PV 100
+Animation
+no
+Image/ennemies/ennemi_test_25_21.bmp
+
+no
+no
+
+
+Genre Plateforme
+Position (200,100)
+Vitesse (0.0,0.0)
+VitesseMax (0.0,0.0)
+PV 1000
+Animation
+no
+Image/Plateforme.bmp
+
+no
+no
+
+Genre Door scene2.txt
+Position (0,500)
+Vitesse (0.0,0.0)
+VitesseMax (0.0,0.0)
+PV 1000
+Animation
+no
+Image/porteDroit.bmp
+
+no
+no
