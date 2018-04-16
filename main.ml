@@ -33,7 +33,7 @@ let evenement e exit_arg scene =
     end
   |false -> ()
   in 
-  evenementFenetre e exit_arg; 
+  (*evenementFenetre e exit_arg; *)
   Sdl. pump_events ();
   let tab = Sdl.get_keyboard_state () in
   
