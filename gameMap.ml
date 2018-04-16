@@ -34,7 +34,7 @@ module GameMap : GameMap  = struct
 	 end
       |false -> ()
     in 
-    evenementFenetre e (window,render); 
+    (*evenementFenetre e (window,render); *)
     Sdl. pump_events ();
     let tab = Sdl.get_keyboard_state () in    
     begin
@@ -51,6 +51,11 @@ module GameMap : GameMap  = struct
     |Error (`Msg e) -> Sdl.log "Init loading error: %s" e; exit 1
     |Ok () ->  ()
 
+  let drawFillRect (x1,y1) (w,h) render =
+    match Sdl.render_fill_rect render (Some (Sdl.Rect.create x1 y1  w h)) with
+    |Error (`Msg e) -> Sdl.log "Init loading error: %s" e; exit 1
+    |Ok () ->  ()
+
   let chooseColor  r g b a  render =
     match (Sdl.set_render_draw_color render r g b a) with
     |Error (`Msg e) -> Sdl.log "Init loading error: %s" e; exit 1
@@ -62,7 +67,9 @@ module GameMap : GameMap  = struct
     |Wall ->   chooseColor 255 255 255 255  render
     |Door _ -> chooseColor 0 0 255 255 render
     |Ennemi -> chooseColor 255 0 0 255 render
-    |Plateforme -> chooseColor 100 100 100 255 render 
+    |Plateforme -> chooseColor 100 0 100 255 render 
+    |Projectile -> chooseColor 0 0 0 255 render
+    | _ -> ()
     
       
 
@@ -76,14 +83,16 @@ module GameMap : GameMap  = struct
       selectColor (Objet.getGenre x) render;
       let (xo,yo) = Objet.getPos x in
       let (wo,ho) = Objet.getSize x in
-      drawRect (50 + (int_of_float (xo*.ratioX)), 50 + (int_of_float (yo*.ratioY))) (wo *. ratioX, ho *. ratioY) render) (Scene.getEntitie scene)
+      drawFillRect (50 + (int_of_float ((float_of_int xo)*.ratioX)), 50 + (int_of_float ((float_of_int yo)*.ratioY)))
+       (int_of_float ((float_of_int wo) *. ratioX),(int_of_float  ((float_of_int ho) *. ratioY))) render) (Scene.getEntitie scene)
 	
     
     
       
   let startMap window render scene =
     (*chargement des éléments de jeu*)
-    let background = Objet.create Background (0,0) (0.0,0.0) (0.0,0.0) 10000  (Anim.create [||] [|"Image/map.bmp"|]  [||] [||] render ) render in    
+    let background = Objet.create Background (0,0) (0.0,0.0) (0.0,0.0) 10000 
+                       (Anim.create [||] [|"Image/map.bmp"|]  [||] [||] render ) render in    
     let refresh renderer =
       match Sdl.render_clear renderer with
       |Error (`Msg e) -> Sdl.log "Init render error: %s" e; exit 1

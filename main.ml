@@ -34,7 +34,7 @@ let evenement e w r scene =
        end
     |false -> ()
   in 
-  evenementFenetre e (w,r); 
+  (*evenementFenetre e (w,r); *)
   Sdl. pump_events ();
   let tab = Sdl.get_keyboard_state () in  
   begin 
