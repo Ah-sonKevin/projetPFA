@@ -194,8 +194,7 @@ module Scene : Scene =  struct
        begin
 	 loadPicture sceneNew.renderer (Camera.convertPosBackground sceneNew.cam)
            (Objet.getSize sceneNew.background) (Objet.getTexture sceneNew.background);
-	 refresh_sub sceneNew.entities;
-	 Sdl.render_present sceneNew.renderer
+	 refresh_sub sceneNew.entities	 
        end
 	 
   let getTexture scene =

@@ -93,6 +93,8 @@ let jeu () =
                 let sceneMove = Scene.moveAll sceneEvent in
 	        let sceneActive = Scene.kickDead sceneMove in
                 Scene.refresh scene sceneActive;
+                GameMap.startMapMini window renderer scene;
+                Sdl.render_present renderer;
               if Scene.continue sceneActive then 
                 game sceneActive window renderer
               else ()
