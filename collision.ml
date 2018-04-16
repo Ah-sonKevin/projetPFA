@@ -80,7 +80,7 @@ module Collision : Collision = struct
 		    (* face 1 rencontre en premiere *)
 		    then 1
 		    (* face 4 rencontre en premier *)
-		    else begin Printf.printf "tbaisé 8 \n\n" ;4 end
+		    else 4 
 		  end
 		(* cas 1 *)
 		else 1
@@ -93,7 +93,7 @@ module Collision : Collision = struct
 	    (* cas 2 *)
 	    then 2
 	    (* cas 4 *)
-	    else begin Printf.printf "tbaisé d->4 \n\n" ;4 end
+	    else 4 
 	  end
       end
     else
@@ -124,7 +124,7 @@ module Collision : Collision = struct
 		    (* face 3 rencontre en premiere *)
 		    then 3
 		    (* face 4 rencontre en premier *)
-		    else begin Printf.printf "tbaisé 7->4 \n\n" ;4 end
+		    else 4 
 		  end
 		(* cas 3 *)
 		else 3
@@ -137,7 +137,7 @@ module Collision : Collision = struct
 	    (* cas 2 *)
 	    then 2
 	    (* cas 4 *)
-	    else begin Printf.printf "tbaisé g->4 \n\n" ;4 end
+	    else 4 
 	  end
       end
     
@@ -163,8 +163,6 @@ module Collision : Collision = struct
       |_ -> failwith "ya que 4 face à un rectangle"
 	 
   let collision_perso p obj =
-    Objet.print p;
-    Objet.print obj;
     match (Objet.getGenre obj) with
     |Ennemi     ->
        let (xs,ys) = Objet.getSpeed p in

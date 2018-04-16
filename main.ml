@@ -5,6 +5,7 @@ open Camera
 open Menu
 open Tsdl_mixer
 open Sound
+open GameMap
 
 exception ErreurScene
 
@@ -16,38 +17,39 @@ let my_exit (window,renderer) scene =
   exit 0
 
 (*le jeu*)
-let evenement e exit_arg scene =
+let evenement e w r scene =
   let evenementFenetre e exit_arg = 
-  match Sdl.poll_event (Some e) with
-  |true->
-    begin
-      match Sdl.Event.enum (Sdl.Event.get e Sdl.Event.typ) with
-      |`Window_event ->
-        begin
-          let nom = Sdl.Event.window_event_enum (Sdl.Event.get e Sdl.Event.window_event_id ) in
-          match nom with
-          |`Close -> my_exit exit_arg scene
-          |_ -> ()
-        end
-      | _ -> ()
-    end
-  |false -> ()
+    match Sdl.poll_event (Some e) with
+    |true->
+       begin
+	 match Sdl.Event.enum (Sdl.Event.get e Sdl.Event.typ) with
+	 |`Window_event ->
+            begin
+              let nom = Sdl.Event.window_event_enum (Sdl.Event.get e Sdl.Event.window_event_id ) in
+              match nom with
+              |`Close -> my_exit exit_arg scene
+              |_ -> ()
+            end
+	 | _ -> ()
+       end
+    |false -> ()
   in 
-  (*evenementFenetre e exit_arg; *)
+  evenementFenetre e (w,r); 
   Sdl. pump_events ();
-  let tab = Sdl.get_keyboard_state () in
-  
+  let tab = Sdl.get_keyboard_state () in  
   begin 
     if tab.{(Sdl.get_scancode_from_key Sdl.K.escape)}=1 then
       exit 0;
+    if tab.{(Sdl.get_scancode_from_key Sdl.K.m)}=1 then
+      GameMap.startMap w r scene;
     let temp1 = 
       if tab.{(Sdl.get_scancode_from_key Sdl.K.r)}=1 then
-        Scene.suicide scene
+	Scene.suicide scene
       else
-        scene
+	scene
     in
     let x =  (0.2 *. (float_of_int (tab.{(Sdl.get_scancode_from_key Sdl.K.right)})))
-             -. 0.2 *. float_of_int (tab.{(Sdl.get_scancode_from_key Sdl.K.left)}) in
+      -. 0.2 *. float_of_int (tab.{(Sdl.get_scancode_from_key Sdl.K.left)}) in
     let y = float_of_int (-20 * tab.{(Sdl.get_scancode_from_key Sdl.K.up )}) in
     let xt = (tab.{(Sdl.get_scancode_from_key Sdl.K.d)})-(tab.{(Sdl.get_scancode_from_key Sdl.K.q)}) in
     let yt = (tab.{(Sdl.get_scancode_from_key Sdl.K.s)})-(tab.{(Sdl.get_scancode_from_key Sdl.K.z)}) in
@@ -87,7 +89,7 @@ let jeu () =
               let rec game scene wesyindow renderer =
                 Sdl.delay 17l;
 		let sceneTemp = Scene.decreaseClock scene in 
-                let sceneEvent = evenement event (window,renderer) sceneTemp in
+                let sceneEvent = evenement event window renderer sceneTemp in
                 let sceneMove = Scene.moveAll sceneEvent in
 	        let sceneActive = Scene.kickDead sceneMove in
                 Scene.refresh scene sceneActive;
