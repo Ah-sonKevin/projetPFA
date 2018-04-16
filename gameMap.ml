@@ -72,8 +72,6 @@ module GameMap : GameMap  = struct
     |Projectile -> chooseColor 0 0 0 255 render
     | _ -> ()
     
-      
-
   let draw scene window render =
     let (ws,hs) = Scene.getSize scene in
     let (sw1,sw2) = Sdl.get_window_size window in
@@ -87,19 +85,34 @@ module GameMap : GameMap  = struct
       drawFillRect (50 + (int_of_float ((float_of_int xo)*.ratioX)), 50 + (int_of_float ((float_of_int yo)*.ratioY)))
        (int_of_float ((float_of_int wo) *. ratioX),(int_of_float  ((float_of_int ho) *. ratioY))) render) (Scene.getEntitie scene)
 
-
   let drawMini scene window render =
-    let (ws,hs) = Scene.getSize scene in
-    let (sw1,sw2) = (200.0,140.0)in
-    drawRect (0,0) (200,140) render;
+    let (wst,hst) = Scene.getSize scene in
+    let (ws,hs) = (wst/2,hst/2) in
+    let (sw1,sw2) = (300.0,210.0)in
+    drawRect (0,0) (300,210) render;
     let ratioX = sw1 /. (float_of_int ws) in
     let ratioY = sw2 /. (float_of_int hs) in
+    let (xPer,yPer) = Objet.getPos (Scene.getPers scene ) in
     List.iter (fun x ->
       selectColor (Objet.getGenre x) render;
       let (xo,yo) = Objet.getPos x in
       let (wo,ho) = Objet.getSize x in
-      drawFillRect ( (int_of_float ((float_of_int xo)*.ratioX)), (int_of_float ((float_of_int yo)*.ratioY)))
-       (int_of_float ((float_of_int wo) *. ratioX),(int_of_float  ((float_of_int ho) *. ratioY))) render) (Scene.getEntitie scene)
+      let xPers = 
+        if xPer >ws - 300/2 then  ws - 300/2
+        else if xPer < 300/2 then 300/2 else xPer
+      in
+      let (yPers) = 
+        if yPer >hs - 210/2 then 
+          (hs - 210/2)
+        else if yPer < 210/2 then (210/2) else yPer
+      in
+      let (rx,ry) = (xo+(-xPers+300/2), yo+(-yPers+210/2))
+      in
+      drawFillRect ((int_of_float ((float_of_int rx)*.ratioX)), (int_of_float ((float_of_int ry)*.ratioY)))
+       (int_of_float ((float_of_int wo) *. ratioX),(int_of_float  ((float_of_int ho) *. ratioY)))
+      render) (Scene.getEntitie scene)
+
+
 
   let startMap window render scene =
     (*chargement des éléments de jeu*)
@@ -137,7 +150,7 @@ module GameMap : GameMap  = struct
   let startMapMini window render scene =
     (*chargement des éléments de jeu*)
     let background = Objet.create Background (0,0) (0.0,0.0) (0.0,0.0) 10000 
-                       (Anim.create [||] [|"Image/map200.bmp"|]  [||] [||] render ) render in    
+                       (Anim.create [||] [|"Image/map300.bmp"|]  [||] [||] render ) render in    
     let refresh renderer =
       let loadPicture renderer (x1,y1) (w,h) texture =
         let frag_rect = Sdl.Rect.create 0 0 w h in

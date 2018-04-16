@@ -5,6 +5,7 @@ open Camera
 open Menu
 open Tsdl_mixer
 open Sound
+open GameMap
 
 exception ErreurScene
 
@@ -16,7 +17,7 @@ let my_exit (window,renderer) scene =
   exit 0
 
 (*le jeu*)
-let evenement e exit_arg scene =
+let evenement e window renderer scene =
   let evenementFenetre e exit_arg = 
   match Sdl.poll_event (Some e) with
   |true->
@@ -40,6 +41,8 @@ let evenement e exit_arg scene =
   begin 
     if tab.{(Sdl.get_scancode_from_key Sdl.K.escape)}=1 then
       exit 0;
+    if tab.{(Sdl.get_scancode_from_key Sdl.K.m)}=1 then
+      GameMap.startMap window renderer scene;
     let temp1 = 
       if tab.{(Sdl.get_scancode_from_key Sdl.K.r)}=1 then
         Scene.suicide scene
@@ -87,7 +90,7 @@ let jeu () =
               let rec game scene wesyindow renderer =
                 Sdl.delay 17l;
 		let sceneTemp = Scene.decreaseClock scene in 
-                let sceneEvent = evenement event (window,renderer) sceneTemp in
+                let sceneEvent = evenement event  window renderer sceneTemp in
                 let sceneMove = Scene.moveAll sceneEvent in
 	        let sceneActive = Scene.kickDead sceneMove in
                 Scene.refresh scene sceneActive;
