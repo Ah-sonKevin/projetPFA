@@ -2,7 +2,7 @@ open Tsdl
 open Anim
 
 module type Objet = sig
-  type genre_objet = Personnage|Ennemi|Plateforme|Wall|Door of string |Background|Projectile
+  type genre_objet = Personnage|Ennemi|Plateforme of int * int |Wall of int * int|Door of string |Background|Projectile
   type objet
   val create : genre_objet -> int*int -> float*float -> float*float -> int -> Anim.anim -> Sdl.renderer -> objet
   val move : objet -> (int*int) -> objet
@@ -35,8 +35,9 @@ module type Objet = sig
 end
  
 module Objet : Objet = struct
-  type genre_objet = Personnage|Ennemi|Plateforme|Wall|Door of string|Background|Projectile
-  type objet = {genre : genre_objet; position : int*int; old_pos : int*int; can_jump : bool; vitesse : float * float ; maxSpeed : float*float; pv : int;baseSize : int*int ; texture : Anim.anim; clockInv : int; clockShoot : int}
+  type genre_objet = Personnage|Ennemi|Plateforme of int * int |Wall of int * int |Door of string|Background|Projectile
+  type objet = {genre : genre_objet; position : int*int; old_pos : int*int; can_jump : bool; vitesse : float * float ; maxSpeed : float*float; pv : int;
+	baseSize : int*int ; texture : Anim.anim; clockInv : int; clockShoot : int}
     
   let create genre_o pos vit maxvit hp textu renderer  =
     let sizeT t=
@@ -53,7 +54,7 @@ module Objet : Objet = struct
      pv = hp;
      clockInv = 0;
      clockShoot = 0;
-     texture = textu; 
+     texture = textu;     
      baseSize = sizeT (Anim.getTexture textu); (*taille de base du personnage, utilisé lors des collision *)
     }
       
@@ -121,11 +122,15 @@ module Objet : Objet = struct
   let isMovable obj = if (obj.genre = Personnage) || (obj.genre = Ennemi) || (obj.genre = Projectile) then true else false
   let changeFrame obj dir = {obj with texture = Anim.changeFrame obj.texture dir}
 
-  let getSize obj = 
-    let x = Anim.getTexture obj.texture in
-   match Sdl.query_texture x with 
-    |Error (`Msg e) -> Sdl.log "Init load picture error: %s" e; exit 1
-    |Ok (_,_,(x,y)) -> (x,y)
-
+  let getSize obj =
+    match obj.genre  with
+    |Plateforme (w,h) | Wall (w,h) -> (w,h)
+    | _ ->
+       begin
+	 let x = Anim.getTexture obj.texture in
+	 match Sdl.query_texture x with 
+	 |Error (`Msg e) -> Sdl.log "Init load picture error: %s" e; exit 1
+	 |Ok (_,_,(x,y)) -> (x,y)
+       end
       
 end

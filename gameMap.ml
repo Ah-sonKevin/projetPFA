@@ -65,10 +65,10 @@ module GameMap : GameMap  = struct
   let selectColor g render=
     match g with
     |Objet.Personnage -> chooseColor  0 255  0 255 render
-    |Wall ->   chooseColor 255 255 255 255  render
+    |Wall _ ->   chooseColor 255 255 255 255  render
     |Door _ -> chooseColor 0 0 255 255 render
     |Ennemi -> chooseColor 255 0 0 255 render
-    |Plateforme -> chooseColor 100 0 100 255 render 
+    |Plateforme _ -> chooseColor 100 0 100 255 render 
     |Projectile -> chooseColor 0 0 0 255 render
     | _ -> ()
     

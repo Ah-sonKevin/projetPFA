@@ -61,17 +61,17 @@ and genre perso r = parse
       |None -> let (pos,speed,maxSpeed,pv,(g,m,d,s), y) = (pos perso r lexbuf ) in ((Objet.Personnage),pos, speed , maxSpeed , pv , (Anim.create g m d s r), y)
       |Some p -> let (pos,y) = (pos2 perso r lexbuf ) in ((Objet.Personnage),pos, (Objet.getSpeed p), (Objet.getMaxSpeed p), (Objet.getPV p), (Objet.getAnim p), y)
     }
-    |"Plateforme" espaces '\n' {
+    |"Plateforme" espaces (coupleDigit as s) '\n' {
       let (pos,speed,maxSpeed,pv,(g,m,d,s), y) = (pos perso r lexbuf ) in
-      ((Objet.Plateforme),pos, speed, maxSpeed, pv, (Anim.create g m d s r), y)
+      ((Objet.Plateforme (int_of_string x1,int_of_string x2)),pos, speed, maxSpeed, pv, (Anim.create g m d s r), y)
     } 
     |"Ennemi\n" {
       let (pos,speed,maxSpeed,pv,(g,m,d,s), y) = (pos perso r lexbuf ) in
       ((Objet.Ennemi),pos, speed, maxSpeed, pv, (Anim.create g m d s r), y)
     }
-    |"Wall\n" {
+    |"Wall" espaces (coupleDigit as s) '\n' {
       let (pos,speed,maxSpeed,pv,(g,m,d,s), y) = (pos perso r lexbuf ) in
-      ((Objet.Wall),pos, speed, maxSpeed, pv, (Anim.create g m d s r), y)
+      ((Objet.Wall (int_of_string x1,int_of_string x2)),pos, speed, maxSpeed, pv, (Anim.create g m d s r), y)
     }
     |"Door" espaces (nomFichierTXT as t) '\n' {
       let (pos,speed,maxSpeed,pv,(g,m,d,s), y) = (pos perso r lexbuf ) in

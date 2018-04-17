@@ -89,7 +89,7 @@ module Scene : Scene =  struct
       |o when (Objet.isMovable o = false) -> obj
       |o ->
 	 let (x,y) = Objet.getPos o in
-	 let (w,h) = Objet.getBaseSize o in
+	 let (w,h) = Objet.getSize o in
 	 let (sizeX,sizeY) = getSize scene in
 	 (* calcul des collisions avec les bords de la scene, on regarde si l'objet est "sorti" de la scene*)
 	 if (((x) < 0) || ((y) < 0) || ((x+w)>sizeX) || ((y+h)>sizeY))

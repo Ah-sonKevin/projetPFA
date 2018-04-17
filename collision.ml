@@ -72,12 +72,12 @@ module Collision : Collision = struct
     let (xs,ys) = Objet.getSpeed obj in
     let (xCol,yCol) = Objet.getPos obj_col in
     let (wCol,hCol) = Objet.getBaseSize obj_col in
-    if ((Objet.getGenre obj_col) = Plateforme)
-    then
-	if (face = 2)
-	then Objet.allowJump (Objet.reposition obj (x,yCol-h) (xs,0.0))
-	else obj
-    else
+    match ((Objet.getGenre obj_col)) with
+    |Plateforme _  ->
+       if (face = 2)
+       then Objet.allowJump (Objet.reposition obj (x,yCol-h) (xs,0.0))
+       else obj
+    | _ ->
       match face with
       |1 -> Objet.allowJump (Objet.reposition obj (xCol-w,y) (0.0,ys))
       |2 -> Objet.allowJump (Objet.reposition obj (x,yCol-h) (xs,0.0))

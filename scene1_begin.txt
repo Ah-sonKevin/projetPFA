@@ -45,7 +45,7 @@ Image/samus/Samus_saut/Samus_saut3_16_16.bmp
 Image/samus/Samus_saut/Samus_saut2_16_16.bmp
 Image/samus/Samus_saut/Samus_saut1_16_16.bmp
 
-Genre Wall
+Genre Wall (1000,100)
 Position (0,600)
 Vitesse (0.0,0.0)
 VitesseMax (0.0,0.0)
@@ -70,7 +70,19 @@ no
 no
 
 
-Genre Plateforme
+Genre Plateforme (500,100)
+Position (200,100)
+Vitesse (0.0,0.0)
+VitesseMax (0.0,0.0)
+PV 1000
+Animation
+no
+Image/Plateforme.bmp
+
+no
+no
+
+Genre Plateforme (100,100)
 Position (200,100)
 Vitesse (0.0,0.0)
 VitesseMax (0.0,0.0)
