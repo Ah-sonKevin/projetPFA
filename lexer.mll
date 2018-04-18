@@ -59,7 +59,8 @@ and genre perso r = parse
     |"Personnage" espaces '\n' {
       match perso with
       |None -> let (pos,speed,maxSpeed,pv,(g,m,d,s), y) = (pos perso r lexbuf ) in ((Objet.Personnage),pos, speed , maxSpeed , pv , (Anim.create g m d s r), y)
-      |Some p -> let (pos,y) = (pos2 perso r lexbuf ) in ((Objet.Personnage),pos, (Objet.getSpeed p), (Objet.getMaxSpeed p), (Objet.getPV p), (Objet.getAnim p), y)
+      |Some p -> let (pos,y) = (pos2 perso r lexbuf ) in ((Objet.Personnage),pos, (0.0,0.0), (Objet.getMaxSpeed p), 
+    (Objet.getPV p), (Objet.changeFrame p Anim.Milieu), y)
     }
     |"Plateforme" espaces (coupleDigit as s) '\n' {
       let (pos,speed,maxSpeed,pv,(g,m,d,s), y) = (pos perso r lexbuf ) in
