@@ -33,7 +33,7 @@ module Camera : Camera = struct
         (sby - yw/2)
       else if yPer < yw/2 then (yw/2) else yPer
     in
-    (x+(-xPers+xw/2), y+(-yPers+xw/2))  (*position dans la camera *)
+    (x+(-xPers+xw/2), y+(-yPers+yw/2))  (*position dans la camera *)
 
   let convertPosBackground cam = 
     let (xw,yw) = cam.windowSize in 
