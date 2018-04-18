@@ -92,7 +92,7 @@ let jeu () =
                 let sceneEvent = evenement event  window renderer sceneTemp in
                 let sceneMove = Scene.moveAll sceneEvent in
 		Sdl.delay 17l;
-	        let sceneActive = Scene.kickDead sceneMove in
+	        let sceneActive = Scene.refreshLifebar (Scene.kickDead sceneMove) in
                 Scene.refresh scene sceneActive;
                 GameMap.startMapMini window renderer scene;
                 Sdl.render_present renderer;
