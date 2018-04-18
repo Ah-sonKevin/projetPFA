@@ -88,7 +88,7 @@ and genre perso r = parse
     |eof {raise Erreur_de_syntaxe}
 
 
-and parse ennemi perso r = parse
+and  ennemi perso r = parse
     |"Normal" espaces '\n' {Objet.Ennemi Normal}
     |"Shooter" espaces '\n' {Objet.Ennemi Shooter}
     |"Fly" espaces '\n' {Objet.Ennemi Fly}
