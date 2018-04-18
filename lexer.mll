@@ -88,13 +88,11 @@ and genre perso r = parse
     |eof {raise Erreur_de_syntaxe}
 
 
-and ennemi perso r = parse
+and parse ennemi perso r = parse
     |"Normal" espaces '\n' {Objet.Ennemi Normal}
     |"Shooter" espaces '\n' {Objet.Ennemi Shooter}
     |"Fly" espaces '\n' {Objet.Ennemi Fly}
     |"Both" espaces '\n' {Objet.Ennemi Both}
-    |_ as c {Printf.printf "Erreur : %c" c;raise Erreur_de_syntaxe}
-    |eof {raise Erreur_de_syntaxe}
 	
 and pos2 perso r = parse
     |"Position" espaces (coupleDigit ) '\n' {
