@@ -333,7 +333,7 @@ Image/Plateforme.bmp
 no
 no
 
-Genre Ennemi
+Genre Ennemi Normal
 Position (270,775)
 Vitesse (4.0,0.0)
 VitesseMax (5.0,10.0)
@@ -345,7 +345,7 @@ Image/ennemies/ennemi_test_25_21.bmp
 no
 no
 
-Genre Ennemi
+Genre Ennemi Normal
 Position (470,775)
 Vitesse (-2.0,0.0)
 VitesseMax (5.0,10.0)

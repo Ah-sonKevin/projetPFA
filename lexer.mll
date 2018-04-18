@@ -67,7 +67,7 @@ and genre perso r = parse
       let (pos,speed,maxSpeed,pv,(g,m,d,s), y) = (pos perso r lexbuf ) in
       ((Objet.Plateforme (int_of_string x1,int_of_string x2)),pos, speed, maxSpeed, pv, (Anim.create g m d s r), y)
     } 
-    |"Ennemi" espaces '\n' {
+    |"Ennemi" espaces {
     let genre = ennemi perso r lexbuf in
       let (pos,speed,maxSpeed,pv,(g,m,d,s), y) = (pos perso r lexbuf ) in
       (genre,pos, speed, maxSpeed, pv, (Anim.create g m d s r), y)
