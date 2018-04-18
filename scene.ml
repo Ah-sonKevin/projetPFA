@@ -95,7 +95,7 @@ module Scene : Scene =  struct
 	 let (w,h) = Objet.getSize obj in
 	 let (sizeX,sizeY) = getSize scene in
 	 (* calcul des collisions avec les bords de la scene, on regarde si l'objet est "sorti" de la scene*)
-	 if (((x+w) < 0) || ((y+h) < 0) || ((x)>sizeX) || ((y)>sizeY)) then Objet.kill obj else obj
+	 if ((x < 0) || (y < 0) || ((x+w)>sizeX) || ((y+h)>sizeY)) then Objet.kill obj  else obj
     in
     let temp = {scene with entities = List.map (fun obj -> (List.fold_left (Collision.collision) obj (getEntitie (removeEntitie scene obj)))) (getEntitie scene)} in
     {temp with entities = (List.map (out_of_bound) (getEntitie temp))}

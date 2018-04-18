@@ -129,8 +129,6 @@ module Collision : Collision = struct
     if checkCollision obj1 obj2 then
       match Objet.getGenre obj1 with
       |Personnage -> begin
-	(*let (x1,y1) = Objet.getPos obj1 in
-	Printf.printf "%d %d \n " x1 y1;*)
 	collision_perso obj1 obj2
       end
       |Ennemi -> collision_ennemi obj1 obj2 

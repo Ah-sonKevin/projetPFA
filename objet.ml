@@ -132,6 +132,7 @@ module Objet : Objet = struct
   let getAnim obj = obj.texture 
   let getTexture obj =  Anim.getTexture obj.texture
   let isMovable obj = if (obj.genre = Personnage) || (obj.genre = Ennemi) || (obj.genre = Projectile) then true else false
+
   let changeFrame obj dir = {obj with texture = Anim.changeFrame obj.texture dir}
 
   let getSize obj =
