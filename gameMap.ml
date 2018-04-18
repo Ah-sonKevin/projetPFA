@@ -87,7 +87,6 @@ module GameMap : GameMap  = struct
        (int_of_float ((float_of_int wo) *. ratioX),(int_of_float  ((float_of_int ho) *. ratioY))) render) (Scene.getEntitie scene)
 
   let drawMini scene window render sizeMap =
-    print_string "************************************************************************************\n";
     chooseColor  255 255  255 255 render;
     let (windowSizeX,windowSizeY) = Sdl.get_window_size window in 
     let (sceneWidth,sceneHeight) = Scene.getSize scene in
@@ -101,7 +100,6 @@ module GameMap : GameMap  = struct
     let (demiWidth,demiHeight) = (int_of_float ((float_of_int sceneWidth)*.ratioX),int_of_float ((float_of_int sceneHeight)*.ratioY)) in
     let (xPer,yPer) = Objet.getPos (Scene.getPers scene ) in
     List.iter (fun x ->
-      Objet.print x;
       selectColor (Objet.getGenre x) render;
       let (objX,objY) = Objet.getPos x in
       let (objWidthTemp,objHeightTemp) = Objet.getSize x in
@@ -122,7 +120,6 @@ module GameMap : GameMap  = struct
 	    int_of_float (float_of_int objWidthTemp *. ratioX) 
 	  else
 	    begin
-	      print_string "bwark";
 	      sw1Int-(int_of_float rx)
 	    end
 	in
