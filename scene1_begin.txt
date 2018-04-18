@@ -153,7 +153,7 @@ Image/wall.bmp
 no
 no
 
-Genre Wall (450,20)
+Genre Wall (410,20)
 Position (250,560)
 Vitesse (0.0,0.0)
 VitesseMax (0.0,0.0)
@@ -257,6 +257,102 @@ PV 1000
 Animation
 no
 Image/wall.bmp
+
+no
+no
+
+Genre Wall (350,20)
+Position (750,560)
+Vitesse (0.0,0.0)
+VitesseMax (0.0,0.0)
+PV 1000
+Animation
+no
+Image/wall.bmp
+
+no
+no
+
+Genre Door scene2.txt
+Position (550,818)
+Vitesse (0.0,0.0)
+VitesseMax (0.0,0.0)
+PV 1000
+Animation
+no
+Image/porteHaut.bmp
+
+no
+no
+
+Genre Plateforme  (50,10)
+Position (700,560)
+Vitesse (0.0,0.0)
+VitesseMax (0.0,0.0)
+PV 1000
+Animation
+no
+Image/Plateforme.bmp
+
+no
+no
+
+Genre Plateforme  (50,10)
+Position (700,630)
+Vitesse (0.0,0.0)
+VitesseMax (0.0,0.0)
+PV 1000
+Animation
+no
+Image/Plateforme.bmp
+
+no
+no
+
+Genre Plateforme  (50,10)
+Position (700,700)
+Vitesse (0.0,0.0)
+VitesseMax (0.0,0.0)
+PV 1000
+Animation
+no
+Image/Plateforme.bmp
+
+no
+no
+
+Genre Plateforme  (50,10)
+Position (700,770)
+Vitesse (0.0,0.0)
+VitesseMax (0.0,0.0)
+PV 1000
+Animation
+no
+Image/Plateforme.bmp
+
+no
+no
+
+Genre Ennemi
+Position (270,775)
+Vitesse (4.0,0.0)
+VitesseMax (5.0,10.0)
+PV 100
+Animation
+no
+Image/ennemies/ennemi_test_25_21.bmp
+
+no
+no
+
+Genre Ennemi
+Position (470,775)
+Vitesse (-2.0,0.0)
+VitesseMax (5.0,10.0)
+PV 100
+Animation
+no
+Image/ennemies/ennemi_test_25_21.bmp
 
 no
 no
