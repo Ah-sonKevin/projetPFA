@@ -6,6 +6,7 @@ open Scene
 module type GameMap = sig
   val evenement :  Sdl.event ->  Sdl.window -> Sdl.renderer ->  bool -> bool
   val startMap : Sdl.window ->  Sdl.renderer -> Scene.scene ->  unit 
+  val startMapMini : Sdl.window ->  Sdl.renderer -> Scene.scene ->  unit 
 end
   
 module GameMap : GameMap  = struct
@@ -64,15 +65,13 @@ module GameMap : GameMap  = struct
   let selectColor g render=
     match g with
     |Objet.Personnage -> chooseColor  0 255  0 255 render
-    |Wall ->   chooseColor 255 255 255 255  render
+    |Wall _ ->   chooseColor 255 255 255 255  render
     |Door _ -> chooseColor 0 0 255 255 render
     |Ennemi -> chooseColor 255 0 0 255 render
-    |Plateforme -> chooseColor 100 0 100 255 render 
+    |Plateforme _ -> chooseColor 100 0 100 255 render 
     |Projectile -> chooseColor 0 0 0 255 render
     | _ -> ()
     
-      
-
   let draw scene window render =
     let (ws,hs) = Scene.getSize scene in
     let (sw1,sw2) = Sdl.get_window_size window in
@@ -85,10 +84,37 @@ module GameMap : GameMap  = struct
       let (wo,ho) = Objet.getSize x in
       drawFillRect (50 + (int_of_float ((float_of_int xo)*.ratioX)), 50 + (int_of_float ((float_of_int yo)*.ratioY)))
        (int_of_float ((float_of_int wo) *. ratioX),(int_of_float  ((float_of_int ho) *. ratioY))) render) (Scene.getEntitie scene)
-	
-    
-    
-      
+
+  let drawMini scene window render sizeMap =
+    let (wst,hst) = Scene.getSize scene in
+    let (ws,hs) = (wst/2,hst/2) in
+    let (sw1Int,sw2Int) = sizeMap in
+    let (sw1Float,sw2Float) = (float_of_int sw1Int, float_of_int sw2Int) in
+    drawRect (0,0) (sw1Int,sw2Int) render;
+    let ratioX = sw1Float /. (float_of_int ws) in
+    let ratioY = sw2Float /. (float_of_int hs) in
+    let (xPer,yPer) = Objet.getPos (Scene.getPers scene ) in
+    List.iter (fun x ->
+      selectColor (Objet.getGenre x) render;
+      let (xo,yo) = Objet.getPos x in
+      let (wo,ho) = Objet.getSize x in
+      let xPers = 
+        if xPer >ws - sw1Int/2 then  ws - sw1Int/2
+        else if xPer < sw1Int/2 then sw1Int/2 else xPer
+      in
+      let (yPers) = 
+        if yPer >hs - sw2Int/2 then 
+          (hs - 210/2)
+        else if yPer < sw2Int/2 then sw2Int/2 else yPer
+      in
+      let (rx,ry) = (xo+(-xPers+sw1Int/2), yo+(-yPers+sw2Int/2))
+      in
+      drawFillRect ((int_of_float ((float_of_int rx)*.ratioX)), (int_of_float ((float_of_int ry)*.ratioY)))
+       (int_of_float ((float_of_int wo) *. ratioX),(int_of_float  ((float_of_int ho) *. ratioY)))
+      render) (Scene.getEntitie scene)
+
+
+
   let startMap window render scene =
     (*chargement des éléments de jeu*)
     let background = Objet.create Background (0,0) (0.0,0.0) (0.0,0.0) 10000 
@@ -118,8 +144,38 @@ module GameMap : GameMap  = struct
       let temp  = evenement event window renderer bool  in
       if temp then
 	sub window renderer bool
-      else print_string "bacd"
+      else ()
     in sub window render true
+
+
+  let startMapMini window render scene =
+    (*chargement des éléments de jeu*)
+    let background_map  = Objet.create Background (0,0) (0.0,0.0) (0.0,0.0) 10000 
+                       (Anim.create [||] [|"Image/map250.bmp"|]  [||] [||] render ) render in    
+    let refresh renderer =
+      let loadPicture renderer (x1,y1) (w,h) texture =
+        let frag_rect = Sdl.Rect.create 0 0 w h in
+        let position_background_map = Sdl.Rect.create x1 y1 w h in
+        match Sdl.render_copy ~dst:position_background_map ~src:frag_rect renderer texture with
+        |Error (`Msg e) -> Sdl.log "Init texture on screen error: %s" e; exit 1
+        |Ok () -> ()
+      in
+      begin
+        loadPicture renderer (0,0) (Objet.getSize background_map) (Objet.getTexture background_map);
+	drawMini scene window render (Objet.getSize background_map) (*;
+        Sdl.render_present renderer*)
+      end
+    in    
+    (* gestion du jeu une fois lancé *)
+    let event = Sdl.Event.create() in  
+    let rec sub window renderer bool =
+      refresh renderer;
+    in sub window render true
+
+	
+
+  
+
 
 	
 end

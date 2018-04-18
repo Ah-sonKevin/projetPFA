@@ -2,7 +2,7 @@ open Tsdl
 open Anim
 
 module type Objet = sig
-  type genre_objet = Personnage|Ennemi|Plateforme|Wall|Door of string |Background|Projectile
+  type genre_objet = Personnage|Ennemi|Plateforme of int * int |Wall of int * int|Door of string |Background|Projectile
   type objet
   val create : genre_objet -> int*int -> float*float -> float*float -> int -> Anim.anim -> Sdl.renderer -> objet
   val move : objet -> (int*int) -> objet
@@ -29,14 +29,15 @@ module type Objet = sig
   val kill : objet -> objet
   val canShoot : objet -> bool
   val canBeDmg : objet -> bool 
-  val triggerShoot : objet -> objet
+  val triggerShoot : objet -> int -> objet
   val triggerInv : objet -> objet
   val decreaseClock : objet -> objet
 end
  
 module Objet : Objet = struct
-  type genre_objet = Personnage|Ennemi|Plateforme|Wall|Door of string|Background|Projectile
-  type objet = {genre : genre_objet; position : int*int; old_pos : int*int; can_jump : bool; vitesse : float * float ; maxSpeed : float*float; pv : int;baseSize : int*int ; texture : Anim.anim; clockInv : int; clockShoot : int}
+  type genre_objet = Personnage|Ennemi|Plateforme of int * int |Wall of int * int |Door of string|Background|Projectile
+  type objet = {genre : genre_objet; position : int*int; old_pos : int*int; can_jump : bool; vitesse : float * float ; maxSpeed : float*float; pv : int;
+	baseSize : int*int ; texture : Anim.anim; clockInv : int; clockShoot : int}
     
   let create genre_o pos vit maxvit hp textu renderer  =
     let sizeT t=
@@ -53,13 +54,16 @@ module Objet : Objet = struct
      pv = hp;
      clockInv = 0;
      clockShoot = 0;
-     texture = textu; 
-     baseSize = sizeT (Anim.getTexture textu); (*taille de base du personnage, utilisé lors des collision *)
+     texture = textu;     
+     baseSize =
+	match genre_o with
+	|Plateforme (x,y) | Wall (x,y) -> (x,y)
+	|_->sizeT (Anim.getTexture textu); (*taille de base du personnage, utilisé lors des collision *)
     }
       
   let canShoot p = p.clockShoot = 0
   let canBeDmg p = p.clockInv = 0
-  let triggerShoot p = {p with clockShoot = 5}
+  let triggerShoot p n = {p with clockShoot = n}
   let triggerInv p = {p with clockInv = 40}
   let decreaseClock p =
     {p with clockShoot = if p.clockShoot > 0 then p.clockShoot -1 else 0;
@@ -71,7 +75,16 @@ module Objet : Objet = struct
     let (xs,ys) = obj.vitesse in
     let (xsm,ysm) = obj.maxSpeed in
     let pv = obj.pv in
-    Printf.printf "Pos : %d %d \n Speed : %f %f \n MaxSpeed : %f %f \n PV : %d \n\n" x y xs ys xsm ysm pv 
+    let (bw,bh) = obj.baseSize in
+    let (ox,oy) = obj.old_pos in
+    match obj.genre with
+    |Personnage   ->Printf.printf " Genre : Personnage \n Pos : %d %d \n baseSize : %d %d \n Old Pos : %d %d \n Speed : %f %f \n MaxSpeed : %f %f \n PV : %d \n\n" x y bw bh ox oy xs ys xsm ysm pv 
+    |Ennemi       ->Printf.printf " Genre : Ennemi \n Pos : %d %d baseSize : %d %d \n Old Pos : %d %d \n Speed : %f %f \n MaxSpeed : %f %f \n PV : %d \n\n" x y bw bh ox oy xs ys xsm ysm pv 
+    |Plateforme _ ->Printf.printf " Genre : Plateforme \n Pos : %d %d baseSize : %d %d \n Speed : %f %f \n MaxSpeed : %f %f \n PV : %d \n\n" x y bw bh xs ys xsm ysm pv 
+    |Wall _       ->Printf.printf " Genre : Wall \n Pos : %d %d baseSize : %d %d \n Speed : %f %f \n MaxSpeed : %f %f \n PV : %d \n\n" x y bw bh xs ys xsm ysm pv 
+    |Door _       ->Printf.printf " Genre : Door \n Pos : %d %d baseSize : %d %d \n Speed : %f %f \n MaxSpeed : %f %f \n PV : %d \n\n" x y bw bh xs ys xsm ysm pv 
+    |Projectile   ->Printf.printf " Genre : Projectile \n Pos : %d %d baseSize : %d %d \n Speed : %f %f \n MaxSpeed : %f %f \n PV : %d \n\n" x y bw bh xs ys xsm ysm pv 
+    |Background   ->Printf.printf " Genre : Background \n Pos : %d %d baseSize : %d %d \n Speed : %f %f \n MaxSpeed : %f %f \n PV : %d \n\n" x y bw bh xs ys xsm ysm pv 
       
   let kill obj = {obj with pv = 0}                   
   let getBaseSize obj = obj.baseSize
@@ -121,11 +134,15 @@ module Objet : Objet = struct
   let isMovable obj = if (obj.genre = Personnage) || (obj.genre = Ennemi) || (obj.genre = Projectile) then true else false
   let changeFrame obj dir = {obj with texture = Anim.changeFrame obj.texture dir}
 
-  let getSize obj = 
-    let x = Anim.getTexture obj.texture in
-   match Sdl.query_texture x with 
-    |Error (`Msg e) -> Sdl.log "Init load picture error: %s" e; exit 1
-    |Ok (_,_,(x,y)) -> (x,y)
-
+  let getSize obj =
+    match obj.genre  with
+    |Plateforme (w,h) | Wall (w,h) -> (w,h)
+    | _ ->
+       begin
+	 let x = Anim.getTexture obj.texture in
+	 match Sdl.query_texture x with 
+	 |Error (`Msg e) -> Sdl.log "Init load picture error: %s" e; exit 1
+	 |Ok (_,_,(x,y)) -> (x,y)
+       end
       
 end
