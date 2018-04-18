@@ -85,28 +85,29 @@ module GameMap : GameMap  = struct
       drawFillRect (50 + (int_of_float ((float_of_int xo)*.ratioX)), 50 + (int_of_float ((float_of_int yo)*.ratioY)))
        (int_of_float ((float_of_int wo) *. ratioX),(int_of_float  ((float_of_int ho) *. ratioY))) render) (Scene.getEntitie scene)
 
-  let drawMini scene window render =
+  let drawMini scene window render sizeMap =
     let (wst,hst) = Scene.getSize scene in
     let (ws,hs) = (wst/2,hst/2) in
-    let (sw1,sw2) = (300.0,210.0)in
-    drawRect (0,0) (300,210) render;
-    let ratioX = sw1 /. (float_of_int ws) in
-    let ratioY = sw2 /. (float_of_int hs) in
+    let (sw1Int,sw2Int) = sizeMap in
+    let (sw1Float,sw2Float) = (float_of_int sw1Int, float_of_int sw2Int) in
+    drawRect (0,0) (sw1Int,sw2Int) render;
+    let ratioX = sw1Float /. (float_of_int ws) in
+    let ratioY = sw2Float /. (float_of_int hs) in
     let (xPer,yPer) = Objet.getPos (Scene.getPers scene ) in
     List.iter (fun x ->
       selectColor (Objet.getGenre x) render;
       let (xo,yo) = Objet.getPos x in
       let (wo,ho) = Objet.getSize x in
       let xPers = 
-        if xPer >ws - 300/2 then  ws - 300/2
-        else if xPer < 300/2 then 300/2 else xPer
+        if xPer >ws - sw1Int/2 then  ws - sw1Int/2
+        else if xPer < sw1Int/2 then sw1Int/2 else xPer
       in
       let (yPers) = 
-        if yPer >hs - 210/2 then 
+        if yPer >hs - sw2Int/2 then 
           (hs - 210/2)
-        else if yPer < 210/2 then (210/2) else yPer
+        else if yPer < sw2Int/2 then sw2Int/2 else yPer
       in
-      let (rx,ry) = (xo+(-xPers+300/2), yo+(-yPers+210/2))
+      let (rx,ry) = (xo+(-xPers+sw1Int/2), yo+(-yPers+sw2Int/2))
       in
       drawFillRect ((int_of_float ((float_of_int rx)*.ratioX)), (int_of_float ((float_of_int ry)*.ratioY)))
        (int_of_float ((float_of_int wo) *. ratioX),(int_of_float  ((float_of_int ho) *. ratioY)))
@@ -149,19 +150,19 @@ module GameMap : GameMap  = struct
 
   let startMapMini window render scene =
     (*chargement des éléments de jeu*)
-    let background = Objet.create Background (0,0) (0.0,0.0) (0.0,0.0) 10000 
-                       (Anim.create [||] [|"Image/map300.bmp"|]  [||] [||] render ) render in    
+    let background_map  = Objet.create Background (0,0) (0.0,0.0) (0.0,0.0) 10000 
+                       (Anim.create [||] [|"Image/map250.bmp"|]  [||] [||] render ) render in    
     let refresh renderer =
       let loadPicture renderer (x1,y1) (w,h) texture =
         let frag_rect = Sdl.Rect.create 0 0 w h in
-        let position_background = Sdl.Rect.create x1 y1 w h in
-        match Sdl.render_copy ~dst:position_background ~src:frag_rect renderer texture with
+        let position_background_map = Sdl.Rect.create x1 y1 w h in
+        match Sdl.render_copy ~dst:position_background_map ~src:frag_rect renderer texture with
         |Error (`Msg e) -> Sdl.log "Init texture on screen error: %s" e; exit 1
         |Ok () -> ()
       in
       begin
-        loadPicture renderer (0,0) (Objet.getSize background) (Objet.getTexture background);
-	drawMini scene window render(*;
+        loadPicture renderer (0,0) (Objet.getSize background_map) (Objet.getTexture background_map);
+	drawMini scene window render (Objet.getSize background_map) (*;
         Sdl.render_present renderer*)
       end
     in    

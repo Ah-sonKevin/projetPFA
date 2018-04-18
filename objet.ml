@@ -55,7 +55,10 @@ module Objet : Objet = struct
      clockInv = 0;
      clockShoot = 0;
      texture = textu;     
-     baseSize = sizeT (Anim.getTexture textu); (*taille de base du personnage, utilisé lors des collision *)
+     baseSize =
+	match genre_o with
+	|Plateforme (x,y) | Wall (x,y) -> (x,y)
+	|_->sizeT (Anim.getTexture textu); (*taille de base du personnage, utilisé lors des collision *)
     }
       
   let canShoot p = p.clockShoot = 0

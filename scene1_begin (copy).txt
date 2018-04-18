@@ -52,7 +52,7 @@ VitesseMax (0.0,0.0)
 PV 1000
 Animation
 no
-Image/wall.bmp
+Image/Plateforme.bmp
 
 no
 no
@@ -70,8 +70,8 @@ no
 no
 
 
-Genre Plateforme (100,10)
-Position (250,250)
+Genre Plateforme (100,100)
+Position (50,50)
 Vitesse (0.0,0.0)
 VitesseMax (0.0,0.0)
 PV 1000
@@ -82,7 +82,7 @@ Image/Plateforme.bmp
 no
 no
 
-Genre Plateforme (100,00)
+Genre Plateforme (100,100)
 Position (200,100)
 Vitesse (0.0,0.0)
 VitesseMax (0.0,0.0)
