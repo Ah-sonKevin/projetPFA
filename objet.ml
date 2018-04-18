@@ -2,7 +2,9 @@ open Tsdl
 open Anim
 
 module type Objet = sig
-  type genre_objet = Personnage|Ennemi|Plateforme of int * int |Wall of int * int|Door of string |Background|Projectile
+    
+  type kind = Normal | Fly | Shooter | Both
+  type genre_objet = Personnage|Ennemi of kind|Plateforme of int * int |Wall of int * int|Door of string |Background|Projectile
   type objet
   val create : genre_objet -> int*int -> float*float -> float*float -> int -> Anim.anim -> Sdl.renderer -> objet
   val move : objet -> (int*int) -> objet
@@ -35,7 +37,8 @@ module type Objet = sig
 end
  
 module Objet : Objet = struct
-  type genre_objet = Personnage|Ennemi|Plateforme of int * int |Wall of int * int |Door of string|Background|Projectile
+  type kind = Normal | Fly | Shooter | Both
+  type genre_objet = Personnage|Ennemi of kind|Plateforme of int * int |Wall of int * int |Door of string|Background|Projectile
   type objet = {genre : genre_objet; position : int*int; old_pos : int*int; can_jump : bool; vitesse : float * float ; maxSpeed : float*float; pv : int;
 	baseSize : int*int ; texture : Anim.anim; clockInv : int; clockShoot : int}
     
@@ -54,11 +57,11 @@ module Objet : Objet = struct
      pv = hp;
      clockInv = 0;
      clockShoot = 0;
-     texture = textu;     
+     texture = textu;
      baseSize =
 	match genre_o with
 	|Plateforme (x,y) | Wall (x,y) -> (x,y)
-	|_->sizeT (Anim.getTexture textu); (*taille de base du personnage, utilisé lors des collision *)
+	|_->sizeT (Anim.getTexture textu); (*taille de base de l'objet, utilisé lors des collision *)
     }
       
   let canShoot p = p.clockShoot = 0
@@ -79,7 +82,7 @@ module Objet : Objet = struct
     let (ox,oy) = obj.old_pos in
     match obj.genre with
     |Personnage   ->Printf.printf " Genre : Personnage \n Pos : %d %d \n baseSize : %d %d \n Old Pos : %d %d \n Speed : %f %f \n MaxSpeed : %f %f \n PV : %d \n\n" x y bw bh ox oy xs ys xsm ysm pv 
-    |Ennemi       ->Printf.printf " Genre : Ennemi \n Pos : %d %d baseSize : %d %d \n Old Pos : %d %d \n Speed : %f %f \n MaxSpeed : %f %f \n PV : %d \n\n" x y bw bh ox oy xs ys xsm ysm pv 
+    |Ennemi _     ->Printf.printf " Genre : Ennemi \n Pos : %d %d baseSize : %d %d \n Old Pos : %d %d \n Speed : %f %f \n MaxSpeed : %f %f \n PV : %d \n\n" x y bw bh ox oy xs ys xsm ysm pv 
     |Plateforme _ ->Printf.printf " Genre : Plateforme \n Pos : %d %d baseSize : %d %d \n Speed : %f %f \n MaxSpeed : %f %f \n PV : %d \n\n" x y bw bh xs ys xsm ysm pv 
     |Wall _       ->Printf.printf " Genre : Wall \n Pos : %d %d baseSize : %d %d \n Speed : %f %f \n MaxSpeed : %f %f \n PV : %d \n\n" x y bw bh xs ys xsm ysm pv 
     |Door _       ->Printf.printf " Genre : Door \n Pos : %d %d baseSize : %d %d \n Speed : %f %f \n MaxSpeed : %f %f \n PV : %d \n\n" x y bw bh xs ys xsm ysm pv 
@@ -104,7 +107,11 @@ module Objet : Objet = struct
   let reposition obj (x,y) (xs,ys) = {obj with position = (x,y); vitesse = (xs,ys)}
 
   let isDmgType obj =
-    (((obj.genre) = Personnage) || ((obj.genre) = Ennemi) || ((obj.genre) = Projectile))
+    match obj.genre with
+    |Personnage -> true
+    |Ennemi _   -> true
+    |Projectile -> true
+    |_          -> false
     
     
   let changePV obj a =
@@ -113,7 +120,7 @@ module Objet : Objet = struct
 	match obj.genre with
 	|Personnage -> let temp = triggerInv obj in
 		       {temp with pv = obj.pv+a}
-	|Ennemi     -> {obj with pv = obj.pv+a}
+	|Ennemi _   -> {obj with pv = obj.pv+a}
 	|_          -> obj
       end
     else obj
@@ -131,8 +138,12 @@ module Objet : Objet = struct
   let getPV  obj = obj.pv
   let getAnim obj = obj.texture 
   let getTexture obj =  Anim.getTexture obj.texture
-  let isMovable obj = if (obj.genre = Personnage) || (obj.genre = Ennemi) || (obj.genre = Projectile) then true else false
-
+  let isMovable obj =
+    match obj.genre with
+    |Personnage -> true
+    |Ennemi _   -> true
+    |Projectile -> true
+    |_          -> false
   let changeFrame obj dir = {obj with texture = Anim.changeFrame obj.texture dir}
 
   let getSize obj =

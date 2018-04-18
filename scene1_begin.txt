@@ -2,15 +2,15 @@ Scene 1
 
 Gravity 0.15
 
-Background Image/Background_2.bmp
+Background Image/Menu_backscreen_1200_900.bmp
 
 Theme Son/theme1.wav
 
 Genre Personnage
-Position (60,220)
+Position (300,200)
 Vitesse (0.0,0.0)
 VitesseMax (5.0,7.5)
-PV 1000
+PV 200
 Animation
 Image/samus/Samus_left/Samus_left_walk/Samus_left_walk1_25_38.bmp
 Image/samus/Samus_left/Samus_left_walk/Samus_left_walk2_25_38.bmp
@@ -45,8 +45,8 @@ Image/samus/Samus_saut/Samus_saut3_16_16.bmp
 Image/samus/Samus_saut/Samus_saut2_16_16.bmp
 Image/samus/Samus_saut/Samus_saut1_16_16.bmp
 
-Genre Wall (1000,100)
-Position (0,600)
+Genre Wall (750,50)
+Position (200,50)
 Vitesse (0.0,0.0)
 VitesseMax (0.0,0.0)
 PV 1000
@@ -57,51 +57,206 @@ Image/wall.bmp
 no
 no
 
-Genre Ennemi
-Position (30,450)
-Vitesse (2.0,0.0)
-VitesseMax (5.0,10.0)
-PV 100
-Animation
-no
-Image/ennemies/ennemi_test_25_21.bmp
-
-no
-no
-
-
-Genre Plateforme (100,10)
-Position (250,250)
+Genre Wall (70,150)
+Position (130,80)
 Vitesse (0.0,0.0)
 VitesseMax (0.0,0.0)
 PV 1000
 Animation
 no
-Image/Plateforme.bmp
+Image/wall.bmp
 
 no
 no
 
-Genre Plateforme (100,00)
+Genre Wall (200,170)
+Position (0,230)
+Vitesse (0.0,0.0)
+VitesseMax (0.0,0.0)
+PV 1000
+Animation
+no
+Image/wall.bmp
+
+no
+no
+
+Genre Wall (70,80)
+Position (130,400)
+Vitesse (0.0,0.0)
+VitesseMax (0.0,0.0)
+PV 1000
+Animation
+no
+Image/wall.bmp
+
+no
+no
+
+Genre Wall (200,170)
+Position (0,480)
+Vitesse (0.0,0.0)
+VitesseMax (0.0,0.0)
+PV 1000
+Animation
+no
+Image/wall.bmp
+
+no
+no
+
+Genre Wall (70,150)
+Position (130,650)
+Vitesse (0.0,0.0)
+VitesseMax (0.0,0.0)
+PV 1000
+Animation
+no
+Image/wall.bmp
+
+no
+no
+
+Genre Wall (50,700)
 Position (200,100)
 Vitesse (0.0,0.0)
 VitesseMax (0.0,0.0)
 PV 1000
 Animation
 no
-Image/Plateforme.bmp
+Image/wall.bmp
 
 no
 no
 
-Genre Door scene2.txt
-Position (0,500)
+Genre Wall (350,50)
+Position (200,800)
 Vitesse (0.0,0.0)
 VitesseMax (0.0,0.0)
 PV 1000
 Animation
 no
-Image/porteDroit.bmp
+Image/wall.bmp
+
+no
+no
+
+Genre Wall (20,220)
+Position (530,580)
+Vitesse (0.0,0.0)
+VitesseMax (0.0,0.0)
+PV 1000
+Animation
+no
+Image/wall.bmp
+
+no
+no
+
+Genre Wall (450,20)
+Position (250,560)
+Vitesse (0.0,0.0)
+VitesseMax (0.0,0.0)
+PV 1000
+Animation
+no
+Image/wall.bmp
+
+no
+no
+
+Genre Wall (70,360)
+Position (450,100)
+Vitesse (0.0,0.0)
+VitesseMax (0.0,0.0)
+PV 1000
+Animation
+no
+Image/wall.bmp
+
+no
+no
+
+Genre Wall (50,360)
+Position (850,100)
+Vitesse (0.0,0.0)
+VitesseMax (0.0,0.0)
+PV 1000
+Animation
+no
+Image/wall.bmp
+
+no
+no
+
+Genre Wall (336,50)
+Position (614,800)
+Vitesse (0.0,0.0)
+VitesseMax (0.0,0.0)
+PV 1000
+Animation
+no
+Image/wall.bmp
+
+no
+no
+
+Genre Wall (75,175)
+Position (950,75)
+Vitesse (0.0,0.0)
+VitesseMax (0.0,0.0)
+PV 1000
+Animation
+no
+Image/wall.bmp
+
+no
+no
+
+Genre Wall (75,150)
+Position (1025,250)
+Vitesse (0.0,0.0)
+VitesseMax (0.0,0.0)
+PV 1000
+Animation
+no
+Image/wall.bmp
+
+no
+no
+
+Genre Wall (100,100)
+Position (1100,400)
+Vitesse (0.0,0.0)
+VitesseMax (0.0,0.0)
+PV 1000
+Animation
+no
+Image/wall.bmp
+
+no
+no
+
+Genre Wall (75,150)
+Position (1025,500)
+Vitesse (0.0,0.0)
+VitesseMax (0.0,0.0)
+PV 1000
+Animation
+no
+Image/wall.bmp
+
+no
+no
+
+Genre Wall (75,175)
+Position (950,650)
+Vitesse (0.0,0.0)
+VitesseMax (0.0,0.0)
+PV 1000
+Animation
+no
+Image/wall.bmp
 
 no
 no

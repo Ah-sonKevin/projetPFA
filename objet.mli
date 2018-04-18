@@ -2,7 +2,8 @@ open Tsdl
 open Anim
 
 module type Objet = sig
-  type genre_objet = Personnage|Ennemi|Plateforme of int * int |Wall of int * int|Door of string |Background|Projectile
+  type kind = Normal | Fly | Shooter | Both
+  type genre_objet = Personnage|Ennemi of kind|Plateforme of int * int |Wall of int * int|Door of string |Background|Projectile
   type objet
   val create : genre_objet -> int*int -> float*float -> float*float -> int ->   Anim.anim -> Sdl.renderer -> objet
   val move : objet -> (int*int) -> objet

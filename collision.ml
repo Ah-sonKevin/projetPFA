@@ -45,7 +45,7 @@ module Collision : Collision = struct
       -  8  -  4  -  7  -
       -     -     -     -
       -------------------
-      les différentes faces du rectangle fixe : 
+      les différentes faces du rectangle rencontré : 
       LEFT: 1 /UP: 2 /RIGHT: 3 /DOWN: 4 / Diag UP-LEFT : 5 / Diag UP-RIGHT : 6 / Diag DOWN-RIGHT : 7 / Diag DOWN-LEFT : 8 
     *)
     (* on check si l'obj 1 etait au dessus de l'obj 2 *)
@@ -90,20 +90,16 @@ module Collision : Collision = struct
       |_ -> failwith "ya que 8 cas normalement"
 	 
   let collision_perso p obj =
-    Printf.printf "---------------------------------------------------------------------------- \n";
-    Objet.print p;
-    Objet.print obj;
-    Printf.printf "---------------------------------------------------------------------------- \n";
     match (Objet.getGenre obj) with
-    |Ennemi     ->
+    |Ennemi _   ->
        if (Objet.canBeDmg p) then
 	 let (xs,ys) = Objet.getSpeed p in
 	 let (xse,yse) = Objet.getSpeed obj in
 	 let temp = replace p (directionCollision p obj) obj in
 	 if abs_float(xs) < 0.8 then
-	   Objet.changePV (Objet.setSpeed (Objet.resetSpeed temp) ((xse*.2.0),(yse*.2.0)-.6.0)) (-20)
+	   Objet.changePV (Objet.setSpeed (Objet.resetSpeed temp) ((xse*.3.0),(-.6.0))) (-40)
 	 else
-	   Objet.changePV (Objet.setSpeed (Objet.resetSpeed temp) ((-.xs+.(xse*.1.5)),(-.ys+.(yse*.1.5)-.6.0))) (-20)
+	   Objet.changePV (Objet.setSpeed (Objet.resetSpeed temp) ((-.xs+.(xse*.0.5)),(-.ys+.(yse*.0.5)-.6.0))) (-40)
        else p
     |Projectile -> Objet.changePV p (-20)
     |Door t     -> p
@@ -113,7 +109,7 @@ module Collision : Collision = struct
   let collision_ennemi e obj =
     match Objet.getGenre obj with
     |Personnage -> e
-    |Ennemi     -> e
+    |Ennemi _   -> e
     |Projectile -> Objet.changePV e (-20)
     |_          ->
        let(xs,ys) = Objet.getSpeed e in
@@ -129,11 +125,13 @@ module Collision : Collision = struct
     if checkCollision obj1 obj2 then
       match Objet.getGenre obj1 with
       |Personnage -> begin
+	(*let (x1,y1) = Objet.getPos obj1 in
+	Printf.printf "%d %d \n " x1 y1;*)
 	collision_perso obj1 obj2
       end
-      |Ennemi -> collision_ennemi obj1 obj2 
+      |Ennemi _   -> collision_ennemi obj1 obj2 
       |Projectile -> collision_projectile obj1
-      |_ -> obj1
+      |_          -> obj1
     else obj1
 
 end

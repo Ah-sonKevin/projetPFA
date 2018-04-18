@@ -8,7 +8,6 @@ module type Anim = sig
   val changeFrame :anim -> direction -> anim
   val getTexture : anim -> Sdl.texture
   val changeDir : anim -> direction -> anim
-  val getBaseText : anim -> anim
 end
 
 module Anim : Anim
