@@ -22,6 +22,7 @@ module type Scene = sig
   val closeScene : scene -> unit
   val collision_All : scene -> scene
   val moveAll : scene -> scene
+  val shootAll : scene -> scene
   val movePersonnage : scene -> (float*float) -> scene
   val continue : scene -> bool
   val suicide : scene -> scene
@@ -172,7 +173,41 @@ module Scene : Scene =  struct
        let temp2 = {temp1 with entities = changeAnim temp1.entities} in
        collision_All temp2
     |Some (sc) ->  sc 
-      
+
+  let shootAll scene =
+    (* récupère le personnage *)
+    let p = getPers scene in
+    let rec shootAll_sub listObjet listRes =
+      (* on récupère les coordonnées du personnage pour déterminer les tirs des ennemis *)
+      let (xp,yp) = Objet.getPos p in
+      let (xsp,ysp) = Objet.getSpeed p in
+      let (wp,hp) = Objet.getBaseSize p in
+      match listObjet with
+      |[]->  {scene with entities = listRes }
+      (* On fait tirer les ennemis qui le peuvent *)
+      |x::s when (((Objet.getGenre x) = (Ennemi Shooter)) || ((Objet.getGenre x) = (Ennemi Both))) ->
+	 begin
+	   (* on fait tirer les ennemis qui le peuvent *)
+	   if (not (Objet.canShoot x)) then shootAll_sub s (x::listRes)
+	   else
+	     begin
+	       let (xt,yt) = Objet.getPos x in
+	       let (w,h) = Objet.getBaseSize x in
+	       (* on calcul le milieu du tireur et le milieu du personnage *)
+	       let (midxp,midyp) = (xp + (wp/2),yp + (hp/2)) in
+	       let (midxt,midyt) = (xp + (wp/2),yp + (hp/2)) in
+	       (* on calcul la position du personnage par rapport au tireur (dans le référentiel du tireur donc) *)
+	       let (vecx,vecy) = (midxp-midxt,midyp-midyt)in
+	       (*decalage afin que le tireur ne tire pas dans lui meme *)
+	       shootAll_sub s ((Objet.triggerShoot x 20)::listRes)
+	     end
+	 end
+      (* Ne rien faire pour les autres objets *)
+      |x2::s -> shootAll_sub s (x2::listRes)
+    in
+    shootAll_sub  scene.entities []
+	 
+    
   let shoot tireur scene (x,y) = 
     if (not (Objet.canShoot tireur)) then scene
     else
