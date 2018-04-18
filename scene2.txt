@@ -9,7 +9,7 @@ Theme Son/theme2.wav
 Genre Personnage
 Position (500,300)
 
-Genre Plateforme
+Genre Plateforme  (1000,100)
 Position (0,600)
 Vitesse (0.0,0.0)
 VitesseMax (0.0,0.0)
@@ -32,3 +32,29 @@ Image/porteDroit.bmp
 
 no
 no
+
+Genre Wall (200,200)
+Position (700,500)
+Vitesse (0.0,0.0)
+VitesseMax (0.0,0.0)
+PV 1000
+Animation
+no
+Image/wall.bmp
+
+no
+no
+
+
+Genre Ennemi
+Position (30,450)
+Vitesse (2.0,0.0)
+VitesseMax (5.0,10.0)
+PV 100
+Animation
+no
+Image/ennemies/ennemi_test_25_21.bmp
+
+no
+no
+

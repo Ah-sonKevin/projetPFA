@@ -9,14 +9,14 @@ Theme Son/theme1.wav
 Genre Personnage
 Position (500,300)
 
-Genre Wall
+Genre Wall (1000,100)
 Position (0,600)
 Vitesse (0.0,0.0)
 VitesseMax (0.0,0.0)
 PV 1000
 Animation
 no
-Image/Plateforme.bmp
+Image/wall.bmp
 
 no
 no
@@ -34,7 +34,19 @@ no
 no
 
 
-Genre Plateforme
+Genre Plateforme (100,10)
+Position (250,250)
+Vitesse (0.0,0.0)
+VitesseMax (0.0,0.0)
+PV 1000
+Animation
+no
+Image/Plateforme.bmp
+
+no
+no
+
+Genre Plateforme (100,00)
 Position (200,100)
 Vitesse (0.0,0.0)
 VitesseMax (0.0,0.0)

@@ -5,6 +5,7 @@ open Anim
 open Collision
 open Camera
 open Sound
+open Random
 
 module type Scene = sig
   type scene 
@@ -15,29 +16,42 @@ module type Scene = sig
   val addEntitie : scene -> Objet.objet -> scene
   val removeEntitie : scene -> Objet.objet -> scene 
   val kickDead : scene -> scene
+  val refreshLifebar : scene -> scene
   val loadPicture : Sdl.renderer -> (int*int) -> (int*int) -> Sdl.texture -> unit
   val refresh : scene -> scene -> unit
   val closeScene : scene -> unit
   val collision_All : scene -> scene
   val moveAll : scene -> scene
+  val shootAll : scene -> scene
   val movePersonnage : scene -> (float*float) -> scene
   val continue : scene -> bool
   val suicide : scene -> scene
   val shoot : Objet.objet -> scene -> (int*int) ->  scene
   val getPers : scene -> Objet.objet
   val decreaseClock : scene -> scene
+  val print : scene -> unit
 end
 
 module Scene : Scene =  struct
   type scene = {entities:Objet.objet list ; gravitie:float ; background : Objet.objet ;
-                cam : Camera.camera ; renderer : Sdl.renderer; son : Sound.sound}
+                cam : Camera.camera ; renderer : Sdl.renderer; son : Sound.sound; lifebar : Objet.objet}
 
   exception NoPerso
   exception ErreurScene
               
   let create objs grav back camera render son theme =
     Sound.play_mus theme;
-    {entities = objs ; gravitie = grav ; background = back ; cam = camera ;renderer = render; son = son}
+    {entities = objs ; gravitie = grav ; background = back ; cam = camera ;renderer = render; son = son;
+     lifebar =
+	let rec getPers_rec l =
+	  match l with 
+	  |[]-> raise NoPerso
+	  |x::s when ((Objet.getGenre x) = Personnage) -> x
+	  |x::s -> getPers_rec s
+	in
+	let pv = Objet.getPV (getPers_rec objs) in
+	Objet.create (Wall ((pv),20)) (900-(pv),10) (0.0,0.0) (0.0,0.0) 1000 (Anim.create [||] [|"Image/LifeBar.bmp"|] [||] [||] render) render
+    }
       
   let getEntitie scene = scene.entities                           
   let getSize scene = Objet.getSize scene.background 
@@ -52,10 +66,13 @@ module Scene : Scene =  struct
     in 
     getPers_rec scene.entities
       
-  (*On enleve les objet qui sont mort, on conserve le personnage, car la scene a besoin de lui *)
+  (*On enleve les objet qui sont mort, on conserve le personnage meme mort, car la scene a besoin de lui pour determiner le game over*)
   let kickDead scene = 
     {scene with entities = List.fold_left (fun acc x ->  if (((Objet.getPV x) < 1)&& (Objet.getGenre x)!=Personnage) then acc else (x::acc)) [] scene.entities }
-      
+  let refreshLifebar scene =
+    {scene with lifebar =
+	let pv = Objet.getPV (getPers scene) in
+	Objet.create (Wall ((pv),20)) (950-(pv),10) (0.0,0.0) (0.0,0.0) 1000 (Anim.create [||] [|"Image/LifeBar.bmp"|] [||] [||] scene.renderer) scene.renderer}
   let continue scene =(Objet.getPV (getPers scene))>0
 
   let suicide scene =
@@ -81,20 +98,20 @@ module Scene : Scene =  struct
             if xs >= 1.0 then Anim.Droite else if xs <= -1.0 then  Anim.Gauche else Milieu
             else Anim.Saut
         in Objet.changeFrame x dir) l 
-      
+
+  let print sc = List.iter (fun obj -> Objet.print obj) sc.entities
+    
   let collision_All scene =
       
     let out_of_bound obj =
-      match obj with
-      |o when (Objet.isMovable o = false) -> obj
-      |o ->
-	 let (x,y) = Objet.getPos o in
-	 let (w,h) = Objet.getBaseSize o in
+      match Objet.isMovable obj with
+      |false  -> obj
+      |true ->
+	 let (x,y) = Objet.getPos obj in
+	 let (w,h) = Objet.getSize obj in
 	 let (sizeX,sizeY) = getSize scene in
 	 (* calcul des collisions avec les bords de la scene, on regarde si l'objet est "sorti" de la scene*)
-	 if (((x) < 0) || ((y) < 0) || ((x+w)>sizeX) || ((y+h)>sizeY))
-	 then Objet.kill obj
-	 else obj
+	 if (((x+w) < 0) || ((y+h) < 0) || ((x)>sizeX) || ((y)>sizeY)) then Objet.kill obj else obj
     in
     let temp = {scene with entities = List.map (fun obj -> (List.fold_left (Collision.collision) obj (getEntitie (removeEntitie scene obj)))) (getEntitie scene)} in
     {temp with entities = (List.map (out_of_bound) (getEntitie temp))}
@@ -104,8 +121,8 @@ module Scene : Scene =  struct
     let rec moveAll_sub listObjet listRes cam =
       match listObjet with
       |[]->  {scene with entities = listRes ; cam = cam }
-      (* traitement des déplacement pour un projectile *)
-      |x::s when ((Objet.getGenre x)=(Projectile)) ->
+      (* traitement des déplacement pour un projectile ou un ennemi volant *)
+      |x::s when (((Objet.getGenre x)=(Projectile)) || ((Objet.getGenre x) = (Ennemi Fly)) || ((Objet.getGenre x) = (Ennemi Both))) ->
 	 begin
 	   let (xs,ys) = Objet.getSpeed x in
 	   let xs_int = int_of_float xs in
@@ -114,7 +131,7 @@ module Scene : Scene =  struct
 	   let objTemp = Objet.move x (xs_int + xp , ys_int + yp) in
 	   moveAll_sub s (objTemp::listRes) cam;
 	 end
-      (* traitement des déplacements pour le personnage et les ennemis*)
+      (* traitement des déplacements pour le personnage et les ennemis restant*)
       |x::s when (Objet.isMovable x) ->
          begin
 	   let temp = if (Objet.getGenre x = Personnage) then Camera.move (Objet.getPos x) cam else cam in
@@ -155,8 +172,42 @@ module Scene : Scene =  struct
     |None ->
        let temp2 = {temp1 with entities = changeAnim temp1.entities} in
        collision_All temp2
-    |Some (sc) -> sc 
-      
+    |Some (sc) ->  sc 
+
+  let shootAll scene =
+    (* récupère le personnage *)
+    let p = getPers scene in
+    let rec shootAll_sub listObjet listRes =
+      (* on récupère les coordonnées du personnage pour déterminer les tirs des ennemis *)
+      let (xp,yp) = Objet.getPos p in
+      let (xsp,ysp) = Objet.getSpeed p in
+      let (wp,hp) = Objet.getBaseSize p in
+      match listObjet with
+      |[]->  {scene with entities = listRes }
+      (* On fait tirer les ennemis qui le peuvent *)
+      |x::s when (((Objet.getGenre x) = (Ennemi Shooter)) || ((Objet.getGenre x) = (Ennemi Both))) ->
+	 begin
+	   (* on fait tirer les ennemis qui le peuvent *)
+	   if (not (Objet.canShoot x)) then shootAll_sub s (x::listRes)
+	   else
+	     begin
+	       let (xt,yt) = Objet.getPos x in
+	       let (w,h) = Objet.getBaseSize x in
+	       (* on calcul le milieu du tireur et le milieu du personnage *)
+	       let (midxp,midyp) = (xp + (wp/2),yp + (hp/2)) in
+	       let (midxt,midyt) = (xp + (wp/2),yp + (hp/2)) in
+	       (* on calcul la position du personnage par rapport au tireur (dans le référentiel du tireur donc) *)
+	       let (vecx,vecy) = (midxp-midxt,midyp-midyt)in
+	       (*decalage afin que le tireur ne tire pas dans lui meme *)
+	       shootAll_sub s ((Objet.triggerShoot x 20)::listRes)
+	     end
+	 end
+      (* Ne rien faire pour les autres objets *)
+      |x2::s -> shootAll_sub s (x2::listRes)
+    in
+    shootAll_sub  scene.entities []
+	 
+    
   let shoot tireur scene (x,y) = 
     if (not (Objet.canShoot tireur)) then scene
     else
@@ -167,7 +218,7 @@ module Scene : Scene =  struct
 	(*decalage afin que le tireur ne tire pas dans lui meme*)
 	let decX = if x = 1 then xs else if x = 0 then xs/2 else 0 in       
 	let decY = if y = 1 then ys else if y = 0 then ys/2 else 0 in
-	let temp = List.fold_left (fun acc x -> if x = tireur then ((Objet.triggerShoot x)::acc) else (x::acc)) [] scene.entities in
+	let temp = List.rev (List.fold_left (fun acc x -> if x = tireur then ((Objet.triggerShoot x 15)::acc) else (x::acc)) [] scene.entities) in
 	let temp2 = {scene with entities = temp } in
 	addEntitie temp2 (Objet.create Projectile 
                             (xP+decX+x*10,yP+decY+y*10) 
@@ -225,7 +276,8 @@ module Scene : Scene =  struct
        begin
 	 loadPicture sceneNew.renderer (Camera.convertPosBackground sceneNew.cam)
            (Objet.getSize sceneNew.background) (Objet.getTexture sceneNew.background);
-	 refresh_sub sceneNew.entities	 
+	 refresh_sub sceneNew.entities;
+	 loadPicture sceneNew.renderer (Objet.getPos sceneNew.lifebar) (Objet.getSize sceneNew.lifebar) (Objet.getTexture sceneNew.lifebar)
        end
 	 
   let getTexture scene =

@@ -12,17 +12,20 @@ module type Scene = sig
   val addEntitie : scene -> Objet.objet -> scene
   val removeEntitie : scene -> Objet.objet -> scene 
   val kickDead : scene -> scene
+  val refreshLifebar : scene -> scene
   val loadPicture : Sdl.renderer -> (int*int) -> (int*int) -> Sdl.texture -> unit
   val refresh : scene -> scene -> unit
   val closeScene : scene -> unit
   val collision_All : scene -> scene
   val moveAll : scene -> scene
+  val shootAll : scene -> scene
   val movePersonnage : scene -> (float*float) -> scene
   val continue : scene -> bool
   val suicide : scene -> scene
   val shoot : Objet.objet -> scene -> (int*int) ->  scene
   val getPers : scene -> Objet.objet
   val decreaseClock : scene -> scene
+  val print : scene -> unit
 end
   
 module Scene : Scene

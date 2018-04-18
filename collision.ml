@@ -45,7 +45,7 @@ module Collision : Collision = struct
       -  8  -  4  -  7  -
       -     -     -     -
       -------------------
-      les différentes faces du rectangle fixe : 
+      les différentes faces du rectangle rencontré : 
       LEFT: 1 /UP: 2 /RIGHT: 3 /DOWN: 4 / Diag UP-LEFT : 5 / Diag UP-RIGHT : 6 / Diag DOWN-RIGHT : 7 / Diag DOWN-LEFT : 8 
     *)
     (* on check si l'obj 1 etait au dessus de l'obj 2 *)
@@ -72,12 +72,12 @@ module Collision : Collision = struct
     let (xs,ys) = Objet.getSpeed obj in
     let (xCol,yCol) = Objet.getPos obj_col in
     let (wCol,hCol) = Objet.getBaseSize obj_col in
-    if ((Objet.getGenre obj_col) = Plateforme)
-    then
-	if (face = 2)
-	then Objet.allowJump (Objet.reposition obj (x,yCol-h) (xs,0.0))
-	else obj
-    else
+    match ((Objet.getGenre obj_col)) with
+    |Plateforme _  ->
+       if (face = 2 || face = 5 || face = 6)
+       then Objet.allowJump (Objet.reposition obj (x,yCol-h) (xs,0.0))
+       else obj
+    | _ ->
       match face with
       |1 -> Objet.allowJump (Objet.reposition obj (xCol-w,y) (0.0,ys))
       |2 -> Objet.allowJump (Objet.reposition obj (x,yCol-h) (xs,0.0))
@@ -91,14 +91,15 @@ module Collision : Collision = struct
 	 
   let collision_perso p obj =
     match (Objet.getGenre obj) with
-    |Ennemi     ->
+    |Ennemi _   ->
        if (Objet.canBeDmg p) then
 	 let (xs,ys) = Objet.getSpeed p in
 	 let (xse,yse) = Objet.getSpeed obj in
 	 let temp = replace p (directionCollision p obj) obj in
-	 if abs_float(xs) < 0.8
-	 then Objet.changePV (Objet.setSpeed (Objet.resetSpeed temp) ((xse*.2.0),(yse*.2.0)-.6.0)) (-20)
-	 else Objet.changePV (Objet.setSpeed (Objet.resetSpeed temp) ((-.xs+.(xse*.1.5)),(-.ys+.(yse*.1.5)-.6.0))) (-20)
+	 if abs_float(xs) < 0.8 then
+	   Objet.changePV (Objet.setSpeed (Objet.resetSpeed temp) ((xse*.3.0),(-.6.0))) (-40)
+	 else
+	   Objet.changePV (Objet.setSpeed (Objet.resetSpeed temp) ((-.xs+.(xse*.0.5)),(-.ys+.(yse*.0.5)-.6.0))) (-40)
        else p
     |Projectile -> Objet.changePV p (-20)
     |Door t     -> p
@@ -108,7 +109,7 @@ module Collision : Collision = struct
   let collision_ennemi e obj =
     match Objet.getGenre obj with
     |Personnage -> e
-    |Ennemi     -> e
+    |Ennemi _   -> e
     |Projectile -> Objet.changePV e (-20)
     |_          ->
        let(xs,ys) = Objet.getSpeed e in
@@ -123,10 +124,14 @@ module Collision : Collision = struct
   let collision obj1 obj2 =
     if checkCollision obj1 obj2 then
       match Objet.getGenre obj1 with
-      |Personnage -> collision_perso obj1 obj2 
-      |Ennemi -> collision_ennemi obj1 obj2 
+      |Personnage -> begin
+	(*let (x1,y1) = Objet.getPos obj1 in
+	Printf.printf "%d %d \n " x1 y1;*)
+	collision_perso obj1 obj2
+      end
+      |Ennemi _   -> collision_ennemi obj1 obj2 
       |Projectile -> collision_projectile obj1
-      |_ -> obj1
+      |_          -> obj1
     else obj1
 
 end
