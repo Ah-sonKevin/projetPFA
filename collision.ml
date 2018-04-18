@@ -74,7 +74,7 @@ module Collision : Collision = struct
     let (wCol,hCol) = Objet.getBaseSize obj_col in
     match ((Objet.getGenre obj_col)) with
     |Plateforme _  ->
-       if (face = 2)
+       if (face = 2 || face = 5 || face = 6)
        then Objet.allowJump (Objet.reposition obj (x,yCol-h) (xs,0.0))
        else obj
     | _ ->
@@ -90,6 +90,10 @@ module Collision : Collision = struct
       |_ -> failwith "ya que 8 cas normalement"
 	 
   let collision_perso p obj =
+    Printf.printf "---------------------------------------------------------------------------- \n";
+    Objet.print p;
+    Objet.print obj;
+    Printf.printf "---------------------------------------------------------------------------- \n";
     match (Objet.getGenre obj) with
     |Ennemi     ->
        if (Objet.canBeDmg p) then
@@ -125,8 +129,6 @@ module Collision : Collision = struct
     if checkCollision obj1 obj2 then
       match Objet.getGenre obj1 with
       |Personnage -> begin
-	let (x1,y1) = Objet.getPos obj1 in
-	Printf.printf "%d %d \n " x1 y1;
 	collision_perso obj1 obj2
       end
       |Ennemi -> collision_ennemi obj1 obj2 

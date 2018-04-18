@@ -88,10 +88,10 @@ let jeu () =
               Menu.startMenu window renderer son;
               let scene = genererScene "scene1_begin.txt" None render in 
               let rec game scene wesyindow renderer =
-                Sdl.delay 17l;
 		let sceneTemp = Scene.decreaseClock scene in 
                 let sceneEvent = evenement event  window renderer sceneTemp in
                 let sceneMove = Scene.moveAll sceneEvent in
+		Sdl.delay 17l;
 	        let sceneActive = Scene.kickDead sceneMove in
                 Scene.refresh scene sceneActive;
                 GameMap.startMapMini window renderer scene;

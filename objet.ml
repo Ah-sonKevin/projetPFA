@@ -29,7 +29,7 @@ module type Objet = sig
   val kill : objet -> objet
   val canShoot : objet -> bool
   val canBeDmg : objet -> bool 
-  val triggerShoot : objet -> objet
+  val triggerShoot : objet -> int -> objet
   val triggerInv : objet -> objet
   val decreaseClock : objet -> objet
 end
@@ -63,7 +63,7 @@ module Objet : Objet = struct
       
   let canShoot p = p.clockShoot = 0
   let canBeDmg p = p.clockInv = 0
-  let triggerShoot p = {p with clockShoot = 5}
+  let triggerShoot p n = {p with clockShoot = n}
   let triggerInv p = {p with clockInv = 40}
   let decreaseClock p =
     {p with clockShoot = if p.clockShoot > 0 then p.clockShoot -1 else 0;
@@ -75,7 +75,16 @@ module Objet : Objet = struct
     let (xs,ys) = obj.vitesse in
     let (xsm,ysm) = obj.maxSpeed in
     let pv = obj.pv in
-    Printf.printf "Pos : %d %d \n Speed : %f %f \n MaxSpeed : %f %f \n PV : %d \n\n" x y xs ys xsm ysm pv 
+    let (bw,bh) = obj.baseSize in
+    let (ox,oy) = obj.old_pos in
+    match obj.genre with
+    |Personnage   ->Printf.printf " Genre : Personnage \n Pos : %d %d \n baseSize : %d %d \n Old Pos : %d %d \n Speed : %f %f \n MaxSpeed : %f %f \n PV : %d \n\n" x y bw bh ox oy xs ys xsm ysm pv 
+    |Ennemi       ->Printf.printf " Genre : Ennemi \n Pos : %d %d baseSize : %d %d \n Old Pos : %d %d \n Speed : %f %f \n MaxSpeed : %f %f \n PV : %d \n\n" x y bw bh ox oy xs ys xsm ysm pv 
+    |Plateforme _ ->Printf.printf " Genre : Plateforme \n Pos : %d %d baseSize : %d %d \n Speed : %f %f \n MaxSpeed : %f %f \n PV : %d \n\n" x y bw bh xs ys xsm ysm pv 
+    |Wall _       ->Printf.printf " Genre : Wall \n Pos : %d %d baseSize : %d %d \n Speed : %f %f \n MaxSpeed : %f %f \n PV : %d \n\n" x y bw bh xs ys xsm ysm pv 
+    |Door _       ->Printf.printf " Genre : Door \n Pos : %d %d baseSize : %d %d \n Speed : %f %f \n MaxSpeed : %f %f \n PV : %d \n\n" x y bw bh xs ys xsm ysm pv 
+    |Projectile   ->Printf.printf " Genre : Projectile \n Pos : %d %d baseSize : %d %d \n Speed : %f %f \n MaxSpeed : %f %f \n PV : %d \n\n" x y bw bh xs ys xsm ysm pv 
+    |Background   ->Printf.printf " Genre : Background \n Pos : %d %d baseSize : %d %d \n Speed : %f %f \n MaxSpeed : %f %f \n PV : %d \n\n" x y bw bh xs ys xsm ysm pv 
       
   let kill obj = {obj with pv = 0}                   
   let getBaseSize obj = obj.baseSize
@@ -125,8 +134,6 @@ module Objet : Objet = struct
   let isMovable obj = if (obj.genre = Personnage) || (obj.genre = Ennemi) || (obj.genre = Projectile) then true else false
 
   let changeFrame obj dir = {obj with texture = Anim.changeFrame obj.texture dir}
-
-  let gerBaseText obj = Anim.getBaseText obj.texture
 
   let getSize obj =
     match obj.genre  with

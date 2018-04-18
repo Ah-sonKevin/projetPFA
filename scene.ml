@@ -26,6 +26,7 @@ module type Scene = sig
   val shoot : Objet.objet -> scene -> (int*int) ->  scene
   val getPers : scene -> Objet.objet
   val decreaseClock : scene -> scene
+  val print : scene -> unit
 end
 
 module Scene : Scene =  struct
@@ -81,7 +82,9 @@ module Scene : Scene =  struct
             if xs >= 1.0 then Anim.Droite else if xs <= -1.0 then  Anim.Gauche else Milieu
             else Anim.Saut
         in Objet.changeFrame x dir) l 
-      
+
+  let print sc = List.iter (fun obj -> Objet.print obj) sc.entities
+    
   let collision_All scene =
       
     let out_of_bound obj =
@@ -92,9 +95,7 @@ module Scene : Scene =  struct
 	 let (w,h) = Objet.getSize obj in
 	 let (sizeX,sizeY) = getSize scene in
 	 (* calcul des collisions avec les bords de la scene, on regarde si l'objet est "sorti" de la scene*)
-	 if ((x < 0) || (y < 0) || ((x+w)>sizeX) || ((y+h)>sizeY)) then
-	   begin Printf.printf "%d %d %d %d %d %d \n" x y (x+w) (y+h) sizeX sizeY ;Objet.kill obj end
-	 else obj
+	 if ((x < 0) || (y < 0) || ((x+w)>sizeX) || ((y+h)>sizeY)) then Objet.kill obj  else obj
     in
     let temp = {scene with entities = List.map (fun obj -> (List.fold_left (Collision.collision) obj (getEntitie (removeEntitie scene obj)))) (getEntitie scene)} in
     {temp with entities = (List.map (out_of_bound) (getEntitie temp))}
@@ -155,7 +156,7 @@ module Scene : Scene =  struct
     |None ->
        let temp2 = {temp1 with entities = changeAnim temp1.entities} in
        collision_All temp2
-    |Some (sc) -> sc 
+    |Some (sc) -> print sc; sc 
       
   let shoot tireur scene (x,y) = 
     if (not (Objet.canShoot tireur)) then scene
@@ -167,7 +168,7 @@ module Scene : Scene =  struct
 	(*decalage afin que le tireur ne tire pas dans lui meme*)
 	let decX = if x = 1 then xs else if x = 0 then xs/2 else 0 in       
 	let decY = if y = 1 then ys else if y = 0 then ys/2 else 0 in
-	let temp = List.fold_left (fun acc x -> if x = tireur then ((Objet.triggerShoot x)::acc) else (x::acc)) [] scene.entities in
+	let temp = List.rev (List.fold_left (fun acc x -> if x = tireur then ((Objet.triggerShoot x 15)::acc) else (x::acc)) [] scene.entities) in
 	let temp2 = {scene with entities = temp } in
 	addEntitie temp2 (Objet.create Projectile 
                             (xP+decX+x*10,yP+decY+y*10) 

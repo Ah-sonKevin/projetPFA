@@ -87,6 +87,7 @@ module GameMap : GameMap  = struct
        (int_of_float ((float_of_int wo) *. ratioX),(int_of_float  ((float_of_int ho) *. ratioY))) render) (Scene.getEntitie scene)
 
   let drawMini scene window render sizeMap =
+
     chooseColor  255 255  255 255 render;
     let (windowSizeX,windowSizeY) = Sdl.get_window_size window in 
     let (sceneWidth,sceneHeight) = Scene.getSize scene in
@@ -115,7 +116,6 @@ module GameMap : GameMap  = struct
 	drawFillRect (int_of_float rx, (int_of_float ry))  (int_of_float ((float_of_int objWidth) *. ratioX),(int_of_float  ((float_of_int objHeight) *. ratioY)))
 			 render) (Scene.getEntitie scene)
 
-      
 
 
 

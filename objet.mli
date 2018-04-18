@@ -29,7 +29,7 @@ module type Objet = sig
   val kill : objet -> objet
   val canShoot : objet -> bool
   val canBeDmg : objet -> bool 
-  val triggerShoot : objet -> objet
+  val triggerShoot : objet -> int -> objet
   val triggerInv : objet -> objet
   val decreaseClock : objet -> objet
 end
