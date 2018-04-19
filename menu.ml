@@ -2,18 +2,22 @@ open Tsdl
 open Objet
 open Scene
 open Camera
+open Tsdl_mixer
 open Anim
+open Tools
 open Sound
 
 module type Menu = sig 
   type choix
+  type soundSetting
   val my_exit : Sdl.window * Sdl.renderer -> unit 
   val evenement : Sdl.window * Sdl.renderer -> choix -> Sound.sound -> choix option
-  val startMenu : Sdl.window  ->  Sdl.renderer -> Sound.sound ->unit
+  val startMenu : Sdl.window  ->  Sdl.renderer -> Sound.sound  ->unit
 end
 
 module Menu = struct
   type choix = Game|Exit|Config|Key
+  type soundSetting = Music|SoundEffect
   
   let my_exit (window,renderer) =
     Sdl.destroy_renderer renderer;
@@ -43,6 +47,7 @@ module Menu = struct
       if ((tab.{(Sdl.get_scancode_from_key Sdl.K.return)} = 1) || ((tab.{(Sdl.get_scancode_from_key Sdl.K.space)} = 1))) then 
         begin
           Sound.play_sound Sound.MenuO son;
+	  print_string "bwark";
           None
         end
       else if (tab.{(Sdl.get_scancode_from_key Sdl.K.up )} = 1) then 
@@ -59,7 +64,7 @@ module Menu = struct
         Some choice
     end
 
-  let evenementSousMenu son = 
+  let evenementSousMenuCommande son = 
     Sdl. pump_events ();
     let tab = Sdl.get_keyboard_state () in    
     begin
@@ -72,11 +77,54 @@ module Menu = struct
         false
     end
       
-  let startMenu window render son =
+  let evenementSousMenuConfig son soundSetting=    
+    Sdl. pump_events ();
+    let tab = Sdl.get_keyboard_state () in    
+    begin
+      if ((tab.{(Sdl.get_scancode_from_key Sdl.K.return)} = 1) || ((tab.{(Sdl.get_scancode_from_key Sdl.K.space)} = 1))) then 
+        begin
+          Sound.play_sound Sound.MenuO son;
+          None
+        end
+      else
+	let x =   5*(tab.{(Sdl.get_scancode_from_key Sdl.K.right)} - tab.{(Sdl.get_scancode_from_key Sdl.K.left)}) in	
+	if x != 0 then
+	  match soundSetting with
+	  |Music ->
+	     begin
+	       let vol = Tsdl_mixer.Mixer.volume_music (-1) in
+	       let _ = Tsdl_mixer.Mixer.volume_music (vol +x) in
+	       Some soundSetting
+	     end
+	  |soundEffect ->
+	     begin
+	       let vol = Tsdl_mixer.Mixer.volume (-1) (-1) in
+	       let _ = Tsdl_mixer.Mixer.volume (-1) (vol +x) in
+	       Sound.play_sound Sound.MenuO son;
+	       Some soundSetting
+	     end
+	else if (tab.{(Sdl.get_scancode_from_key Sdl.K.up )} = 1) then 
+          begin
+            Sound.play_sound Sound.MenuC son;
+            match soundSetting with
+	    |Music -> Some SoundEffect
+	    |soundEffect -> Some Music
+          end
+	else if (tab.{(Sdl.get_scancode_from_key Sdl.K.down )} = 1) then 
+          begin
+            Sound.play_sound Sound.MenuC son;
+            match soundSetting with
+	    |Music -> Some SoundEffect
+	    |soundEffect -> Some Music
+          end	     
+	else
+	  Some soundSetting
+    end
+      
+  let startMenu window render son  =
     (*chargement des éléments de jeu*)
     let background = Objet.create Background (0,0) (0.0,0.0) (0.0,0.0) 10000  
                        (Anim.create [||] [|"Image/Menu_backscreen_1200_900.bmp"|]  [||] [||] render ) render in
-
     let jouer    = Objet.create Background (200,50) (0.0,0.0) (0.0,0.0) 10000 
                      (Anim.create [||] [|"Image/jouer.bmp"|] [||] [||] render)  render in 
     let jouer2   = Objet.create Background (200,50) (0.0,0.0) (0.0,0.0) 10000
@@ -95,54 +143,66 @@ module Menu = struct
                      (Anim.create [||] [|"Image/quitter2.bmp"|] [||] [||] render)  render in
     let background_sousMenu = Objet.create Background (0,0)  (0.0,0.0) (0.0,0.0) 10000 
                                 (Anim.create [||] [|"Image/map.bmp"|] [||] [||] render)  render in
-
     let shootKey    = Objet.create Background (200,10) (0.0,0.0) (0.0,0.0) 10000 
                      (Anim.create [||] [|"Image/shootKey.bmp"|] [||] [||] render)  render in 
     let moveKey   = Objet.create Background (200,250) (0.0,0.0) (0.0,0.0) 10000
-                     (Anim.create [||] [|"Image/move.bmp"|] [||] [||] render)  render in 
+                     (Anim.create [||] [|"Image/moveKey.bmp"|] [||] [||] render)  render in 
     let mapKey  = Objet.create Background (200,400) (0.0,0.0) (0.0,0.0) 10000 
                     (Anim.create [||] [|"Image/mapKey.bmp"|] [||] [||] render)  render in
 
     
-    let rec commande renderer son = 
+    let rec menuCommande renderer son = 
       match Sdl.render_clear renderer with
       |Error (`Msg e) -> Sdl.log "Init render error: %s" e; exit 1
       |Ok () ->
         begin
-          let loadPicture renderer (x1,y1) (w,h) texture =
-            let frag_rect = Sdl.Rect.create 0 0 w h in
-            let position_background = Sdl.Rect.create x1 y1 w h in
-            match Sdl.render_copy ~dst:position_background ~src:frag_rect renderer texture with
-            |Error (`Msg e) -> Sdl.log "Init texture on screen error: %s" e; exit 1
-            |Ok () -> ()
-          in
-          loadPicture renderer (0,0) (Objet.getSize background_sousMenu) (Objet.getTexture background_sousMenu);
-          loadPicture renderer (0,0) (Objet.getSize shootKey) (Objet.getTexture shootKey);
-          loadPicture renderer (0,0) (Objet.getSize moveKey) (Objet.getTexture moveKey);
-          loadPicture renderer (0,0) (Objet.getSize mapKey) (Objet.getTexture mapKey);
-          if (evenementSousMenu son ) then ()
-          else 
-            begin
-              Sdl.delay 50l;
-              commande renderer son
-            end
+          Tools.loadPicture renderer (0,0) (Objet.getSize background_sousMenu) (Objet.getTexture background_sousMenu);
+          Tools.loadPicture renderer (0,0) (Objet.getSize shootKey) (Objet.getTexture shootKey);
+          Tools.loadPicture renderer (0,0) (Objet.getSize moveKey) (Objet.getTexture moveKey);
+          Tools.loadPicture renderer (0,0) (Objet.getSize mapKey) (Objet.getTexture mapKey);
+	  Sdl.render_present renderer;
+	  Sdl.delay 150l;
+          if (evenementSousMenuCommande son ) then ()
+          else menuCommande renderer son            
         end
     in
 
-    
-    let refresh choice renderer =
+    let rec menuConfig renderer son soundSetting =
       match Sdl.render_clear renderer with
       |Error (`Msg e) -> Sdl.log "Init render error: %s" e; exit 1
       |Ok () ->
-        let loadPicture renderer (x1,y1) (w,h) texture =
-          let frag_rect = Sdl.Rect.create 0 0 w h in
-          let position_background = Sdl.Rect.create x1 y1 w h in
-          match Sdl.render_copy ~dst:position_background ~src:frag_rect renderer texture with
-          |Error (`Msg e) -> Sdl.log "Init texture on screen error: %s" e; exit 1
-          |Ok () -> ()
-        in
+	 begin
+	   let (sw,sh) = Sdl.get_window_size window in
+	   let volM = float_of_int (Tsdl_mixer.Mixer.volume_music (-1)) in
+	   let ratioVolM = volM/.(float_of_int Tsdl_mixer.Mixer.max_volume) in
+
+	   let volE = float_of_int (Tsdl_mixer.Mixer.volume (-1)(-1)) in
+	   let ratioVolE = volE/.(float_of_int Tsdl_mixer.Mixer.max_volume) in
+	   
+	   begin
+	     Tools.loadPicture renderer (0,0) (Objet.getSize background_sousMenu) (Objet.getTexture background_sousMenu);
+	     Tools.chooseColor 55 15 200 255 renderer;	          
+	     Tools.drawFillRect (50,50) (int_of_float ((float_of_int (sw-100))*.ratioVolM),50) renderer;    
+	     Tools.drawFillRect (50,200) (int_of_float ((float_of_int (sw-100))*.ratioVolE),50) renderer;
+	     Tools.chooseColor 255 255 255 255 renderer;
+	     Tools.drawRect (50,50) (sw-100,50) render;
+	     Tools.drawRect (50,200) (sw-100,50) render;
+	     Sdl.render_present render;
+	     Sdl.delay 150l;
+             match evenementSousMenuConfig son soundSetting with
+	     |None -> ()
+	     |Some b -> menuConfig renderer son b
+	   end
+	 end
+      in
+
+    
+    let refresh choice renderer =      
+      match Sdl.render_clear renderer with
+      |Error (`Msg e) -> Sdl.log "Init render error: %s" e; exit 1
+      |Ok () ->
         begin         
-          loadPicture renderer (0,0) (Objet.getSize background) (Objet.getTexture background);
+          Tools.loadPicture renderer (0,0) (Objet.getSize background) (Objet.getTexture background);
            let (game,key,config,ext) = 
             match choice with 
             |Game -> (jouer2,key,config,quitter)
@@ -150,32 +210,34 @@ module Menu = struct
             |Config -> (jouer,key,config2,quitter)
             |Exit -> (jouer,key,config,quitter2)
            in
-          loadPicture renderer (Objet.getPos game) (Objet.getSize game) (Objet.getTexture game);
-          loadPicture renderer (Objet.getPos ext) (Objet.getSize ext) (Objet.getTexture ext);
-          loadPicture renderer (Objet.getPos key) (Objet.getSize key) (Objet.getTexture key);
-          loadPicture renderer (Objet.getPos config) (Objet.getSize config) (Objet.getTexture config);
+          Tools.loadPicture renderer (Objet.getPos game) (Objet.getSize game) (Objet.getTexture game);
+          Tools.loadPicture renderer (Objet.getPos ext) (Objet.getSize ext) (Objet.getTexture ext);
+          Tools.loadPicture renderer (Objet.getPos key) (Objet.getSize key) (Objet.getTexture key);
+          Tools.loadPicture renderer (Objet.getPos config) (Objet.getSize config) (Objet.getTexture config);
           Sdl.render_present renderer
         end
     in    
     (* gestion du jeu une fois lancé *)
-    let rec sub window renderer choice son =
+    let rec sub window renderer choice son soundSetting =
       refresh choice renderer;
       Sdl.delay 150l;
-      let temp  = evenement (window,renderer) choice son in 
+      let temp  = evenement (window,renderer) choice son in    
       match temp with 
-      |Some b -> sub window renderer b son
-      |None when choice = Game -> ()
+      |Some b -> sub window renderer b son soundSetting
+      |None when choice = Game -> begin print_string "bwirk";()end
       |None when choice = Key -> 
-        begin
-          sub window renderer choice son
+         begin
+	   menuCommande render son;
+           sub window renderer choice son soundSetting
         end
       |None when choice = Config -> 
-        begin
-          commande render son;
-          sub window renderer choice son
+         begin
+    	   menuConfig render son soundSetting;
+          sub window renderer choice son soundSetting
         end
       |None when choice = Exit -> exit 0
       |None -> failwith "n'existe pas" 
-    in sub window render Game son
+    in sub window render Game son Music;
 
+    
 end
