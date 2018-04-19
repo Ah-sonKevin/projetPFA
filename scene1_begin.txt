@@ -286,7 +286,7 @@ no
 no
 
 Genre Plateforme  (50,10)
-Position (700,560)
+Position (700,570)
 Vitesse (0.0,0.0)
 VitesseMax (0.0,0.0)
 PV 1000
@@ -333,7 +333,7 @@ Image/Plateforme.bmp
 no
 no
 
-Genre Ennemi
+Genre Ennemi Normal
 Position (270,775)
 Vitesse (4.0,0.0)
 VitesseMax (5.0,10.0)
@@ -345,9 +345,45 @@ Image/ennemies/ennemi_test_25_21.bmp
 no
 no
 
-Genre Ennemi
+Genre Ennemi Normal
 Position (470,775)
 Vitesse (-2.0,0.0)
+VitesseMax (5.0,10.0)
+PV 100
+Animation
+no
+Image/ennemies/ennemi_test_25_21.bmp
+
+no
+no
+
+Genre Ennemi Fly
+Position (470,705)
+Vitesse (-4.5,0.0)
+VitesseMax (5.0,10.0)
+PV 100
+Animation
+no
+Image/ennemies/ennemi_test_25_21.bmp
+
+no
+no
+
+Genre Ennemi Both
+Position (470,645)
+Vitesse (1.5,0.0)
+VitesseMax (5.0,10.0)
+PV 100
+Animation
+no
+Image/ennemies/ennemi_test_25_21.bmp
+
+no
+no
+
+Genre Ennemi Both
+Position (750,400)
+Vitesse (1.5,0.0)
 VitesseMax (5.0,10.0)
 PV 100
 Animation

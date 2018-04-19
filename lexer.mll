@@ -67,9 +67,10 @@ and genre perso r = parse
       let (pos,speed,maxSpeed,pv,(g,m,d,s), y) = (pos perso r lexbuf ) in
       ((Objet.Plateforme (int_of_string x1,int_of_string x2)),pos, speed, maxSpeed, pv, (Anim.create g m d s r), y)
     } 
-    |"Ennemi\n" {
+    |"Ennemi" espaces {
+    let genre = ennemi perso r lexbuf in
       let (pos,speed,maxSpeed,pv,(g,m,d,s), y) = (pos perso r lexbuf ) in
-      ((Objet.Ennemi),pos, speed, maxSpeed, pv, (Anim.create g m d s r), y)
+      (genre,pos, speed, maxSpeed, pv, (Anim.create g m d s r), y)
     }
     |"Wall" espaces (coupleDigit as s) '\n' {
       let (pos,speed,maxSpeed,pv,(g,m,d,s), y) = (pos perso r lexbuf ) in
@@ -85,6 +86,13 @@ and genre perso r = parse
     }
     |_ as c {Printf.printf "Erreur : %c" c;raise Erreur_de_syntaxe}
     |eof {raise Erreur_de_syntaxe}
+
+
+and  ennemi perso r = parse
+    |"Normal" espaces '\n' {Objet.Ennemi Normal}
+    |"Shooter" espaces '\n' {Objet.Ennemi Shooter}
+    |"Fly" espaces '\n' {Objet.Ennemi Fly}
+    |"Both" espaces '\n' {Objet.Ennemi Both}
 	
 and pos2 perso r = parse
     |"Position" espaces (coupleDigit ) '\n' {

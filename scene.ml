@@ -22,6 +22,7 @@ module type Scene = sig
   val closeScene : scene -> unit
   val collision_All : scene -> scene
   val moveAll : scene -> scene
+  val shootAll : scene -> scene
   val movePersonnage : scene -> (float*float) -> scene
   val continue : scene -> bool
   val suicide : scene -> scene
@@ -172,7 +173,56 @@ module Scene : Scene =  struct
        let temp2 = {temp1 with entities = changeAnim temp1.entities} in
        collision_All temp2
     |Some (sc) ->  sc 
-      
+
+  let shootAll scene =
+    (* récupère le personnage *)
+    let p = getPers scene in
+    let rec shootAll_sub listObjet listRes =
+      (* on récupère les coordonnées du personnage pour déterminer les tirs des ennemis *)
+      let (xp,yp) = Objet.getPos p in
+      let (xsp,ysp) = Objet.getSpeed p in
+      let (wp,hp) = Objet.getBaseSize p in
+      match listObjet with
+      |[]->  {scene with entities = listRes }
+      (* On fait tirer les ennemis qui le peuvent *)
+      |x::s ->
+	 match Objet.getGenre x with
+	 |Ennemi k when ((k  = Shooter) || (k = Both)) ->
+	    begin
+	      (* on fait tirer les ennemis qui le peuvent *)
+	      if (not (Objet.canShoot x)) then shootAll_sub s (x::listRes)
+	      else
+		begin
+		  let (xt,yt) = Objet.getPos x in
+		  let (w,h) = Objet.getBaseSize x in
+		  (* on calcul le milieu du tireur et le milieu du personnage *)
+		  let (ppX,ppY) = (xp + (wp/2),yp + (hp/2)) in
+		  let (peX,peY) = (xt + (w/2),yt + (h/2)) in
+		  (* on calcul la position du personnage par rapport au tireur (dans le référentiel du tireur donc) *)
+		  let (vecx,vecy) = (ppX-peX,ppY-peY) in
+		  let norm = sqrt(float_of_int(vecx*vecx + vecy*vecy))in
+		  let (normX,normY) = ((float_of_int vecx)/.norm , (float_of_int vecy)/.norm) in
+		  (*decalage afin que le tireur ne tire pas dans lui meme on calcul par rapport aux milieu des objets, puis on refera un décalage*)
+		  (*pythagore*)
+		  let distdiagEnProj = int_of_float(sqrt(float_of_int(h*h+w*w)))+10 in
+		  (*on applique notre vecteur normalisé afin de définir la "direction" dans laquelle ira le projectil à sa creation le +6 c'est 
+		    la taille du projectile divisé par 2 (w et h, sont les meme vus qu'il est carré)*)
+		  let (posX,posY) = (int_of_float((normX)*.(float_of_int(distdiagEnProj+1+6))),
+				     int_of_float((normY)*.(float_of_int(distdiagEnProj+1+6)))) in
+		  let proj = Objet.create Projectile 
+                    (xt+posX,yt+posY) 
+                    ((normX)*.(10.0),(normY)*.(10.0))  (10.0,10.0) 10 
+                    (Anim.create [||] [|"Image/Ennemi_proj.bmp"|] [||] [||] scene.renderer) 
+                    scene.renderer in
+		  shootAll_sub s (proj::(Objet.triggerShoot x 60)::listRes)
+		end
+	    end
+	 (* Ne rien faire pour les autres objets *)
+	 |_ -> shootAll_sub s (x::listRes)
+    in
+    shootAll_sub  scene.entities []
+	 
+    
   let shoot tireur scene (x,y) = 
     if (not (Objet.canShoot tireur)) then scene
     else
