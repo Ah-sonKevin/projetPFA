@@ -4,7 +4,8 @@ open Anim
 module type Objet = sig
     
   type kind = Normal | Fly | Shooter | Both
-  type genre_objet = Personnage|Ennemi of kind|Plateforme of int * int |Wall of int * int|Door of string |Background|Projectile
+  type typeUp = HP|Inv
+  type genre_objet = Personnage|Ennemi of kind|Plateforme of int * int |Wall of int * int|Door of string |Background|Projectile |PowerUp of typeUp
   type objet
   val create : genre_objet -> int*int -> float*float -> float*float -> int -> Anim.anim -> Sdl.renderer -> objet
   val move : objet -> (int*int) -> objet
@@ -34,12 +35,15 @@ module type Objet = sig
   val triggerShoot : objet -> int -> objet
   val triggerInv : objet -> objet
   val decreaseClock : objet -> objet
+  val getPvMax : objet -> int
+  val clignote : objet -> bool
 end
  
 module Objet : Objet = struct
   type kind = Normal | Fly | Shooter | Both
-  type genre_objet = Personnage|Ennemi of kind|Plateforme of int * int |Wall of int * int |Door of string|Background|Projectile
-  type objet = {genre : genre_objet; position : int*int; old_pos : int*int; can_jump : bool; vitesse : float * float ; maxSpeed : float*float; pv : int;
+  type typeUp = HP|Inv
+  type genre_objet = Personnage|Ennemi of kind|Plateforme of int * int |Wall of int * int|Door of string |Background|Projectile |PowerUp of typeUp
+  type objet = {genre : genre_objet; position : int*int; old_pos : int*int; can_jump : bool; vitesse : float * float ; maxSpeed : float*float; pv : int; pvMax : int;
 	baseSize : int*int ; texture : Anim.anim; clockInv : int; clockShoot : int}
     
   let create genre_o pos vit maxvit hp textu renderer  =
@@ -55,6 +59,7 @@ module Objet : Objet = struct
      vitesse = vit;
      maxSpeed = maxvit;
      pv = hp;
+     pvMax = hp;
      clockInv = 0;
      clockShoot = 0;
      texture = textu;
@@ -71,6 +76,10 @@ module Objet : Objet = struct
   let decreaseClock p =
     {p with clockShoot = if p.clockShoot > 0 then p.clockShoot -1 else 0;
       clockInv = if p.clockInv > 0 then p.clockInv -1 else 0}
+
+  let clignote p = (p.clockInv mod 2) = 0 
+
+  let getPvMax p = p.pvMax
 
   (* fonction de debuggage*)
   let print obj = 

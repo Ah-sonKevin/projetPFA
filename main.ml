@@ -6,6 +6,7 @@ open Menu
 open Tsdl_mixer
 open Sound
 open GameMap
+open Random
 
 exception ErreurScene
 
@@ -60,7 +61,8 @@ let evenement e window renderer scene =
   end
 
 
-let jeu () =  
+let jeu () =
+  Random.self_init ();
   (*gestion de l'ouverture de la fenetre*)
     match Sdl.init Sdl.Init.video with
     | Error (`Msg e) -> Sdl.log "Init error: %s" e; exit 1
