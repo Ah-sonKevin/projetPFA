@@ -5,7 +5,7 @@ open Sound
 
 module type Scene = sig
   type scene 
-  val create : Objet.objet list -> float -> Objet.objet -> Camera.camera ->  Sdl.renderer -> Sound.sound-> string -> scene
+  val create : Objet.objet list -> float -> Objet.objet -> Camera.camera ->  Sdl.renderer -> string -> scene
   val getEntitie : scene -> Objet.objet list
   val getTexture : scene -> Sdl.texture list
   val getSize : scene -> (int*int)

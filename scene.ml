@@ -10,7 +10,7 @@ open Tools
 
 module type Scene = sig
   type scene 
-  val create : Objet.objet list -> float -> Objet.objet -> Camera.camera ->  Sdl.renderer -> Sound.sound-> string -> scene
+  val create : Objet.objet list -> float -> Objet.objet -> Camera.camera ->  Sdl.renderer -> string -> scene
   val getEntitie : scene -> Objet.objet list
   val getTexture : scene -> Sdl.texture list
   val getSize : scene -> (int*int)
@@ -33,14 +33,14 @@ end
 
 module Scene : Scene =  struct
   type scene = {entities:Objet.objet list ; gravitie:float ; background : Objet.objet ;
-                cam : Camera.camera ; renderer : Sdl.renderer; son : Sound.sound; lifebar : Objet.objet}
+                cam : Camera.camera ; renderer : Sdl.renderer; lifebar : Objet.objet}
 
   exception NoPerso
   exception ErreurScene
               
-  let create objs grav back camera render son theme =
+  let create objs grav back camera render theme =
     Sound.play_mus theme;
-    {entities = objs ; gravitie = grav ; background = back ; cam = camera ;renderer = render; son = son;
+    {entities = objs ; gravitie = grav ; background = back ; cam = camera ;renderer = render; 
      lifebar =
 	let rec getPers_rec l =
 	  match l with 
@@ -77,7 +77,7 @@ module Scene : Scene =  struct
       if (((Objet.getPV x) < 1) && (Objet.getGenre x)!=Personnage) then
 	match  (Objet.getGenre x ) with
 	|Ennemi _ ->
-	   (*if  ((Random.int 5)= 0) then*) (((newPowerUp (Objet.getPos x) scene.renderer))::acc) (*else acc*)
+	   if  ((Random.int 5)= 0) then (((newPowerUp (Objet.getPos x) scene.renderer))::acc) else acc
 	| _ ->  acc
       else (x::acc)) [] scene.entities
     }
@@ -89,6 +89,7 @@ module Scene : Scene =  struct
   let continue scene =(Objet.getPV (getPers scene))>0
 
   let suicide scene =
+    print_string "bwark";
     {scene with entities = List.map (fun  x -> if (Objet.getGenre x) = Personnage then  Objet.kill x else x) scene.entities }
       
   let nextPos obj scene = 
@@ -112,7 +113,7 @@ module Scene : Scene =  struct
             else Anim.Saut
         in Objet.changeFrame x dir) l 
 
-  let collision_All scene =      
+  let collision_All scene  =      
     let out_of_bound obj =
       match Objet.isMovable obj with
       |false  -> obj
@@ -123,7 +124,9 @@ module Scene : Scene =  struct
 	 (* calcul des collisions avec les bords de la scene, on regarde si l'objet est "sorti" de la scene*)
 	 if (((x+w) < 0) || ((y+h) < 0) || ((x)>sizeX) || ((y)>sizeY)) then Objet.kill obj else obj
     in
-    let temp = {scene with entities = List.map (fun obj -> (List.fold_left (Collision.collision) obj (getEntitie (removeEntitie scene obj)))) (getEntitie scene)} in
+    let temp = {scene with entities =
+                             List.map (fun obj -> 
+                                 (List.fold_left (Collision.collision) obj (getEntitie (removeEntitie scene obj))  )) (getEntitie scene)} in
     {temp with entities = (List.map (out_of_bound) (getEntitie temp))}
 
 
@@ -171,7 +174,7 @@ module Scene : Scene =  struct
 	      if Sdl.has_intersection rectPerso rectDoor
 	      then
 		let (l,g,b,t,p) = Lexer.lex t (Some perso ) scene.renderer  in
-		Some (create l g b (Camera.create (Objet.getPos p) (Objet.getSize b) (Camera.getWindowSize scene.cam)) scene.renderer scene.son t)
+		Some (create l g b (Camera.create (Objet.getPos p) (Objet.getSize b) (Camera.getWindowSize scene.cam)) scene.renderer  t)
 	      else sub obj s
 	   |_ -> sub obj s
       in
@@ -243,7 +246,7 @@ module Scene : Scene =  struct
     if (not (Objet.canShoot tireur)) then scene
     else
       begin
-	Sound.play_sound Sound.Tir scene.son ;
+	Sound.play_sound Sound.Tir  ;
 	let (xP,yP) = Objet.getPos tireur in
 	let (xs,ys) = Objet.getBaseSize tireur in
 	(*decalage afin que le tireur ne tire pas dans lui meme*)
@@ -268,7 +271,7 @@ module Scene : Scene =  struct
               Objet.setSpeed x (xs,0.0)
 	    else 
               begin
-		Sound.play_sound Sound.Saut scene.son;
+		Sound.play_sound Sound.Saut ;
 		Objet.forbidJump (Objet.setSpeed x (xs,ys))
               end
 	  else 

@@ -1,7 +1,9 @@
 open Tsdl
+open Objet
 
 module type Tools = sig
   val loadPicture : Sdl.renderer -> int * int -> int * int -> Sdl.texture -> unit
+  val loadPicturePosObj : Sdl.renderer -> Objet.objet -> unit
   val drawRect : int * int -> int * int -> Sdl.renderer -> unit
   val drawFillRect : int * int -> int * int -> Sdl.renderer -> unit 
   val chooseColor  : int -> int -> int -> int -> Sdl.renderer   -> unit
@@ -15,6 +17,8 @@ module Tools = struct
     match Sdl.render_copy ~dst:position_background ~src:frag_rect renderer texture with
     |Error (`Msg e) -> Sdl.log "Init texture on screen error: %s" e; exit 1
     |Ok () -> ()
+
+  let loadPicturePosObj renderer obj = loadPicture renderer (Objet.getPos obj) (Objet.getSize obj) (Objet.getTexture obj)
 
   let drawRect (x1,y1) (w,h) render =
     match Sdl.render_draw_rect render (Some (Sdl.Rect.create x1 y1  w h)) with
