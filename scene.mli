@@ -13,7 +13,6 @@ module type Scene = sig
   val removeEntitie : scene -> Objet.objet -> scene 
   val kickDead : scene -> scene
   val refreshLifebar : scene -> scene
-  val loadPicture : Sdl.renderer -> (int*int) -> (int*int) -> Sdl.texture -> unit
   val refresh : scene -> scene -> unit
   val closeScene : scene -> unit
   val collision_All : scene -> scene
