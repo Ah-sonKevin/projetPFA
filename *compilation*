@@ -1,0 +1,18 @@
+-*- mode: compilation; default-directory: "~/projetPFA/" -*-
+Compilation started at Thu Apr 19 12:41:11
+
+ocamlbuild -use-ocamlfind -package tsdl,tsdl_mixer main.byte
+
+
+ocamlfind ocamldep -package tsdl,tsdl_mixer -modules menu.ml > menu.ml.depends
+ocamlfind ocamlc -c -package tsdl,tsdl_mixer -o menu.cmo menu.ml
++ ocamlfind ocamlc -c -package tsdl,tsdl_mixer -o menu.cmo menu.ml
+File "menu.ml", line 1:
+Error: The implementation menu.ml does not match the interface menu.cmi:
+       ...
+       At position module type Menu = <here>
+       The type `soundSetting' is required but not provided
+       File "menu.ml", line 12, characters 2-19: Expected declaration
+Command exited with code 2.
+
+Compilation exited abnormally with code 10 at Thu Apr 19 12:41:11
