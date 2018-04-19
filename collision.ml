@@ -92,6 +92,7 @@ module Collision : Collision = struct
   let collision_perso p obj =
     match (Objet.getGenre obj) with
     |Ennemi _   ->
+       Sound.play_sound Degat son;
        if (Objet.canBeDmg p) then
 	 let (xs,ys) = Objet.getSpeed p in
 	 let (xse,yse) = Objet.getSpeed obj in
@@ -103,7 +104,8 @@ module Collision : Collision = struct
        else p
     |Projectile -> Objet.changePV p (-20)
     |Door t     -> p
-    |PowerUp HP -> let x = if (Objet.getPV p) +50 <= (Objet.getPvMax p ) then 50 else (Objet.getPvMax p) - (Objet.getPV p)
+    |PowerUp HP ->      
+	 let x = if (Objet.getPV p) +50 <= (Objet.getPvMax p ) then 50 else (Objet.getPvMax p) - (Objet.getPV p)
 		   in Objet.changePV p x
     |PowerUp Inv -> Objet.triggerInv p 
     |_          -> replace p (directionCollision p obj) obj
@@ -124,19 +126,20 @@ module Collision : Collision = struct
   let collision_projectile proj =
     Objet.kill proj
 
-  let collision_powerUp obj1 obj2 =
+  let collision_powerUp obj1 obj2 son =
+    Sound.play_sound PowerUp son;
     if (Objet.getGenre obj2) = Personnage then
       Objet.kill obj1
     else
       obj1
       
-  let collision obj1 obj2 =
+  let collision obj1 obj2 son =
     if checkCollision obj1 obj2 then
       match Objet.getGenre obj1 with
-      |Personnage -> collision_perso obj1 obj2      
+      |Personnage -> collision_perso obj1 obj2 son    
       |Ennemi _   -> collision_ennemi obj1 obj2 
       |Projectile -> collision_projectile obj1
-      |PowerUp _  -> collision_powerUp obj1 obj2
+      |PowerUp _  -> collision_powerUp obj1 obj2 son
       |_          -> obj1
     else obj1
 

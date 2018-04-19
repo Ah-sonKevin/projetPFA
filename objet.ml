@@ -26,7 +26,6 @@ module type Objet = sig
   val isMovable : objet -> bool
   val changeFrame : objet -> Anim.direction -> objet
   val getBaseSize : objet -> int*int
-  val print : objet -> unit
   val getMaxSpeed : objet -> float * float
   val getAnim : objet -> Anim.anim
   val kill : objet -> objet
@@ -81,22 +80,6 @@ module Objet : Objet = struct
 
   let getPvMax p = p.pvMax
 
-  (* fonction de debuggage*)
-  let print obj = 
-    let (x,y) = obj.position in 
-    let (xs,ys) = obj.vitesse in
-    let (xsm,ysm) = obj.maxSpeed in
-    let pv = obj.pv in
-    let (bw,bh) = obj.baseSize in
-    let (ox,oy) = obj.old_pos in
-    match obj.genre with
-    |Personnage   ->Printf.printf " Genre : Personnage \n Pos : %d %d \n baseSize : %d %d \n Old Pos : %d %d \n Speed : %f %f \n MaxSpeed : %f %f \n PV : %d \n\n" x y bw bh ox oy xs ys xsm ysm pv 
-    |Ennemi _     ->Printf.printf " Genre : Ennemi \n Pos : %d %d baseSize : %d %d \n Old Pos : %d %d \n Speed : %f %f \n MaxSpeed : %f %f \n PV : %d \n\n" x y bw bh ox oy xs ys xsm ysm pv 
-    |Plateforme _ ->Printf.printf " Genre : Plateforme \n Pos : %d %d baseSize : %d %d \n Speed : %f %f \n MaxSpeed : %f %f \n PV : %d \n\n" x y bw bh xs ys xsm ysm pv 
-    |Wall _       ->Printf.printf " Genre : Wall \n Pos : %d %d baseSize : %d %d \n Speed : %f %f \n MaxSpeed : %f %f \n PV : %d \n\n" x y bw bh xs ys xsm ysm pv 
-    |Door _       ->Printf.printf " Genre : Door \n Pos : %d %d baseSize : %d %d \n Speed : %f %f \n MaxSpeed : %f %f \n PV : %d \n\n" x y bw bh xs ys xsm ysm pv 
-    |Projectile   ->Printf.printf " Genre : Projectile \n Pos : %d %d baseSize : %d %d \n Speed : %f %f \n MaxSpeed : %f %f \n PV : %d \n\n" x y bw bh xs ys xsm ysm pv 
-    |Background   ->Printf.printf " Genre : Background \n Pos : %d %d baseSize : %d %d \n Speed : %f %f \n MaxSpeed : %f %f \n PV : %d \n\n" x y bw bh xs ys xsm ysm pv 
       
   let kill obj = {obj with pv = 0}                   
   let getBaseSize obj = obj.baseSize

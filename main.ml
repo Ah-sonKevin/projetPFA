@@ -10,15 +10,16 @@ open Random
 
 exception ErreurScene
 
-let my_exit (window,renderer) scene =
+let my_exit (window,renderer) scene son =
   Scene.closeScene scene;
   Sdl.destroy_renderer renderer;
   Sdl.destroy_window window;
+  Sound.close son;
   Sdl.quit();
   exit 0
 
 (*le jeu*)
-let evenement e window renderer scene =
+let evenement e window renderer scene son =
   let evenementFenetre e exit_arg = 
   match Sdl.poll_event (Some e) with
   |true->
@@ -28,14 +29,14 @@ let evenement e window renderer scene =
         begin
           let nom = Sdl.Event.window_event_enum (Sdl.Event.get e Sdl.Event.window_event_id ) in
           match nom with
-          |`Close -> my_exit exit_arg scene
+          |`Close -> my_exit exit_arg scene son
           |_ -> ()
         end
       | _ -> ()
     end
   |false -> ()
   in 
-  (*evenementFenetre e exit_arg; *)
+ evenementFenetre e (window,renderer); 
   Sdl. pump_events ();
   let tab = Sdl.get_keyboard_state () in
   
@@ -92,7 +93,7 @@ let jeu () =
               let scene = genererScene "scene1_begin.txt" None render in 
               let rec game scene wesyindow renderer =
 		let sceneTemp = Scene.decreaseClock scene in 
-                let sceneEvent = evenement event  window renderer sceneTemp in
+                let sceneEvent = evenement event  window renderer sceneTemp son in
                 let sceneMove = Scene.moveAll sceneEvent in
 		let sceneShoot = Scene.shootAll sceneMove in
 	        let sceneActive = Scene.refreshLifebar (Scene.kickDead sceneShoot) in

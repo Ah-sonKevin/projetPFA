@@ -25,7 +25,6 @@ module type Objet = sig
   val isMovable : objet -> bool
   val changeFrame : objet -> Anim.direction -> objet
   val getBaseSize : objet -> int*int
-  val print : objet -> unit
   val getMaxSpeed : objet -> float * float
   val getAnim : objet -> Anim.anim
   val kill : objet -> objet

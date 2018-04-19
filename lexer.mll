@@ -63,7 +63,7 @@ and genre perso r = parse
         let (pos,y) = (pos2 perso r lexbuf ) in ((Objet.Personnage),pos, (0.0,0.0), (Objet.getMaxSpeed temp), (Objet.getPV temp), 
 (Objet.getAnim temp), y)
     }
-    |"Plateforme" espaces (coupleDigit as s) '\n' {
+    |"Plateforme" espaces coupleDigit  '\n' {
       let (pos,speed,maxSpeed,pv,(g,m,d,s), y) = (pos perso r lexbuf ) in
       ((Objet.Plateforme (int_of_string x1,int_of_string x2)),pos, speed, maxSpeed, pv, (Anim.create g m d s r), y)
     } 
@@ -72,7 +72,7 @@ and genre perso r = parse
       let (pos,speed,maxSpeed,pv,(g,m,d,s), y) = (pos perso r lexbuf ) in
       (genre,pos, speed, maxSpeed, pv, (Anim.create g m d s r), y)
     }
-    |"Wall" espaces (coupleDigit as s) '\n' {
+    |"Wall" espaces coupleDigit '\n' {
       let (pos,speed,maxSpeed,pv,(g,m,d,s), y) = (pos perso r lexbuf ) in
       ((Objet.Wall (int_of_string x1,int_of_string x2)),pos, speed, maxSpeed, pv, (Anim.create g m d s r), y)
     }

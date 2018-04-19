@@ -14,7 +14,7 @@ end
 
 module Sound : Sound = struct 
 
-  type sound = {soundMenuO : Tsdl_mixer.Mixer.chunk; soundMenuC : Tsdl_mixer.Mixer.chunk; soundTir : Tsdl_mixer.Mixer.chunk; soundSaut : Tsdl_mixer.Mixer.chunk; soundDegat : Tsdl_mixer.Mixer.chunk ; channels : int;  } 
+  type sound = {soundMenuO : Tsdl_mixer.Mixer.chunk; soundMenuC : Tsdl_mixer.Mixer.chunk; soundTir : Tsdl_mixer.Mixer.chunk; soundSaut : Tsdl_mixer.Mixer.chunk; soundDegat : Tsdl_mixer.Mixer.chunk ; soundPU : Tsdl_mixer.Mixer.chunk; channels : int } 
   type effet = Tir|Saut|Degat|MenuC|MenuO
                               
   let loadChunk s = 
@@ -29,10 +29,11 @@ module Sound : Sound = struct
     |Ok () ->  
       let t = loadChunk "Son/tir.wav" in
       let s = loadChunk "Son/saut.wav" in
-      let d = loadChunk "Son/tir.wav" in   
+      let d = loadChunk "Son/degat.wav" in   
       let m_c = loadChunk "Son/menuChoice.wav" in
       let m_o = loadChunk "Son/menuOK.wav" in
-      {soundMenuC = m_c; soundMenuO = m_o ;soundTir = t ; soundSaut = s; soundDegat =d ; channels = (Tsdl_mixer.Mixer.allocate_channels 100 100)}
+      let pu = loadChunck "Son/powerUp.wav" in
+      {soundPU =pu; soundMenuC = m_c; soundMenuO = m_o ;soundTir = t ; soundSaut = s; soundDegat =d ; channels = (Tsdl_mixer.Mixer.allocate_channels 100 100)}
         
   let play_mus mus =  
     if Tsdl_mixer.Mixer.playing_music () then 
@@ -57,11 +58,12 @@ module Sound : Sound = struct
 
   let play_sound effet sound = 
     match effet with 
-    |Tir   ->  play_a_sound sound.soundTir
-    |Saut  ->  play_a_sound sound.soundSaut
-    |Degat ->  play_a_sound sound.soundDegat
-    |MenuC -> play_a_sound sound.soundMenuC
-    |MenuO -> play_a_sound sound.soundMenuO
+    |Tir     -> play_a_sound sound.soundTir
+    |Saut    -> play_a_sound sound.soundSaut
+    |PowerUp -> play_a_sound sound.soundPU
+    |Degat   -> play_a_sound sound.soundDegat
+    |MenuC   -> play_a_sound sound.soundMenuC
+    |MenuO   -> play_a_sound sound.soundMenuO
 
   let close sound =
     Tsdl_mixer.Mixer.free_chunk sound.soundTir;

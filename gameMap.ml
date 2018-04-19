@@ -75,7 +75,6 @@ module GameMap : GameMap  = struct
 
   let drawMini scene window render sizeMap =
     Tools.chooseColor  255 255  255 255 render;
-    let (windowSizeX,windowSizeY) = Sdl.get_window_size window in 
     let (sceneWidth,sceneHeight) = Scene.getSize scene in
     (* let (demiWidth,demiHeight) = (sceneWidth/2,sceneHeight/2) in*)
   

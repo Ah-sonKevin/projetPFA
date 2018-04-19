@@ -29,7 +29,6 @@ module type Scene = sig
   val shoot : Objet.objet -> scene -> (int*int) ->  scene
   val getPers : scene -> Objet.objet
   val decreaseClock : scene -> scene
-  val print : scene -> unit
 end
 
 module Scene : Scene =  struct
@@ -113,8 +112,6 @@ module Scene : Scene =  struct
             else Anim.Saut
         in Objet.changeFrame x dir) l 
 
-  let print sc = List.iter (fun obj -> Objet.print obj) sc.entities
-    
   let collision_All scene =      
     let out_of_bound obj =
       match Objet.isMovable obj with
@@ -195,7 +192,6 @@ module Scene : Scene =  struct
     let rec shootAll_sub listObjet listRes =
       (* on récupère les coordonnées du personnage pour déterminer les tirs des ennemis *)
       let (xp,yp) = Objet.getPos p in
-      let (xsp,ysp) = Objet.getSpeed p in
       let (wp,hp) = Objet.getBaseSize p in
       match listObjet with
       |[]->  {scene with entities = listRes }

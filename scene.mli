@@ -24,7 +24,6 @@ module type Scene = sig
   val shoot : Objet.objet -> scene -> (int*int) ->  scene
   val getPers : scene -> Objet.objet
   val decreaseClock : scene -> scene
-  val print : scene -> unit
 end
   
 module Scene : Scene
