@@ -209,12 +209,13 @@ module Scene : Scene =  struct
 		    la taille du projectile divisé par 2 (w et h, sont les meme vus qu'il est carré)*)
 		  let (posX,posY) = (int_of_float((normX)*.(float_of_int(distdiagEnProj+1+6))),
 				     int_of_float((normY)*.(float_of_int(distdiagEnProj+1+6)))) in
+		  let rng = Random.int 21 in
 		  let proj = Objet.create Projectile 
                     (xt+posX,yt+posY) 
-                    ((normX)*.(10.0),(normY)*.(10.0))  (10.0,10.0) 10 
+                    ((normX)*.(8.0),(normY)*.(8.0))  (10.0,10.0) 10 
                     (Anim.create [||] [|"Image/Ennemi_proj.bmp"|] [||] [||] scene.renderer) 
                     scene.renderer in
-		  shootAll_sub s (proj::(Objet.triggerShoot x 60)::listRes)
+		  shootAll_sub s (proj::(Objet.triggerShoot x (120+rng))::listRes)
 		end
 	    end
 	 (* Ne rien faire pour les autres objets *)
