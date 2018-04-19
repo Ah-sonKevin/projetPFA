@@ -282,13 +282,7 @@ module Scene : Scene =  struct
       ) scene.entities
     in {scene with entities = l}
     
-  let loadPicture renderer (x1,y1) (w,h) texture =
-    let frag_rect = Sdl.Rect.create 0 0 w h in
-    let position_background = Sdl.Rect.create x1 y1 w h in
-    match Sdl.render_copy ~dst:position_background ~src:frag_rect renderer texture with
-    |Error (`Msg e) -> Sdl.log "Init texture on screen error: %s" e; exit 1
-    |Ok () -> ()
-       
+   
   let refresh sceneOld sceneNew =
     let rec refresh_sub list =
       match list with
@@ -304,10 +298,10 @@ module Scene : Scene =  struct
 	     begin
              if ((Objet.getGenre x) = Personnage ) then
 	       if (Objet.clignote x) then
-		 loadPicture sceneNew.renderer (Camera.convertPosObjet (Objet.getPos x) sceneNew.cam) (Objet.getSize x) (Objet.getTexture x)
+		 Tools.loadPicture sceneNew.renderer (Camera.convertPosObjet (Objet.getPos x) sceneNew.cam) (Objet.getSize x) (Objet.getTexture x)
 	       else ()
 	     else
-	       loadPicture sceneNew.renderer (Camera.convertPosObjet (Objet.getPos x) sceneNew.cam) (Objet.getSize x) (Objet.getTexture x)
+	       Tools.loadPicture sceneNew.renderer (Camera.convertPosObjet (Objet.getPos x) sceneNew.cam) (Objet.getSize x) (Objet.getTexture x)
 	     end;
              refresh_sub s
            end
@@ -316,10 +310,10 @@ module Scene : Scene =  struct
     |Error (`Msg e) -> Sdl.log "Init render error: %s" e; exit 1
     |Ok () ->
        begin
-	 loadPicture sceneNew.renderer (Camera.convertPosBackground sceneNew.cam)
+	 Tools.loadPicture sceneNew.renderer (Camera.convertPosBackground sceneNew.cam)
            (Objet.getSize sceneNew.background) (Objet.getTexture sceneNew.background);
 	 refresh_sub sceneNew.entities;
-	 loadPicture sceneNew.renderer (Objet.getPos sceneNew.lifebar) (Objet.getSize sceneNew.lifebar) (Objet.getTexture sceneNew.lifebar)
+	 Tools.loadPicture sceneNew.renderer (Objet.getPos sceneNew.lifebar) (Objet.getSize sceneNew.lifebar) (Objet.getTexture sceneNew.lifebar)
        end
 	 
   let getTexture scene =

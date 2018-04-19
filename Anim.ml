@@ -1,4 +1,5 @@
-open Tsdl 
+open Tsdl
+open Tools
 
 module type Anim = sig 
   type direction = Gauche|Droite|Milieu|Saut
@@ -15,20 +16,12 @@ module Anim : Anim = struct
   type anim = {gauche : Sdl.texture array ; milieu : Sdl.texture array ; droite : Sdl.texture array; saut : Sdl.texture array; frame : int; dir : direction ; animated : bool}
   
   let create g m d s renderer = 
-    let loadTexture x = 
-      match Sdl.load_bmp x with
-      | Error (`Msg e) -> Sdl.log "Init load picture error: %s" e; exit 1
-      | Ok surface_temp ->
-	 match Sdl.create_texture_from_surface renderer surface_temp with
-	 | Error (`Msg e) -> Sdl.log "Init surface to texture error: %s" e; exit 1
-	 | Ok name -> Sdl.free_surface surface_temp;name
-    in    
       let animBool = if (((Array.length g) = 0)&&((Array.length d) = 0)) then false else true in 
 	  {
-	  gauche = (Array.init (Array.length g) (fun i -> loadTexture g.(i)));
-	  milieu = (Array.init (Array.length m) (fun i -> loadTexture m.(i)));
-	  droite = (Array.init (Array.length d) (fun i -> loadTexture d.(i)));
-	  saut   = (Array.init (Array.length s) (fun i -> loadTexture s.(i)));
+	  gauche = (Array.init (Array.length g) (fun i -> Tools.loadTexture g.(i)));
+	  milieu = (Array.init (Array.length m) (fun i -> Tools.loadTexture m.(i)));
+	  droite = (Array.init (Array.length d) (fun i -> Tools.loadTexture d.(i)));
+	  saut   = (Array.init (Array.length s) (fun i -> Tools.loadTexture s.(i)));
 	  frame = 0;
 	  dir = Milieu;
 	  animated = animBool
