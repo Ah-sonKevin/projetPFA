@@ -47,7 +47,6 @@ module Menu = struct
       if ((tab.{(Sdl.get_scancode_from_key Sdl.K.return)} = 1) || ((tab.{(Sdl.get_scancode_from_key Sdl.K.space)} = 1))) then 
         begin
           Sound.play_sound Sound.MenuO son;
-	  print_string "bwark";
           None
         end
       else if (tab.{(Sdl.get_scancode_from_key Sdl.K.up )} = 1) then 
