@@ -83,16 +83,17 @@ let jeu () =
             in
             (* gestion du jeu une fois lancé *)
             let event = Sdl.Event.create() in     
-            let rec menu window renderer = 
-              Sound.play_mus "Son/kingdomHeartMenuMusic.wav";	    
-              Menu.startMenu window renderer son;	     
+            let rec menu window renderer =
+	      Sdl.delay 17l;
+              Sound.play_mus "Son/kingdomHeartMenuMusic.wav";
+              Menu.startMenu window renderer son;
               let scene = genererScene "scene1_begin.txt" None render in 
               let rec game scene wesyindow renderer =
 		let sceneTemp = Scene.decreaseClock scene in 
                 let sceneEvent = evenement event  window renderer sceneTemp in
                 let sceneMove = Scene.moveAll sceneEvent in
-		Sdl.delay 17l;
-	        let sceneActive = Scene.refreshLifebar (Scene.kickDead sceneMove) in
+		let sceneShoot = Scene.shootAll sceneMove in
+	        let sceneActive = Scene.refreshLifebar (Scene.kickDead sceneShoot) in
                 Scene.refresh scene sceneActive;
                 GameMap.startMapMini window renderer scene;
                 Sdl.render_present renderer;

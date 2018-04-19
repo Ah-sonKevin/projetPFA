@@ -369,8 +369,20 @@ Image/ennemies/ennemi_test_25_21.bmp
 no
 no
 
-Genre Ennemi Fly
+Genre Ennemi Both
 Position (470,645)
+Vitesse (1.5,0.0)
+VitesseMax (5.0,10.0)
+PV 100
+Animation
+no
+Image/ennemies/ennemi_test_25_21.bmp
+
+no
+no
+
+Genre Ennemi Both
+Position (750,400)
 Vitesse (1.5,0.0)
 VitesseMax (5.0,10.0)
 PV 100
