@@ -3,7 +3,8 @@ open Anim
 
 module type Objet = sig
   type kind = Normal | Fly | Shooter | Both
-  type genre_objet = Personnage|Ennemi of kind|Plateforme of int * int |Wall of int * int|Door of string |Background|Projectile
+  type typeUp = HP|Inv
+  type genre_objet = Personnage|Ennemi of kind|Plateforme of int * int |Wall of int * int|Door of string |Background|Projectile |PowerUp of typeUp
   type objet
   val create : genre_objet -> int*int -> float*float -> float*float -> int ->   Anim.anim -> Sdl.renderer -> objet
   val move : objet -> (int*int) -> objet
@@ -33,6 +34,8 @@ module type Objet = sig
   val triggerShoot : objet -> int -> objet
   val triggerInv : objet -> objet
   val decreaseClock : objet -> objet
+  val getPvMax : objet -> int
+  val clignote : objet -> bool
 end
 
 module Objet : Objet

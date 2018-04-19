@@ -103,6 +103,9 @@ module Collision : Collision = struct
        else p
     |Projectile -> Objet.changePV p (-20)
     |Door t     -> p
+    |PowerUp HP -> let x = if (Objet.getPV p) +50 <= (Objet.getPvMax p ) then 50 else (Objet.getPvMax p) - (Objet.getPV p)
+		   in Objet.changePV p x
+    |PowerUp Inv -> Objet.triggerInv p 
     |_          -> replace p (directionCollision p obj) obj
        
        
@@ -120,17 +123,20 @@ module Collision : Collision = struct
 		     
   let collision_projectile proj =
     Objet.kill proj
+
+  let collision_powerUp obj1 obj2 =
+    if (Objet.getGenre obj2) = Personnage then
+      Objet.kill obj1
+    else
+      obj1
       
   let collision obj1 obj2 =
     if checkCollision obj1 obj2 then
       match Objet.getGenre obj1 with
-      |Personnage -> begin
-	(*let (x1,y1) = Objet.getPos obj1 in
-	Printf.printf "%d %d \n " x1 y1;*)
-	collision_perso obj1 obj2
-      end
+      |Personnage -> collision_perso obj1 obj2      
       |Ennemi _   -> collision_ennemi obj1 obj2 
       |Projectile -> collision_projectile obj1
+      |PowerUp _  -> collision_powerUp obj1 obj2
       |_          -> obj1
     else obj1
 

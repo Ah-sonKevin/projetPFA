@@ -65,10 +65,24 @@ module Scene : Scene =  struct
       |x::s -> getPers_rec s
     in 
     getPers_rec scene.entities
+
+  let newPowerUp (x,y) renderer=   
+    if (Random.int 10) <=8 then 
+      (Objet.create (PowerUp HP) (x,y) (0.0,0.0) (0.0,0.0) 100 (Anim.create [||] [|"Image/powerUpHP.bmp"|] [||] [||] renderer) renderer)
+    else
+      (Objet.create (PowerUp Inv) (x,y) (0.0,0.0) (0.0,0.0) 100 (Anim.create [||] [|"Image/powerUpInv.bmp"|] [||] [||] renderer) renderer)
       
   (*On enleve les objet qui sont mort, on conserve le personnage meme mort, car la scene a besoin de lui pour determiner le game over*)
   let kickDead scene = 
-    {scene with entities = List.fold_left (fun acc x ->  if (((Objet.getPV x) < 1)&& (Objet.getGenre x)!=Personnage) then acc else (x::acc)) [] scene.entities }
+    {scene with entities = List.fold_left (fun acc x ->
+      if (((Objet.getPV x) < 1) && (Objet.getGenre x)!=Personnage) then
+	match  (Objet.getGenre x ) with
+	|Ennemi _ ->
+	   (*if  ((Random.int 5)= 0) then*) (((newPowerUp (Objet.getPos x) scene.renderer))::acc) (*else acc*)
+	| _ ->  acc
+      else (x::acc)) [] scene.entities
+    }
+      
   let refreshLifebar scene =
     {scene with lifebar =
 	let pv = Objet.getPV (getPers scene) in
@@ -101,8 +115,7 @@ module Scene : Scene =  struct
 
   let print sc = List.iter (fun obj -> Objet.print obj) sc.entities
     
-  let collision_All scene =
-      
+  let collision_All scene =      
     let out_of_bound obj =
       match Objet.isMovable obj with
       |false  -> obj
@@ -115,6 +128,8 @@ module Scene : Scene =  struct
     in
     let temp = {scene with entities = List.map (fun obj -> (List.fold_left (Collision.collision) obj (getEntitie (removeEntitie scene obj)))) (getEntitie scene)} in
     {temp with entities = (List.map (out_of_bound) (getEntitie temp))}
+
+
       
   (* gestion des déplacements *)
   let moveAll scene =
@@ -266,7 +281,14 @@ module Scene : Scene =  struct
              (refresh_sub s) 
 	 else
            begin
-             loadPicture sceneNew.renderer (Camera.convertPosObjet (Objet.getPos x) sceneNew.cam) (Objet.getSize x) (Objet.getTexture x);
+	     begin
+             if ((Objet.getGenre x) = Personnage ) then
+	       if (Objet.clignote x) then
+		 loadPicture sceneNew.renderer (Camera.convertPosObjet (Objet.getPos x) sceneNew.cam) (Objet.getSize x) (Objet.getTexture x)
+	       else ()
+	     else
+	       loadPicture sceneNew.renderer (Camera.convertPosObjet (Objet.getPos x) sceneNew.cam) (Objet.getSize x) (Objet.getTexture x)
+	     end;
              refresh_sub s
            end
     in
