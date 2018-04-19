@@ -185,25 +185,40 @@ module Scene : Scene =  struct
       match listObjet with
       |[]->  {scene with entities = listRes }
       (* On fait tirer les ennemis qui le peuvent *)
-      |x::s when (((Objet.getGenre x) = (Ennemi Shooter)) || ((Objet.getGenre x) = (Ennemi Both))) ->
-	 begin
-	   (* on fait tirer les ennemis qui le peuvent *)
-	   if (not (Objet.canShoot x)) then shootAll_sub s (x::listRes)
-	   else
-	     begin
-	       let (xt,yt) = Objet.getPos x in
-	       let (w,h) = Objet.getBaseSize x in
-	       (* on calcul le milieu du tireur et le milieu du personnage *)
-	       let (midxp,midyp) = (xp + (wp/2),yp + (hp/2)) in
-	       let (midxt,midyt) = (xp + (wp/2),yp + (hp/2)) in
-	       (* on calcul la position du personnage par rapport au tireur (dans le référentiel du tireur donc) *)
-	       let (vecx,vecy) = (midxp-midxt,midyp-midyt)in
-	       (*decalage afin que le tireur ne tire pas dans lui meme *)
-	       shootAll_sub s ((Objet.triggerShoot x 20)::listRes)
-	     end
-	 end
-      (* Ne rien faire pour les autres objets *)
-      |x2::s -> shootAll_sub s (x2::listRes)
+      |x::s ->
+	 match Objet.getGenre x with
+	 |Ennemi k when ((k  = Shooter) || (k = Both)) ->
+	    begin
+	      (* on fait tirer les ennemis qui le peuvent *)
+	      if (not (Objet.canShoot x)) then shootAll_sub s (x::listRes)
+	      else
+		begin
+		  let (xt,yt) = Objet.getPos x in
+		  let (w,h) = Objet.getBaseSize x in
+		  (* on calcul le milieu du tireur et le milieu du personnage *)
+		  let (ppX,ppY) = (xp + (wp/2),yp + (hp/2)) in
+		  let (peX,peY) = (xt + (w/2),yt + (h/2)) in
+		  (* on calcul la position du personnage par rapport au tireur (dans le référentiel du tireur donc) *)
+		  let (vecx,vecy) = (ppX-peX,ppY-peY) in
+		  let norm = sqrt(float_of_int(vecx*vecx + vecy*vecy))in
+		  let (normX,normY) = ((float_of_int vecx)/.norm , (float_of_int vecy)/.norm) in
+		  (*decalage afin que le tireur ne tire pas dans lui meme on calcul par rapport aux milieu des objets, puis on refera un décalage*)
+		  (*pythagore*)
+		  let distdiagEnProj = int_of_float(sqrt(float_of_int(h*h+w*w)))+10 in
+		  (*on applique notre vecteur normalisé afin de définir la "direction" dans laquelle ira le projectil à sa creation le +6 c'est 
+		    la taille du projectile divisé par 2 (w et h, sont les meme vus qu'il est carré)*)
+		  let (posX,posY) = (int_of_float((normX)*.(float_of_int(distdiagEnProj+1+6))),
+				     int_of_float((normY)*.(float_of_int(distdiagEnProj+1+6)))) in
+		  let proj = Objet.create Projectile 
+                    (xt+posX,yt+posY) 
+                    ((normX)*.(10.0),(normY)*.(10.0))  (10.0,10.0) 10 
+                    (Anim.create [||] [|"Image/Ennemi_proj.bmp"|] [||] [||] scene.renderer) 
+                    scene.renderer in
+		  shootAll_sub s (proj::(Objet.triggerShoot x 60)::listRes)
+		end
+	    end
+	 (* Ne rien faire pour les autres objets *)
+	 |_ -> shootAll_sub s (x::listRes)
     in
     shootAll_sub  scene.entities []
 	 
