@@ -55,7 +55,7 @@ module Scene : Scene =  struct
   let removeEntitie scene objet = {scene with entities = List.fold_left (fun res obj -> if obj=objet then res else (obj::res)) [] scene.entities}
 
   let newPowerUp (x,y) renderer=   
-    if (Random.int 10) <=8 then 
+    if (Random.int 10) >118 then 
       (Objet.create (PowerUp HP) (x,y) (0.0,0.0) (0.0,1.0) 100 (Anim.create [||] [|"Image/powerUpHP.bmp"|] [||] [||] renderer) renderer)
     else
       (Objet.create (PowerUp Inv) (x,y) (0.0,0.0) (0.0,1.0) 100 (Anim.create [||] [|"Image/powerUpInv.bmp"|] [||] [||] renderer) renderer)
@@ -67,7 +67,7 @@ module Scene : Scene =  struct
 	  if (((Objet.getPV x) < 1) && (Objet.getGenre x)!=Personnage) then
 	    match  (Objet.getGenre x ) with
 	    |Ennemi _ ->
-	       if  ((Random.int 5)= 0) then (((newPowerUp (Objet.getPos x) scene.renderer))::acc) else acc
+	      (* if  ((Random.int 5)= 0) then *)(((newPowerUp (Objet.getPos x) scene.renderer))::acc) (*else acc*)
 	    | _ ->  acc
 	  else (x::acc)) [] scene.entities
     }
@@ -83,7 +83,6 @@ module Scene : Scene =  struct
     let xs_int = int_of_float xs in
     let (xp,yp) = Objet.getPos obj in
     ((xs_int + xp) , ((int_of_float(ceil(scene.gravitie/.2.) +. ys) + yp)))
-
       
   let decreaseClock scene =
     {scene with entities = List.map (fun x -> Objet.decreaseClock x) scene.entities}
@@ -248,7 +247,7 @@ module Scene : Scene =  struct
   let movePersonnage scene (xs,ys)=
     let l = List.map 
       (fun x ->
-	if (((Objet.getGenre x) = Personnage) && (Objet.canBeDmg x)) then
+	if (((Objet.getGenre x) = Personnage) && (Objet.canMove x)) then
  	  if ys < 0.0  then
             if not (Objet.canJump x) then 
               Objet.setSpeed x (xs,0.0)

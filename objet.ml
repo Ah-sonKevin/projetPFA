@@ -37,6 +37,7 @@ module type Objet = sig
   val decreaseClock : objet -> objet
   val getPvMax : objet -> int
   val clignote : objet -> bool
+  val canMove : objet -> bool
 end
  
 module Objet : Objet = struct
@@ -44,7 +45,7 @@ module Objet : Objet = struct
   type typeUp = HP|Inv
   type genre_objet = Personnage|Ennemi of kind|Plateforme of int * int |Wall of int * int|Door of string |Background|Projectile |PowerUp of typeUp
   type objet = {genre : genre_objet; position : int*int; old_pos : int*int; can_jump : bool; vitesse : float * float ; maxSpeed : float*float; pv : int; pvMax : int;
-	baseSize : int*int ; texture : Anim.anim; clockInv : int; clockShoot : int}
+	baseSize : int*int ; texture : Anim.anim; clockInv : int; clockShoot : int; canMove : bool}
     
   let create genre_o pos vit maxvit hp textu renderer  =
     let sizeT t=
@@ -54,7 +55,7 @@ module Objet : Objet = struct
     in
     {genre = genre_o; position = pos; old_pos = pos;can_jump = true;
      vitesse = vit; maxSpeed = maxvit; pv = hp; pvMax = hp; clockInv = 0;
-     clockShoot = 0; texture = textu; baseSize =
+     clockShoot = 0; texture = textu; canMove = true;baseSize =
 	match genre_o with
 	|Plateforme (x,y) | Wall (x,y) -> (x,y)
 	|_->sizeT (Anim.getTexture textu); (*taille de base de l'objet, utilisé lors des collision *)
@@ -86,13 +87,16 @@ module Objet : Objet = struct
     
   let canShoot p = p.clockShoot = 0
   let canBeDmg p = p.clockInv = 0
+  let canMove p =  p.canMove
   let clignote p = (p.clockInv mod 2) = 0 
   let triggerShoot p n = {p with clockShoot = n}
-  let triggerInv p = {p with clockInv = 40}
+  let triggerInv p = {p with clockInv = 40; canMove = false}
   let triggerInvPU p = {p with clockInv = 300}
   let decreaseClock p =
-    {p with clockShoot = if p.clockShoot > 0 then p.clockShoot -1 else 0;
-      clockInv = if p.clockInv > 0 then p.clockInv -1 else 0}
+    {p with
+      clockShoot = if p.clockShoot > 0 then p.clockShoot -1 else 0;
+      clockInv = if p.clockInv > 0 then p.clockInv -1 else 0;
+      canMove = if p.canMove then p.canMove else (p.clockInv = 0)}
 
   let move obj (x,y)  = {obj with position = (x,y); old_pos = obj.position}
   let changeFrame obj dir = {obj with texture = Anim.changeFrame obj.texture dir}

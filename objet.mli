@@ -36,6 +36,7 @@ module type Objet = sig
   val decreaseClock : objet -> objet
   val getPvMax : objet -> int
   val clignote : objet -> bool
+  val canMove : objet -> bool
 end
 
 module Objet : Objet
