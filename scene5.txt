@@ -1,0 +1,118 @@
+Scene 5
+
+Gravity 0.25
+
+Background Image/Background_4.bmp
+
+Theme Son/theme2.wav
+
+Genre Personnage
+Position (310,40)
+
+Genre Wall (300,300)
+Position (0,0)
+Vitesse (0.0,0.0)
+VitesseMax (0.0,0.0)
+PV 1000
+Animation
+no
+Image/wall.bmp
+
+no
+no
+
+Genre Door scene3_5.txt
+Position (300,0)
+Vitesse (0.0,0.0)
+VitesseMax (0.0,0.0)
+PV 1000
+Animation
+no
+Image/porteBas.bmp
+
+no
+no
+
+Genre Wall (834,300)
+Position (364,0)
+Vitesse (0.0,0.0)
+VitesseMax (0.0,0.0)
+PV 1000
+Animation
+no
+Image/wall.bmp
+
+no
+no
+
+Genre Wall (150,300)
+Position (0,300)
+Vitesse (0.0,0.0)
+VitesseMax (0.0,0.0)
+PV 1000
+Animation
+no
+Image/wall.bmp
+
+no
+no
+
+Genre Wall (1200,200)
+Position (0,600)
+Vitesse (0.0,0.0)
+VitesseMax (0.0,0.0)
+PV 1000
+Animation
+no
+Image/wall.bmp
+
+no
+no
+
+Genre Wall (300,300)
+Position (900,300)
+Vitesse (0.0,0.0)
+VitesseMax (0.0,0.0)
+PV 1000
+Animation
+no
+Image/wall.bmp
+
+no
+no
+
+Genre Ennemi Fly
+Position (200,400)
+Vitesse (3.6,0.0)
+VitesseMax (5.0,10.0)
+PV 100
+Animation
+Image/ennemies/Flying/Flying_left/ennemi_fly_left_1.bmp
+Image/ennemies/Flying/Flying_left/ennemi_fly_left_1.bmp
+Image/ennemies/Flying/Flying_left/ennemi_fly_left_1.bmp
+Image/ennemies/Flying/Flying_left/ennemi_fly_left_1.bmp
+Image/ennemies/Flying/Flying_left/ennemi_fly_left_1.bmp
+Image/ennemies/Flying/Flying_left/ennemi_fly_left_1.bmp
+Image/ennemies/Flying/Flying_left/ennemi_fly_left_2.bmp
+Image/ennemies/Flying/Flying_left/ennemi_fly_left_2.bmp
+Image/ennemies/Flying/Flying_left/ennemi_fly_left_2.bmp
+Image/ennemies/Flying/Flying_left/ennemi_fly_left_2.bmp
+Image/ennemies/Flying/Flying_left/ennemi_fly_left_2.bmp
+Image/ennemies/Flying/Flying_left/ennemi_fly_left_2.bmp
+
+Image/ennemies/Flying/Flying_left/ennemi_fly_left_1.bmp
+
+Image/ennemies/Flying/Flying_right/ennemi_fly_right_1.bmp
+Image/ennemies/Flying/Flying_right/ennemi_fly_right_1.bmp
+Image/ennemies/Flying/Flying_right/ennemi_fly_right_1.bmp
+Image/ennemies/Flying/Flying_right/ennemi_fly_right_1.bmp
+Image/ennemies/Flying/Flying_right/ennemi_fly_right_1.bmp
+Image/ennemies/Flying/Flying_right/ennemi_fly_right_1.bmp
+Image/ennemies/Flying/Flying_right/ennemi_fly_right_2.bmp
+Image/ennemies/Flying/Flying_right/ennemi_fly_right_2.bmp
+Image/ennemies/Flying/Flying_right/ennemi_fly_right_2.bmp
+Image/ennemies/Flying/Flying_right/ennemi_fly_right_2.bmp
+Image/ennemies/Flying/Flying_right/ennemi_fly_right_2.bmp
+Image/ennemies/Flying/Flying_right/ennemi_fly_right_2.bmp
+
+no
