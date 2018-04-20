@@ -1,5 +1,6 @@
 open Tsdl
 open Objet
+open Sound 
 
 module type Collision  = sig
   val checkCollision : Objet.objet -> Objet.objet -> bool
@@ -8,7 +9,7 @@ module type Collision  = sig
   val collision_perso : Objet.objet -> Objet.objet -> Objet.objet
   val collision_ennemi : Objet.objet -> Objet.objet -> Objet.objet
   val collision_projectile : Objet.objet -> Objet.objet
-  val collision : Objet.objet -> Objet.objet -> Objet.objet
+  val collision : Objet.objet -> Objet.objet  -> Objet.objet
 end
 
 module Collision : Collision

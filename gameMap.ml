@@ -2,6 +2,7 @@ open Tsdl
 open Objet
 open Anim
 open Scene
+open Tools
 
 module type GameMap = sig
   val evenement :  Sdl.event ->  Sdl.window -> Sdl.renderer ->  bool -> bool
@@ -35,7 +36,7 @@ module GameMap : GameMap  = struct
 	 end
       |false -> ()
     in 
-    (*evenementFenetre e (window,render); *)
+    evenementFenetre e (window,render); 
     Sdl. pump_events ();
     let tab = Sdl.get_keyboard_state () in    
     begin
@@ -47,54 +48,39 @@ module GameMap : GameMap  = struct
         bool
     end
 
-  let drawRect (x1,y1) (w,h) render =
-    match Sdl.render_draw_rect render (Some (Sdl.Rect.create x1 y1  w h)) with
-    |Error (`Msg e) -> Sdl.log "Init loading error: %s" e; exit 1
-    |Ok () ->  ()
-
-  let drawFillRect (x1,y1) (w,h) render =
-    match Sdl.render_fill_rect render (Some (Sdl.Rect.create x1 y1  w h)) with
-    |Error (`Msg e) -> Sdl.log "Init loading error: %s" e; exit 1
-    |Ok () ->  ()
-
-  let chooseColor  r g b a  render =
-    match (Sdl.set_render_draw_color render r g b a) with
-    |Error (`Msg e) -> Sdl.log "Init loading error: %s" e; exit 1
-    |Ok () ->  ()
 
   let selectColor g render=
     match g with
-    |Objet.Personnage -> chooseColor  0 255  0 255 render
-    |Wall _ ->   chooseColor 255 255 255 255  render
-    |Door _ -> chooseColor 0 0 255 255 render
-    |Ennemi _  -> chooseColor 255 0 0 255 render
-    |Plateforme _ -> chooseColor 100 0 100 255 render 
-    |Projectile -> chooseColor 0 0 0 255 render
+    |Objet.Personnage -> Tools.chooseColor  0 255  0 255 render
+    |Wall _ ->   Tools.chooseColor 255 255 255 255  render
+    |Door _ -> Tools.chooseColor 0 0 255 255 render
+    |Ennemi _  -> Tools.chooseColor 255 0 0 255 render
+    |Plateforme _ -> Tools.chooseColor 100 0 100 255 render 
+    |Projectile -> Tools.chooseColor 0 0 0 255 render
     | _ -> ()
     
   let draw scene window render =
-    chooseColor  255 255  255 255 render;
+    Tools.chooseColor  255 255  255 255 render;
     let (ws,hs) = Scene.getSize scene in
     let (sw1,sw2) = Sdl.get_window_size window in
-    drawRect (50,50) (sw1-100,sw2-100) render;
+    Tools.drawRect (50,50) (sw1-100,sw2-100) render;
     let ratioX = (float_of_int (sw1-100)) /. (float_of_int ws) in
     let ratioY =(float_of_int (sw2-100))/. (float_of_int hs) in
     List.iter (fun x ->
       selectColor (Objet.getGenre x) render;
       let (xo,yo) = Objet.getPos x in
       let (wo,ho) = Objet.getSize x in
-      drawFillRect (50 + (int_of_float ((float_of_int xo)*.ratioX)), 50 + (int_of_float ((float_of_int yo)*.ratioY)))
+      Tools.drawFillRect (50 + (int_of_float ((float_of_int xo)*.ratioX)), 50 + (int_of_float ((float_of_int yo)*.ratioY)))
        (int_of_float ((float_of_int wo) *. ratioX),(int_of_float  ((float_of_int ho) *. ratioY))) render) (Scene.getEntitie scene)
 
   let drawMini scene window render sizeMap =
-    chooseColor  255 255  255 255 render;
-    let (windowSizeX,windowSizeY) = Sdl.get_window_size window in 
+    Tools.chooseColor  255 255  255 255 render;
     let (sceneWidth,sceneHeight) = Scene.getSize scene in
     (* let (demiWidth,demiHeight) = (sceneWidth/2,sceneHeight/2) in*)
   
     let (sw1Int,sw2Int) = sizeMap in
     let (sw1Float,sw2Float) = (float_of_int sw1Int, float_of_int sw2Int) in
-    drawRect (0,0) (sw1Int,sw2Int) render;
+    Tools.drawRect (0,0) (sw1Int,sw2Int) render;
     let ratioX = sw1Float /. (float_of_int sceneWidth)  in
     let ratioY =  sw2Float /. (float_of_int sceneHeight)  in
     let (demiWidth,demiHeight) = (int_of_float ((float_of_int sceneWidth)*.ratioX),int_of_float ((float_of_int sceneHeight)*.ratioY)) in
@@ -114,7 +100,6 @@ module GameMap : GameMap  = struct
       in
       let (rx,ry) = ((float_of_int (objX+(-xPers+demiWidth/2))*.ratioX), ((float_of_int (objY+(-yPers+sceneHeight/2)))*.ratioY)) in
       if (((rx <= float_of_int sw1Int)&&(ry <= float_of_int sw2Int))) then 
-	let (objWidth,objHeight) = Objet.getSize x in
       	let objWidth=
 	  if ((rx+.(float_of_int objWidthTemp)*.ratioX) < float_of_int sw1Int) then
 	    int_of_float (float_of_int objWidthTemp *. ratioX) 
@@ -129,7 +114,7 @@ module GameMap : GameMap  = struct
 	  else
 	    sw2Int-(int_of_float ry)
 	in	 
-	drawFillRect (int_of_float rx, int_of_float ry)  (objWidth,objHeight) 	
+	Tools.drawFillRect (int_of_float rx, int_of_float ry)  (objWidth,objHeight) 	
 	  render) (Scene.getEntitie scene)
 
 
@@ -185,7 +170,6 @@ module GameMap : GameMap  = struct
       end
     in    
     (* gestion du jeu une fois lancé *)
-    let event = Sdl.Event.create() in  
     let rec sub window renderer bool =
       refresh renderer;
     in sub window render true

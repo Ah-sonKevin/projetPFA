@@ -1,5 +1,6 @@
 open Tsdl
 open Objet
+open Sound
 
 module type Collision  = sig
   val checkCollision : Objet.objet -> Objet.objet -> bool
@@ -8,7 +9,7 @@ module type Collision  = sig
   val collision_perso : Objet.objet -> Objet.objet -> Objet.objet
   val collision_ennemi : Objet.objet -> Objet.objet -> Objet.objet
   val collision_projectile : Objet.objet -> Objet.objet
-  val collision : Objet.objet -> Objet.objet -> Objet.objet
+  val collision : Objet.objet -> Objet.objet  -> Objet.objet
 end
 
 module Collision : Collision = struct
@@ -89,9 +90,10 @@ module Collision : Collision = struct
       |8 -> Objet.reposition obj (xCol-w,yCol+hCol) (0.0,0.0)
       |_ -> failwith "ya que 8 cas normalement"
 	 
-  let collision_perso p obj =
+  let collision_perso p obj  =
     match (Objet.getGenre obj) with
     |Ennemi _   ->
+      Sound.play_sound Degat ;
        if (Objet.canBeDmg p) then
 	 let (xs,ys) = Objet.getSpeed p in
 	 let (xse,yse) = Objet.getSpeed obj in
@@ -101,8 +103,16 @@ module Collision : Collision = struct
 	 else
 	   Objet.changePV (Objet.setSpeed (Objet.resetSpeed temp) ((-.xs+.(xse*.0.5)),(-.ys+.(yse*.0.5)-.6.0))) (-40)
        else p
-    |Projectile -> Objet.changePV p (-20)
+    |Projectile -> 
+      begin
+        Sound.play_sound Degat ;
+        Objet.changePV p (-20)
+      end
     |Door t     -> p
+    |PowerUp HP ->      
+	 let x = if (Objet.getPV p) +50 <= (Objet.getPvMax p ) then 50 else (Objet.getPvMax p) - (Objet.getPV p)
+		   in Objet.changePV p x
+    |PowerUp Inv -> Objet.triggerInv p 
     |_          -> replace p (directionCollision p obj) obj
        
        
@@ -120,17 +130,23 @@ module Collision : Collision = struct
 		     
   let collision_projectile proj =
     Objet.kill proj
+
+  let collision_powerUp obj1 obj2  =   
+    if (Objet.getGenre obj2) = Personnage then
+      begin
+        Sound.play_sound PowerUp;
+        Objet.kill obj1
+      end
+    else
+      obj1
       
-  let collision obj1 obj2 =
+  let collision obj1 obj2  =
     if checkCollision obj1 obj2 then
       match Objet.getGenre obj1 with
-      |Personnage -> begin
-	(*let (x1,y1) = Objet.getPos obj1 in
-	Printf.printf "%d %d \n " x1 y1;*)
-	collision_perso obj1 obj2
-      end
+      |Personnage -> collision_perso obj1 obj2     
       |Ennemi _   -> collision_ennemi obj1 obj2 
       |Projectile -> collision_projectile obj1
+      |PowerUp _  -> collision_powerUp obj1 obj2 
       |_          -> obj1
     else obj1
 

@@ -6,10 +6,11 @@ open Collision
 open Camera
 open Sound
 open Random
+open Tools
 
 module type Scene = sig
   type scene 
-  val create : Objet.objet list -> float -> Objet.objet -> Camera.camera ->  Sdl.renderer -> Sound.sound-> string -> scene
+  val create : Objet.objet list -> float -> Objet.objet -> Camera.camera ->  Sdl.renderer -> string -> scene
   val getEntitie : scene -> Objet.objet list
   val getTexture : scene -> Sdl.texture list
   val getSize : scene -> (int*int)
@@ -17,7 +18,6 @@ module type Scene = sig
   val removeEntitie : scene -> Objet.objet -> scene 
   val kickDead : scene -> scene
   val refreshLifebar : scene -> scene
-  val loadPicture : Sdl.renderer -> (int*int) -> (int*int) -> Sdl.texture -> unit
   val refresh : scene -> scene -> unit
   val closeScene : scene -> unit
   val collision_All : scene -> scene
@@ -29,19 +29,18 @@ module type Scene = sig
   val shoot : Objet.objet -> scene -> (int*int) ->  scene
   val getPers : scene -> Objet.objet
   val decreaseClock : scene -> scene
-  val print : scene -> unit
 end
 
 module Scene : Scene =  struct
   type scene = {entities:Objet.objet list ; gravitie:float ; background : Objet.objet ;
-                cam : Camera.camera ; renderer : Sdl.renderer; son : Sound.sound; lifebar : Objet.objet}
+                cam : Camera.camera ; renderer : Sdl.renderer; lifebar : Objet.objet}
 
   exception NoPerso
   exception ErreurScene
               
-  let create objs grav back camera render son theme =
+  let create objs grav back camera render theme =
     Sound.play_mus theme;
-    {entities = objs ; gravitie = grav ; background = back ; cam = camera ;renderer = render; son = son;
+    {entities = objs ; gravitie = grav ; background = back ; cam = camera ;renderer = render; 
      lifebar =
 	let rec getPers_rec l =
 	  match l with 
@@ -65,10 +64,24 @@ module Scene : Scene =  struct
       |x::s -> getPers_rec s
     in 
     getPers_rec scene.entities
+
+  let newPowerUp (x,y) renderer=   
+    if (Random.int 10) <=8 then 
+      (Objet.create (PowerUp HP) (x,y) (0.0,0.0) (0.0,0.0) 100 (Anim.create [||] [|"Image/powerUpHP.bmp"|] [||] [||] renderer) renderer)
+    else
+      (Objet.create (PowerUp Inv) (x,y) (0.0,0.0) (0.0,0.0) 100 (Anim.create [||] [|"Image/powerUpInv.bmp"|] [||] [||] renderer) renderer)
       
   (*On enleve les objet qui sont mort, on conserve le personnage meme mort, car la scene a besoin de lui pour determiner le game over*)
   let kickDead scene = 
-    {scene with entities = List.fold_left (fun acc x ->  if (((Objet.getPV x) < 1)&& (Objet.getGenre x)!=Personnage) then acc else (x::acc)) [] scene.entities }
+    {scene with entities = List.fold_left (fun acc x ->
+      if (((Objet.getPV x) < 1) && (Objet.getGenre x)!=Personnage) then
+	match  (Objet.getGenre x ) with
+	|Ennemi _ ->
+	   if  ((Random.int 5)= 0) then (((newPowerUp (Objet.getPos x) scene.renderer))::acc) else acc
+	| _ ->  acc
+      else (x::acc)) [] scene.entities
+    }
+      
   let refreshLifebar scene =
     {scene with lifebar =
 	let pv = Objet.getPV (getPers scene) in
@@ -76,6 +89,7 @@ module Scene : Scene =  struct
   let continue scene =(Objet.getPV (getPers scene))>0
 
   let suicide scene =
+    print_string "bwark";
     {scene with entities = List.map (fun  x -> if (Objet.getGenre x) = Personnage then  Objet.kill x else x) scene.entities }
       
   let nextPos obj scene = 
@@ -99,10 +113,7 @@ module Scene : Scene =  struct
             else Anim.Saut
         in Objet.changeFrame x dir) l 
 
-  let print sc = List.iter (fun obj -> Objet.print obj) sc.entities
-    
-  let collision_All scene =
-      
+  let collision_All scene  =      
     let out_of_bound obj =
       match Objet.isMovable obj with
       |false  -> obj
@@ -113,8 +124,12 @@ module Scene : Scene =  struct
 	 (* calcul des collisions avec les bords de la scene, on regarde si l'objet est "sorti" de la scene*)
 	 if (((x+w) < 0) || ((y+h) < 0) || ((x)>sizeX) || ((y)>sizeY)) then Objet.kill obj else obj
     in
-    let temp = {scene with entities = List.map (fun obj -> (List.fold_left (Collision.collision) obj (getEntitie (removeEntitie scene obj)))) (getEntitie scene)} in
+    let temp = {scene with entities =
+                             List.map (fun obj -> 
+                                 (List.fold_left (Collision.collision) obj (getEntitie (removeEntitie scene obj))  )) (getEntitie scene)} in
     {temp with entities = (List.map (out_of_bound) (getEntitie temp))}
+
+
       
   (* gestion des déplacements *)
   let moveAll scene =
@@ -159,7 +174,7 @@ module Scene : Scene =  struct
 	      if Sdl.has_intersection rectPerso rectDoor
 	      then
 		let (l,g,b,t,p) = Lexer.lex t (Some perso ) scene.renderer  in
-		Some (create l g b (Camera.create (Objet.getPos p) (Objet.getSize b) (Camera.getWindowSize scene.cam)) scene.renderer scene.son t)
+		Some (create l g b (Camera.create (Objet.getPos p) (Objet.getSize b) (Camera.getWindowSize scene.cam)) scene.renderer  t)
 	      else sub obj s
 	   |_ -> sub obj s
       in
@@ -180,7 +195,6 @@ module Scene : Scene =  struct
     let rec shootAll_sub listObjet listRes =
       (* on récupère les coordonnées du personnage pour déterminer les tirs des ennemis *)
       let (xp,yp) = Objet.getPos p in
-      let (xsp,ysp) = Objet.getSpeed p in
       let (wp,hp) = Objet.getBaseSize p in
       match listObjet with
       |[]->  {scene with entities = listRes }
@@ -201,21 +215,25 @@ module Scene : Scene =  struct
 		  (* on calcul la position du personnage par rapport au tireur (dans le référentiel du tireur donc) *)
 		  let (vecx,vecy) = (ppX-peX,ppY-peY) in
 		  let norm = sqrt(float_of_int(vecx*vecx + vecy*vecy))in
-		  let (normX,normY) = ((float_of_int vecx)/.norm , (float_of_int vecy)/.norm) in
-		  (*decalage afin que le tireur ne tire pas dans lui meme on calcul par rapport aux milieu des objets, puis on refera un décalage*)
-		  (*pythagore*)
-		  let distdiagEnProj = int_of_float(sqrt(float_of_int(h*h+w*w)))+10 in
-		  (*on applique notre vecteur normalisé afin de définir la "direction" dans laquelle ira le projectil à sa creation le +6 c'est 
-		    la taille du projectile divisé par 2 (w et h, sont les meme vus qu'il est carré)*)
-		  let (posX,posY) = (int_of_float((normX)*.(float_of_int(distdiagEnProj+1+6))),
-				     int_of_float((normY)*.(float_of_int(distdiagEnProj+1+6)))) in
-		  let rng = Random.int 21 in
-		  let proj = Objet.create Projectile 
-                    (xt+posX,yt+posY) 
-                    ((normX)*.(8.0),(normY)*.(8.0))  (10.0,10.0) 10 
-                    (Anim.create [||] [|"Image/Ennemi_proj.bmp"|] [||] [||] scene.renderer) 
-                    scene.renderer in
-		  shootAll_sub s (proj::(Objet.triggerShoot x (120+rng))::listRes)
+		  (* on ne fait pas tirer l'ennemi si il est trop loin du personnage *)
+		  if norm > 750.0 then
+		    shootAll_sub s (x::listRes)
+		  else
+		    let (normX,normY) = ((float_of_int vecx)/.norm , (float_of_int vecy)/.norm) in
+		    (*decalage afin que le tireur ne tire pas dans lui meme on calcul par rapport aux milieu des objets, puis on refera un décalage*)
+		    (*pythagore*)
+		    let distdiagEnProj = int_of_float(sqrt(float_of_int(h*h+w*w)))+10 in
+		    (*on applique notre vecteur normalisé afin de définir la "direction" dans laquelle ira le projectil à sa creation le +6 c'est 
+		      la taille du projectile divisé par 2 (w et h, sont les meme vus qu'il est carré)*)
+		    let (posX,posY) = (int_of_float((normX)*.(float_of_int(distdiagEnProj+1+6))),
+				       int_of_float((normY)*.(float_of_int(distdiagEnProj+1+6)))) in
+		    let rng = Random.int 36 in
+		    let proj = Objet.create Projectile 
+                      (xt+posX,yt+posY) 
+                      ((normX)*.(8.0),(normY)*.(8.0))  (10.0,10.0) 10 
+                      (Anim.create [||] [|"Image/Ennemi_proj.bmp"|] [||] [||] scene.renderer) 
+                      scene.renderer in
+		    shootAll_sub s (proj::(Objet.triggerShoot x (120+rng))::listRes)
 		end
 	    end
 	 (* Ne rien faire pour les autres objets *)
@@ -228,7 +246,7 @@ module Scene : Scene =  struct
     if (not (Objet.canShoot tireur)) then scene
     else
       begin
-	Sound.play_sound Sound.Tir scene.son ;
+	Sound.play_sound Sound.Tir  ;
 	let (xP,yP) = Objet.getPos tireur in
 	let (xs,ys) = Objet.getBaseSize tireur in
 	(*decalage afin que le tireur ne tire pas dans lui meme*)
@@ -253,7 +271,7 @@ module Scene : Scene =  struct
               Objet.setSpeed x (xs,0.0)
 	    else 
               begin
-		Sound.play_sound Sound.Saut scene.son;
+		Sound.play_sound Sound.Saut ;
 		Objet.forbidJump (Objet.setSpeed x (xs,ys))
               end
 	  else 
@@ -263,13 +281,7 @@ module Scene : Scene =  struct
       ) scene.entities
     in {scene with entities = l}
     
-  let loadPicture renderer (x1,y1) (w,h) texture =
-    let frag_rect = Sdl.Rect.create 0 0 w h in
-    let position_background = Sdl.Rect.create x1 y1 w h in
-    match Sdl.render_copy ~dst:position_background ~src:frag_rect renderer texture with
-    |Error (`Msg e) -> Sdl.log "Init texture on screen error: %s" e; exit 1
-    |Ok () -> ()
-       
+   
   let refresh sceneOld sceneNew =
     let rec refresh_sub list =
       match list with
@@ -282,7 +294,14 @@ module Scene : Scene =  struct
              (refresh_sub s) 
 	 else
            begin
-             loadPicture sceneNew.renderer (Camera.convertPosObjet (Objet.getPos x) sceneNew.cam) (Objet.getSize x) (Objet.getTexture x);
+	     begin
+             if ((Objet.getGenre x) = Personnage ) then
+	       if (Objet.clignote x) then
+		 Tools.loadPicture sceneNew.renderer (Camera.convertPosObjet (Objet.getPos x) sceneNew.cam) (Objet.getSize x) (Objet.getTexture x)
+	       else ()
+	     else
+	       Tools.loadPicture sceneNew.renderer (Camera.convertPosObjet (Objet.getPos x) sceneNew.cam) (Objet.getSize x) (Objet.getTexture x)
+	     end;
              refresh_sub s
            end
     in
@@ -290,10 +309,10 @@ module Scene : Scene =  struct
     |Error (`Msg e) -> Sdl.log "Init render error: %s" e; exit 1
     |Ok () ->
        begin
-	 loadPicture sceneNew.renderer (Camera.convertPosBackground sceneNew.cam)
+	 Tools.loadPicture sceneNew.renderer (Camera.convertPosBackground sceneNew.cam)
            (Objet.getSize sceneNew.background) (Objet.getTexture sceneNew.background);
 	 refresh_sub sceneNew.entities;
-	 loadPicture sceneNew.renderer (Objet.getPos sceneNew.lifebar) (Objet.getSize sceneNew.lifebar) (Objet.getTexture sceneNew.lifebar)
+	 Tools.loadPicture sceneNew.renderer (Objet.getPos sceneNew.lifebar) (Objet.getSize sceneNew.lifebar) (Objet.getTexture sceneNew.lifebar)
        end
 	 
   let getTexture scene =

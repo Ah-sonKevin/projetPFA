@@ -5,7 +5,7 @@ open Sound
 
 module type Scene = sig
   type scene 
-  val create : Objet.objet list -> float -> Objet.objet -> Camera.camera ->  Sdl.renderer -> Sound.sound-> string -> scene
+  val create : Objet.objet list -> float -> Objet.objet -> Camera.camera ->  Sdl.renderer -> string -> scene
   val getEntitie : scene -> Objet.objet list
   val getTexture : scene -> Sdl.texture list
   val getSize : scene -> (int*int)
@@ -13,7 +13,6 @@ module type Scene = sig
   val removeEntitie : scene -> Objet.objet -> scene 
   val kickDead : scene -> scene
   val refreshLifebar : scene -> scene
-  val loadPicture : Sdl.renderer -> (int*int) -> (int*int) -> Sdl.texture -> unit
   val refresh : scene -> scene -> unit
   val closeScene : scene -> unit
   val collision_All : scene -> scene
@@ -25,7 +24,6 @@ module type Scene = sig
   val shoot : Objet.objet -> scene -> (int*int) ->  scene
   val getPers : scene -> Objet.objet
   val decreaseClock : scene -> scene
-  val print : scene -> unit
 end
   
 module Scene : Scene

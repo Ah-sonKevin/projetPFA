@@ -1,24 +1,18 @@
 -*- mode: compilation; default-directory: "~/projetPFA/" -*-
-Compilation started at Tue Apr 10 12:53:36
+Compilation started at Thu Apr 19 12:41:11
 
-ocamlbuild -use-ocamlfind -package tsdl,tsdl_mixer main.byte 
+ocamlbuild -use-ocamlfind -package tsdl,tsdl_mixer main.byte
 
 
-ocamlfind ocamldep -package tsdl,tsdl_mixer -modules scene.mli > scene.mli.depends
-ocamlfind ocamlc -c -package tsdl,tsdl_mixer -o scene.cmi scene.mli
-ocamlfind ocamlc -c -package tsdl,tsdl_mixer -o main.cmi main.mli
-ocamlfind ocamldep -package tsdl,tsdl_mixer -modules main.ml > main.ml.depends
-ocamlfind ocamlc -c -package tsdl,tsdl_mixer -o main.cmo main.ml
-+ ocamlfind ocamlc -c -package tsdl,tsdl_mixer -o main.cmo main.ml
-File "main.ml", line 20, characters 6-22:
-Warning 26: unused variable evenementFenetre.
 ocamlfind ocamldep -package tsdl,tsdl_mixer -modules menu.ml > menu.ml.depends
-ocamlfind ocamldep -package tsdl,tsdl_mixer -modules scene.ml > scene.ml.depends
-ocamlfind ocamldep -package tsdl,tsdl_mixer -modules sound.ml > sound.ml.depends
 ocamlfind ocamlc -c -package tsdl,tsdl_mixer -o menu.cmo menu.ml
 + ocamlfind ocamlc -c -package tsdl,tsdl_mixer -o menu.cmo menu.ml
-File "menu.ml", line 35, characters 29-33:
-Error: Unbound constructor Menu
+File "menu.ml", line 1:
+Error: The implementation menu.ml does not match the interface menu.cmi:
+       ...
+       At position module type Menu = <here>
+       The type `soundSetting' is required but not provided
+       File "menu.ml", line 12, characters 2-19: Expected declaration
 Command exited with code 2.
 
-Compilation exited abnormally with code 10 at Tue Apr 10 12:53:37
+Compilation exited abnormally with code 10 at Thu Apr 19 12:41:11
