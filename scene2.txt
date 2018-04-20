@@ -70,7 +70,7 @@ Image/wall.bmp
 no
 no
 
-Genre Wall (32,566)
+Genre Wall (32,565)
 Position (3368,20)
 Vitesse (0.0,0.0)
 VitesseMax (0.0,0.0)

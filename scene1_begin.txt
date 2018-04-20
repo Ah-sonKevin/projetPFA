@@ -8,11 +8,9 @@ Background Image/Menu_backscreen_1200_900.bmp
 Theme Son/theme1.wav
 
 Genre Personnage
-(*dfgdhrtujghkjhl*)
 Position (300,200)
 Vitesse (0.0,0.0)
 VitesseMax (5.0,7.5)
-(*dfgdhrtujghkjhl*)
 PV 200
 Animation
 Image/samus/Samus_left/Samus_left_walk/Samus_left_walk1_25_38.bmp
@@ -218,7 +216,7 @@ no
 no
 
 Genre Wall (336,50)
-Position (614,800)
+Position (615,800)
 Vitesse (0.0,0.0)
 VitesseMax (0.0,0.0)
 PV 1000

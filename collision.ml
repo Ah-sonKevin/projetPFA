@@ -112,7 +112,7 @@ module Collision : Collision = struct
     |PowerUp HP ->      
 	 let x = if (Objet.getPV p) +50 <= (Objet.getPvMax p ) then 50 else (Objet.getPvMax p) - (Objet.getPV p)
 		   in Objet.changePV p x
-    |PowerUp Inv -> Objet.triggerInv p 
+    |PowerUp Inv -> Objet.triggerInvPU p 
     |_          -> replace p (directionCollision p obj) obj
        
        

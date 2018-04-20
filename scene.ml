@@ -16,7 +16,6 @@ module type Scene = sig
   val addEntitie : scene -> Objet.objet -> scene
   val removeEntitie : scene -> Objet.objet -> scene 
   val kickDead : scene -> scene
-  val refreshLifebar : scene -> scene
   val refresh : scene -> scene -> unit
   val closeScene : scene -> unit
   val collision_All : scene -> scene
@@ -32,24 +31,14 @@ end
 
 module Scene : Scene =  struct
   type scene = {entities:Objet.objet list ; gravitie:float ; background : Objet.objet ;
-                cam : Camera.camera ; renderer : Sdl.renderer; lifebar : Objet.objet}
+                cam : Camera.camera ; renderer : Sdl.renderer}
 
   exception NoPerso
   exception ErreurScene
               
   let create objs grav back camera render theme =
     Sound.play_mus theme;
-    {entities = objs ; gravitie = grav ; background = back ; cam = camera ;renderer = render; 
-     lifebar =
-	let rec getPers_rec l =
-	  match l with 
-	  |[]-> raise NoPerso
-	  |x::s when ((Objet.getGenre x) = Personnage) -> x
-	  |x::s -> getPers_rec s
-	in
-	let pv = Objet.getPV (getPers_rec objs) in
-	Objet.create (Wall ((pv),20)) (900-(pv),10) (0.0,0.0) (0.0,0.0) 1000 (Anim.create [||] [|"Image/LifeBar.bmp"|] [||] [||] render) render
-    }
+    {entities = objs ; gravitie = grav ; background = back ; cam = camera ;renderer = render }
       
   let getEntitie scene = scene.entities                           
   let getSize scene = Objet.getSize scene.background
@@ -73,19 +62,16 @@ module Scene : Scene =  struct
       
   (*On enleve les objet qui sont mort, on conserve le personnage meme mort, car la scene a besoin de lui pour determiner le game over*)
   let kickDead scene = 
-    {scene with entities = List.fold_left (fun acc x ->
-      if (((Objet.getPV x) < 1) && (Objet.getGenre x)!=Personnage) then
-	match  (Objet.getGenre x ) with
-	|Ennemi _ ->
-	   if  ((Random.int 5)= 0) then (((newPowerUp (Objet.getPos x) scene.renderer))::acc) else acc
-	| _ ->  acc
-      else (x::acc)) [] scene.entities
+    {scene with entities =
+	List.fold_left (fun acc x ->
+	  if (((Objet.getPV x) < 1) && (Objet.getGenre x)!=Personnage) then
+	    match  (Objet.getGenre x ) with
+	    |Ennemi _ ->
+	       if  ((Random.int 5)= 0) then (((newPowerUp (Objet.getPos x) scene.renderer))::acc) else acc
+	    | _ ->  acc
+	  else (x::acc)) [] scene.entities
     }
       
-  let refreshLifebar scene =
-    {scene with lifebar =
-	let pv = Objet.getPV (getPers scene) in
-	Objet.create (Wall ((pv),20)) (950-(pv),10) (0.0,0.0) (0.0,0.0) 1000 (Anim.create [||] [|"Image/LifeBar.bmp"|] [||] [||] scene.renderer) scene.renderer}
   let continue scene =(Objet.getPV (getPers scene))>0
 
   let suicide scene =
@@ -128,8 +114,6 @@ module Scene : Scene =  struct
                              List.map (fun obj -> 
                                  (List.fold_left (Collision.collision) obj (getEntitie (removeEntitie scene obj))  )) (getEntitie scene)} in
     {temp with entities = (List.map (out_of_bound) (getEntitie temp))}
-
-
       
   (* gestion des déplacements *)
   let moveAll scene =
@@ -156,7 +140,7 @@ module Scene : Scene =  struct
       (* Ne rien faire pour les autres objets *)
       |x2::s -> moveAll_sub s (x2::listRes) cam
     in
-
+    
     let doorCollision scene =
       let perso = getPers scene in
       let (x1,y1) = Objet.getPos perso in
@@ -180,7 +164,6 @@ module Scene : Scene =  struct
       in
       sub perso scene.entities
     in
-
     
     let temp1 = (moveAll_sub  scene.entities [] scene.cam) in
     match doorCollision temp1 with
@@ -293,15 +276,9 @@ module Scene : Scene =  struct
            else
              (refresh_sub s) 
 	 else
-           begin
-	     begin
-             if ((Objet.getGenre x) = Personnage ) then
-	       if (Objet.clignote x) then
-		 Tools.loadPicture sceneNew.renderer (Camera.convertPosObjet (Objet.getPos x) sceneNew.cam) (Objet.getSize x) (Objet.getTexture x)
-	       else ()
-	     else
-	       Tools.loadPicture sceneNew.renderer (Camera.convertPosObjet (Objet.getPos x) sceneNew.cam) (Objet.getSize x) (Objet.getTexture x)
-	     end;
+           begin	     
+	     if (Objet.clignote x) then
+	       Tools.loadPicture sceneNew.renderer (Camera.convertPosObjet (Objet.getPos x) sceneNew.cam) (Objet.getSize x) (Objet.getTexture x);	     
              refresh_sub s
            end
     in
@@ -312,7 +289,9 @@ module Scene : Scene =  struct
 	 Tools.loadPicture sceneNew.renderer (Camera.convertPosBackground sceneNew.cam)
            (Objet.getSize sceneNew.background) (Objet.getTexture sceneNew.background);
 	 refresh_sub sceneNew.entities;
-	 Tools.loadPicture sceneNew.renderer (Objet.getPos sceneNew.lifebar) (Objet.getSize sceneNew.lifebar) (Objet.getTexture sceneNew.lifebar)
+	 let pv = Objet.getPV (getPers sceneNew) in
+	 Tools.chooseColor 255 0 0 255 sceneNew.renderer;
+	 Tools.drawFillRect (950-pv,10) (pv,20) sceneNew.renderer;
        end
 	 
   let getTexture scene =

@@ -33,6 +33,7 @@ module type Objet = sig
   val canBeDmg : objet -> bool 
   val triggerShoot : objet -> int -> objet
   val triggerInv : objet -> objet
+  val triggerInvPU : objet -> objet
   val decreaseClock : objet -> objet
   val getPvMax : objet -> int
   val clignote : objet -> bool
@@ -88,6 +89,7 @@ module Objet : Objet = struct
   let clignote p = (p.clockInv mod 2) = 0 
   let triggerShoot p n = {p with clockShoot = n}
   let triggerInv p = {p with clockInv = 40}
+  let triggerInvPU p = {p with clockInv = 300}
   let decreaseClock p =
     {p with clockShoot = if p.clockShoot > 0 then p.clockShoot -1 else 0;
       clockInv = if p.clockInv > 0 then p.clockInv -1 else 0}
