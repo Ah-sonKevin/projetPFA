@@ -55,7 +55,7 @@ module Scene : Scene =  struct
   let removeEntitie scene objet = {scene with entities = List.fold_left (fun res obj -> if obj=objet then res else (obj::res)) [] scene.entities}
 
   let newPowerUp (x,y) renderer=   
-    if (Random.int 10) >118 then 
+    if (Random.int 10) < 8 then 
       (Objet.create (PowerUp HP) (x,y) (0.0,0.0) (0.0,1.0) 100 (Anim.create [||] [|"Image/powerUpHP.bmp"|] [||] [||] renderer) renderer)
     else
       (Objet.create (PowerUp Inv) (x,y) (0.0,0.0) (0.0,1.0) 100 (Anim.create [||] [|"Image/powerUpInv.bmp"|] [||] [||] renderer) renderer)
@@ -67,7 +67,7 @@ module Scene : Scene =  struct
 	  if (((Objet.getPV x) < 1) && (Objet.getGenre x)!=Personnage) then
 	    match  (Objet.getGenre x ) with
 	    |Ennemi _ ->
-	      (* if  ((Random.int 5)= 0) then *)(((newPowerUp (Objet.getPos x) scene.renderer))::acc) (*else acc*)
+	      if  ((Random.int 5)= 0) then (((newPowerUp (Objet.getPos x) scene.renderer))::acc) else acc
 	    | _ ->  acc
 	  else (x::acc)) [] scene.entities
     }

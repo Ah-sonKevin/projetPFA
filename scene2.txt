@@ -130,54 +130,6 @@ Image/wall.bmp
 no
 no
 
-Genre Ennemi Normal
-Position (1600,710)
-Vitesse (-4.0,0.0)
-VitesseMax (5.0,10.0)
-PV 100
-Animation
-no
-Image/ennemies/ennemi_test_25_21.bmp
-
-no
-no
-
-Genre Ennemi Normal
-Position (1700,710)
-Vitesse (3.2,0.0)
-VitesseMax (5.0,10.0)
-PV 100
-Animation
-no
-Image/ennemies/ennemi_test_25_21.bmp
-
-no
-no
-
-Genre Ennemi Normal
-Position (1800,710)
-Vitesse (-1.8,0.0)
-VitesseMax (5.0,10.0)
-PV 100
-Animation
-no
-Image/ennemies/ennemi_test_25_21.bmp
-
-no
-no
-
-Genre Ennemi Normal
-Position (1900,710)
-Vitesse (2.7,0.0)
-VitesseMax (5.0,10.0)
-PV 100
-Animation
-no
-Image/ennemies/ennemi_test_25_21.bmp
-
-no
-no
-
 Genre Wall (10,10)
 Position (2700,740)
 Vitesse (0.0,0.0)
@@ -191,51 +143,426 @@ no
 no
 
 Genre Ennemi Normal
-Position (2750,710)
+Position (1600,680)
 Vitesse (-4.0,0.0)
 VitesseMax (5.0,10.0)
 PV 100
 Animation
-no
-Image/ennemies/ennemi_test_25_21.bmp
+Image/ennemies/ground/left/ennemi_left_1.bmp
+Image/ennemies/ground/left/ennemi_left_1.bmp
+Image/ennemies/ground/left/ennemi_left_2.bmp
+Image/ennemies/ground/left/ennemi_left_2.bmp
+Image/ennemies/ground/left/ennemi_left_3.bmp
+Image/ennemies/ground/left/ennemi_left_3.bmp
+Image/ennemies/ground/left/ennemi_left_4.bmp
+Image/ennemies/ground/left/ennemi_left_4.bmp
+Image/ennemies/ground/left/ennemi_left_5.bmp
+Image/ennemies/ground/left/ennemi_left_5.bmp
+Image/ennemies/ground/left/ennemi_left_6.bmp
+Image/ennemies/ground/left/ennemi_left_6.bmp
+Image/ennemies/ground/left/ennemi_left_7.bmp
+Image/ennemies/ground/left/ennemi_left_7.bmp
+Image/ennemies/ground/left/ennemi_left_8.bmp
+Image/ennemies/ground/left/ennemi_left_8.bmp
+Image/ennemies/ground/left/ennemi_left_9.bmp
+Image/ennemies/ground/left/ennemi_left_9.bmp
 
-no
+Image/ennemies/ground/ennemi_static.bmp
+
+Image/ennemies/ground/right/ennemi_right_1.bmp
+Image/ennemies/ground/right/ennemi_right_1.bmp
+Image/ennemies/ground/right/ennemi_right_2.bmp
+Image/ennemies/ground/right/ennemi_right_2.bmp
+Image/ennemies/ground/right/ennemi_right_3.bmp
+Image/ennemies/ground/right/ennemi_right_3.bmp
+Image/ennemies/ground/right/ennemi_right_4.bmp
+Image/ennemies/ground/right/ennemi_right_4.bmp
+Image/ennemies/ground/right/ennemi_right_5.bmp
+Image/ennemies/ground/right/ennemi_right_5.bmp
+Image/ennemies/ground/right/ennemi_right_6.bmp
+Image/ennemies/ground/right/ennemi_right_6.bmp
+Image/ennemies/ground/right/ennemi_right_7.bmp
+Image/ennemies/ground/right/ennemi_right_7.bmp
+Image/ennemies/ground/right/ennemi_right_8.bmp
+Image/ennemies/ground/right/ennemi_right_8.bmp
+Image/ennemies/ground/right/ennemi_right_9.bmp
+Image/ennemies/ground/right/ennemi_right_9.bmp
 no
 
 Genre Ennemi Normal
-Position (2800,710)
+Position (1700,680)
 Vitesse (3.2,0.0)
 VitesseMax (5.0,10.0)
 PV 100
 Animation
-no
-Image/ennemies/ennemi_test_25_21.bmp
+Image/ennemies/ground/left/ennemi_left_1.bmp
+Image/ennemies/ground/left/ennemi_left_1.bmp
+Image/ennemies/ground/left/ennemi_left_2.bmp
+Image/ennemies/ground/left/ennemi_left_2.bmp
+Image/ennemies/ground/left/ennemi_left_3.bmp
+Image/ennemies/ground/left/ennemi_left_3.bmp
+Image/ennemies/ground/left/ennemi_left_4.bmp
+Image/ennemies/ground/left/ennemi_left_4.bmp
+Image/ennemies/ground/left/ennemi_left_5.bmp
+Image/ennemies/ground/left/ennemi_left_5.bmp
+Image/ennemies/ground/left/ennemi_left_6.bmp
+Image/ennemies/ground/left/ennemi_left_6.bmp
+Image/ennemies/ground/left/ennemi_left_7.bmp
+Image/ennemies/ground/left/ennemi_left_7.bmp
+Image/ennemies/ground/left/ennemi_left_8.bmp
+Image/ennemies/ground/left/ennemi_left_8.bmp
+Image/ennemies/ground/left/ennemi_left_9.bmp
+Image/ennemies/ground/left/ennemi_left_9.bmp
 
-no
+Image/ennemies/ground/ennemi_static.bmp
+
+Image/ennemies/ground/right/ennemi_right_1.bmp
+Image/ennemies/ground/right/ennemi_right_1.bmp
+Image/ennemies/ground/right/ennemi_right_2.bmp
+Image/ennemies/ground/right/ennemi_right_2.bmp
+Image/ennemies/ground/right/ennemi_right_3.bmp
+Image/ennemies/ground/right/ennemi_right_3.bmp
+Image/ennemies/ground/right/ennemi_right_4.bmp
+Image/ennemies/ground/right/ennemi_right_4.bmp
+Image/ennemies/ground/right/ennemi_right_5.bmp
+Image/ennemies/ground/right/ennemi_right_5.bmp
+Image/ennemies/ground/right/ennemi_right_6.bmp
+Image/ennemies/ground/right/ennemi_right_6.bmp
+Image/ennemies/ground/right/ennemi_right_7.bmp
+Image/ennemies/ground/right/ennemi_right_7.bmp
+Image/ennemies/ground/right/ennemi_right_8.bmp
+Image/ennemies/ground/right/ennemi_right_8.bmp
+Image/ennemies/ground/right/ennemi_right_9.bmp
+Image/ennemies/ground/right/ennemi_right_9.bmp
 no
 
 Genre Ennemi Normal
-Position (2850,710)
+Position (1800,680)
 Vitesse (-1.8,0.0)
 VitesseMax (5.0,10.0)
 PV 100
 Animation
-no
-Image/ennemies/ennemi_test_25_21.bmp
+Image/ennemies/ground/left/ennemi_left_1.bmp
+Image/ennemies/ground/left/ennemi_left_1.bmp
+Image/ennemies/ground/left/ennemi_left_2.bmp
+Image/ennemies/ground/left/ennemi_left_2.bmp
+Image/ennemies/ground/left/ennemi_left_3.bmp
+Image/ennemies/ground/left/ennemi_left_3.bmp
+Image/ennemies/ground/left/ennemi_left_4.bmp
+Image/ennemies/ground/left/ennemi_left_4.bmp
+Image/ennemies/ground/left/ennemi_left_5.bmp
+Image/ennemies/ground/left/ennemi_left_5.bmp
+Image/ennemies/ground/left/ennemi_left_6.bmp
+Image/ennemies/ground/left/ennemi_left_6.bmp
+Image/ennemies/ground/left/ennemi_left_7.bmp
+Image/ennemies/ground/left/ennemi_left_7.bmp
+Image/ennemies/ground/left/ennemi_left_8.bmp
+Image/ennemies/ground/left/ennemi_left_8.bmp
+Image/ennemies/ground/left/ennemi_left_9.bmp
+Image/ennemies/ground/left/ennemi_left_9.bmp
 
-no
+Image/ennemies/ground/ennemi_static.bmp
+
+Image/ennemies/ground/right/ennemi_right_1.bmp
+Image/ennemies/ground/right/ennemi_right_1.bmp
+Image/ennemies/ground/right/ennemi_right_2.bmp
+Image/ennemies/ground/right/ennemi_right_2.bmp
+Image/ennemies/ground/right/ennemi_right_3.bmp
+Image/ennemies/ground/right/ennemi_right_3.bmp
+Image/ennemies/ground/right/ennemi_right_4.bmp
+Image/ennemies/ground/right/ennemi_right_4.bmp
+Image/ennemies/ground/right/ennemi_right_5.bmp
+Image/ennemies/ground/right/ennemi_right_5.bmp
+Image/ennemies/ground/right/ennemi_right_6.bmp
+Image/ennemies/ground/right/ennemi_right_6.bmp
+Image/ennemies/ground/right/ennemi_right_7.bmp
+Image/ennemies/ground/right/ennemi_right_7.bmp
+Image/ennemies/ground/right/ennemi_right_8.bmp
+Image/ennemies/ground/right/ennemi_right_8.bmp
+Image/ennemies/ground/right/ennemi_right_9.bmp
+Image/ennemies/ground/right/ennemi_right_9.bmp
 no
 
 Genre Ennemi Normal
-Position (2900,710)
+Position (1900,680)
 Vitesse (2.7,0.0)
 VitesseMax (5.0,10.0)
 PV 100
 Animation
-no
-Image/ennemies/ennemi_test_25_21.bmp
+Image/ennemies/ground/left/ennemi_left_1.bmp
+Image/ennemies/ground/left/ennemi_left_1.bmp
+Image/ennemies/ground/left/ennemi_left_2.bmp
+Image/ennemies/ground/left/ennemi_left_2.bmp
+Image/ennemies/ground/left/ennemi_left_3.bmp
+Image/ennemies/ground/left/ennemi_left_3.bmp
+Image/ennemies/ground/left/ennemi_left_4.bmp
+Image/ennemies/ground/left/ennemi_left_4.bmp
+Image/ennemies/ground/left/ennemi_left_5.bmp
+Image/ennemies/ground/left/ennemi_left_5.bmp
+Image/ennemies/ground/left/ennemi_left_6.bmp
+Image/ennemies/ground/left/ennemi_left_6.bmp
+Image/ennemies/ground/left/ennemi_left_7.bmp
+Image/ennemies/ground/left/ennemi_left_7.bmp
+Image/ennemies/ground/left/ennemi_left_8.bmp
+Image/ennemies/ground/left/ennemi_left_8.bmp
+Image/ennemies/ground/left/ennemi_left_9.bmp
+Image/ennemies/ground/left/ennemi_left_9.bmp
 
+Image/ennemies/ground/ennemi_static.bmp
+
+Image/ennemies/ground/right/ennemi_right_1.bmp
+Image/ennemies/ground/right/ennemi_right_1.bmp
+Image/ennemies/ground/right/ennemi_right_2.bmp
+Image/ennemies/ground/right/ennemi_right_2.bmp
+Image/ennemies/ground/right/ennemi_right_3.bmp
+Image/ennemies/ground/right/ennemi_right_3.bmp
+Image/ennemies/ground/right/ennemi_right_4.bmp
+Image/ennemies/ground/right/ennemi_right_4.bmp
+Image/ennemies/ground/right/ennemi_right_5.bmp
+Image/ennemies/ground/right/ennemi_right_5.bmp
+Image/ennemies/ground/right/ennemi_right_6.bmp
+Image/ennemies/ground/right/ennemi_right_6.bmp
+Image/ennemies/ground/right/ennemi_right_7.bmp
+Image/ennemies/ground/right/ennemi_right_7.bmp
+Image/ennemies/ground/right/ennemi_right_8.bmp
+Image/ennemies/ground/right/ennemi_right_8.bmp
+Image/ennemies/ground/right/ennemi_right_9.bmp
+Image/ennemies/ground/right/ennemi_right_9.bmp
 no
+
+Genre Wall (10,10)
+Position (2700,680)
+Vitesse (0.0,0.0)
+VitesseMax (0.0,0.0)
+PV 1000
+Animation
+Image/ennemies/ground/left/ennemi_left_1.bmp
+Image/ennemies/ground/left/ennemi_left_1.bmp
+Image/ennemies/ground/left/ennemi_left_2.bmp
+Image/ennemies/ground/left/ennemi_left_2.bmp
+Image/ennemies/ground/left/ennemi_left_3.bmp
+Image/ennemies/ground/left/ennemi_left_3.bmp
+Image/ennemies/ground/left/ennemi_left_4.bmp
+Image/ennemies/ground/left/ennemi_left_4.bmp
+Image/ennemies/ground/left/ennemi_left_5.bmp
+Image/ennemies/ground/left/ennemi_left_5.bmp
+Image/ennemies/ground/left/ennemi_left_6.bmp
+Image/ennemies/ground/left/ennemi_left_6.bmp
+Image/ennemies/ground/left/ennemi_left_7.bmp
+Image/ennemies/ground/left/ennemi_left_7.bmp
+Image/ennemies/ground/left/ennemi_left_8.bmp
+Image/ennemies/ground/left/ennemi_left_8.bmp
+Image/ennemies/ground/left/ennemi_left_9.bmp
+Image/ennemies/ground/left/ennemi_left_9.bmp
+
+Image/ennemies/ground/ennemi_static.bmp
+
+Image/ennemies/ground/right/ennemi_right_1.bmp
+Image/ennemies/ground/right/ennemi_right_1.bmp
+Image/ennemies/ground/right/ennemi_right_2.bmp
+Image/ennemies/ground/right/ennemi_right_2.bmp
+Image/ennemies/ground/right/ennemi_right_3.bmp
+Image/ennemies/ground/right/ennemi_right_3.bmp
+Image/ennemies/ground/right/ennemi_right_4.bmp
+Image/ennemies/ground/right/ennemi_right_4.bmp
+Image/ennemies/ground/right/ennemi_right_5.bmp
+Image/ennemies/ground/right/ennemi_right_5.bmp
+Image/ennemies/ground/right/ennemi_right_6.bmp
+Image/ennemies/ground/right/ennemi_right_6.bmp
+Image/ennemies/ground/right/ennemi_right_7.bmp
+Image/ennemies/ground/right/ennemi_right_7.bmp
+Image/ennemies/ground/right/ennemi_right_8.bmp
+Image/ennemies/ground/right/ennemi_right_8.bmp
+Image/ennemies/ground/right/ennemi_right_9.bmp
+Image/ennemies/ground/right/ennemi_right_9.bmp
+no
+
+Genre Ennemi Normal
+Position (2750,680)
+Vitesse (-4.0,0.0)
+VitesseMax (5.0,10.0)
+PV 100
+Animation
+Image/ennemies/ground/left/ennemi_left_1.bmp
+Image/ennemies/ground/left/ennemi_left_1.bmp
+Image/ennemies/ground/left/ennemi_left_2.bmp
+Image/ennemies/ground/left/ennemi_left_2.bmp
+Image/ennemies/ground/left/ennemi_left_3.bmp
+Image/ennemies/ground/left/ennemi_left_3.bmp
+Image/ennemies/ground/left/ennemi_left_4.bmp
+Image/ennemies/ground/left/ennemi_left_4.bmp
+Image/ennemies/ground/left/ennemi_left_5.bmp
+Image/ennemies/ground/left/ennemi_left_5.bmp
+Image/ennemies/ground/left/ennemi_left_6.bmp
+Image/ennemies/ground/left/ennemi_left_6.bmp
+Image/ennemies/ground/left/ennemi_left_7.bmp
+Image/ennemies/ground/left/ennemi_left_7.bmp
+Image/ennemies/ground/left/ennemi_left_8.bmp
+Image/ennemies/ground/left/ennemi_left_8.bmp
+Image/ennemies/ground/left/ennemi_left_9.bmp
+Image/ennemies/ground/left/ennemi_left_9.bmp
+
+Image/ennemies/ground/ennemi_static.bmp
+
+Image/ennemies/ground/right/ennemi_right_1.bmp
+Image/ennemies/ground/right/ennemi_right_1.bmp
+Image/ennemies/ground/right/ennemi_right_2.bmp
+Image/ennemies/ground/right/ennemi_right_2.bmp
+Image/ennemies/ground/right/ennemi_right_3.bmp
+Image/ennemies/ground/right/ennemi_right_3.bmp
+Image/ennemies/ground/right/ennemi_right_4.bmp
+Image/ennemies/ground/right/ennemi_right_4.bmp
+Image/ennemies/ground/right/ennemi_right_5.bmp
+Image/ennemies/ground/right/ennemi_right_5.bmp
+Image/ennemies/ground/right/ennemi_right_6.bmp
+Image/ennemies/ground/right/ennemi_right_6.bmp
+Image/ennemies/ground/right/ennemi_right_7.bmp
+Image/ennemies/ground/right/ennemi_right_7.bmp
+Image/ennemies/ground/right/ennemi_right_8.bmp
+Image/ennemies/ground/right/ennemi_right_8.bmp
+Image/ennemies/ground/right/ennemi_right_9.bmp
+Image/ennemies/ground/right/ennemi_right_9.bmp
+no
+
+Genre Ennemi Normal
+Position (2800,680)
+Vitesse (3.2,0.0)
+VitesseMax (5.0,10.0)
+PV 100
+Animation
+Image/ennemies/ground/left/ennemi_left_1.bmp
+Image/ennemies/ground/left/ennemi_left_1.bmp
+Image/ennemies/ground/left/ennemi_left_2.bmp
+Image/ennemies/ground/left/ennemi_left_2.bmp
+Image/ennemies/ground/left/ennemi_left_3.bmp
+Image/ennemies/ground/left/ennemi_left_3.bmp
+Image/ennemies/ground/left/ennemi_left_4.bmp
+Image/ennemies/ground/left/ennemi_left_4.bmp
+Image/ennemies/ground/left/ennemi_left_5.bmp
+Image/ennemies/ground/left/ennemi_left_5.bmp
+Image/ennemies/ground/left/ennemi_left_6.bmp
+Image/ennemies/ground/left/ennemi_left_6.bmp
+Image/ennemies/ground/left/ennemi_left_7.bmp
+Image/ennemies/ground/left/ennemi_left_7.bmp
+Image/ennemies/ground/left/ennemi_left_8.bmp
+Image/ennemies/ground/left/ennemi_left_8.bmp
+Image/ennemies/ground/left/ennemi_left_9.bmp
+Image/ennemies/ground/left/ennemi_left_9.bmp
+
+Image/ennemies/ground/ennemi_static.bmp
+
+Image/ennemies/ground/right/ennemi_right_1.bmp
+Image/ennemies/ground/right/ennemi_right_1.bmp
+Image/ennemies/ground/right/ennemi_right_2.bmp
+Image/ennemies/ground/right/ennemi_right_2.bmp
+Image/ennemies/ground/right/ennemi_right_3.bmp
+Image/ennemies/ground/right/ennemi_right_3.bmp
+Image/ennemies/ground/right/ennemi_right_4.bmp
+Image/ennemies/ground/right/ennemi_right_4.bmp
+Image/ennemies/ground/right/ennemi_right_5.bmp
+Image/ennemies/ground/right/ennemi_right_5.bmp
+Image/ennemies/ground/right/ennemi_right_6.bmp
+Image/ennemies/ground/right/ennemi_right_6.bmp
+Image/ennemies/ground/right/ennemi_right_7.bmp
+Image/ennemies/ground/right/ennemi_right_7.bmp
+Image/ennemies/ground/right/ennemi_right_8.bmp
+Image/ennemies/ground/right/ennemi_right_8.bmp
+Image/ennemies/ground/right/ennemi_right_9.bmp
+Image/ennemies/ground/right/ennemi_right_9.bmp
+no
+
+Genre Ennemi Normal
+Position (2850,680)
+Vitesse (-1.8,0.0)
+VitesseMax (5.0,10.0)
+PV 100
+Animation
+Image/ennemies/ground/left/ennemi_left_1.bmp
+Image/ennemies/ground/left/ennemi_left_1.bmp
+Image/ennemies/ground/left/ennemi_left_2.bmp
+Image/ennemies/ground/left/ennemi_left_2.bmp
+Image/ennemies/ground/left/ennemi_left_3.bmp
+Image/ennemies/ground/left/ennemi_left_3.bmp
+Image/ennemies/ground/left/ennemi_left_4.bmp
+Image/ennemies/ground/left/ennemi_left_4.bmp
+Image/ennemies/ground/left/ennemi_left_5.bmp
+Image/ennemies/ground/left/ennemi_left_5.bmp
+Image/ennemies/ground/left/ennemi_left_6.bmp
+Image/ennemies/ground/left/ennemi_left_6.bmp
+Image/ennemies/ground/left/ennemi_left_7.bmp
+Image/ennemies/ground/left/ennemi_left_7.bmp
+Image/ennemies/ground/left/ennemi_left_8.bmp
+Image/ennemies/ground/left/ennemi_left_8.bmp
+Image/ennemies/ground/left/ennemi_left_9.bmp
+Image/ennemies/ground/left/ennemi_left_9.bmp
+
+Image/ennemies/ground/ennemi_static.bmp
+
+Image/ennemies/ground/right/ennemi_right_1.bmp
+Image/ennemies/ground/right/ennemi_right_1.bmp
+Image/ennemies/ground/right/ennemi_right_2.bmp
+Image/ennemies/ground/right/ennemi_right_2.bmp
+Image/ennemies/ground/right/ennemi_right_3.bmp
+Image/ennemies/ground/right/ennemi_right_3.bmp
+Image/ennemies/ground/right/ennemi_right_4.bmp
+Image/ennemies/ground/right/ennemi_right_4.bmp
+Image/ennemies/ground/right/ennemi_right_5.bmp
+Image/ennemies/ground/right/ennemi_right_5.bmp
+Image/ennemies/ground/right/ennemi_right_6.bmp
+Image/ennemies/ground/right/ennemi_right_6.bmp
+Image/ennemies/ground/right/ennemi_right_7.bmp
+Image/ennemies/ground/right/ennemi_right_7.bmp
+Image/ennemies/ground/right/ennemi_right_8.bmp
+Image/ennemies/ground/right/ennemi_right_8.bmp
+Image/ennemies/ground/right/ennemi_right_9.bmp
+Image/ennemies/ground/right/ennemi_right_9.bmp
+no
+
+Genre Ennemi Normal
+Position (2900,680)
+Vitesse (2.7,0.0)
+VitesseMax (5.0,10.0)
+PV 100
+Animation
+Image/ennemies/ground/left/ennemi_left_1.bmp
+Image/ennemies/ground/left/ennemi_left_1.bmp
+Image/ennemies/ground/left/ennemi_left_2.bmp
+Image/ennemies/ground/left/ennemi_left_2.bmp
+Image/ennemies/ground/left/ennemi_left_3.bmp
+Image/ennemies/ground/left/ennemi_left_3.bmp
+Image/ennemies/ground/left/ennemi_left_4.bmp
+Image/ennemies/ground/left/ennemi_left_4.bmp
+Image/ennemies/ground/left/ennemi_left_5.bmp
+Image/ennemies/ground/left/ennemi_left_5.bmp
+Image/ennemies/ground/left/ennemi_left_6.bmp
+Image/ennemies/ground/left/ennemi_left_6.bmp
+Image/ennemies/ground/left/ennemi_left_7.bmp
+Image/ennemies/ground/left/ennemi_left_7.bmp
+Image/ennemies/ground/left/ennemi_left_8.bmp
+Image/ennemies/ground/left/ennemi_left_8.bmp
+Image/ennemies/ground/left/ennemi_left_9.bmp
+Image/ennemies/ground/left/ennemi_left_9.bmp
+
+Image/ennemies/ground/ennemi_static.bmp
+
+Image/ennemies/ground/right/ennemi_right_1.bmp
+Image/ennemies/ground/right/ennemi_right_1.bmp
+Image/ennemies/ground/right/ennemi_right_2.bmp
+Image/ennemies/ground/right/ennemi_right_2.bmp
+Image/ennemies/ground/right/ennemi_right_3.bmp
+Image/ennemies/ground/right/ennemi_right_3.bmp
+Image/ennemies/ground/right/ennemi_right_4.bmp
+Image/ennemies/ground/right/ennemi_right_4.bmp
+Image/ennemies/ground/right/ennemi_right_5.bmp
+Image/ennemies/ground/right/ennemi_right_5.bmp
+Image/ennemies/ground/right/ennemi_right_6.bmp
+Image/ennemies/ground/right/ennemi_right_6.bmp
+Image/ennemies/ground/right/ennemi_right_7.bmp
+Image/ennemies/ground/right/ennemi_right_7.bmp
+Image/ennemies/ground/right/ennemi_right_8.bmp
+Image/ennemies/ground/right/ennemi_right_8.bmp
+Image/ennemies/ground/right/ennemi_right_9.bmp
+Image/ennemies/ground/right/ennemi_right_9.bmp
 no
 
 Genre Wall (30,450)
@@ -323,15 +650,50 @@ no
 no
 
 Genre Ennemi Shooter
-Position (840,230)
+Position (840,200)
 Vitesse (0.0,0.0)
 VitesseMax (0.0,1.0)
 PV 100
 Animation
-no
-Image/ennemies/ennemi_test_25_21.bmp
+Image/ennemies/ground/left/ennemi_left_1.bmp
+Image/ennemies/ground/left/ennemi_left_1.bmp
+Image/ennemies/ground/left/ennemi_left_2.bmp
+Image/ennemies/ground/left/ennemi_left_2.bmp
+Image/ennemies/ground/left/ennemi_left_3.bmp
+Image/ennemies/ground/left/ennemi_left_3.bmp
+Image/ennemies/ground/left/ennemi_left_4.bmp
+Image/ennemies/ground/left/ennemi_left_4.bmp
+Image/ennemies/ground/left/ennemi_left_5.bmp
+Image/ennemies/ground/left/ennemi_left_5.bmp
+Image/ennemies/ground/left/ennemi_left_6.bmp
+Image/ennemies/ground/left/ennemi_left_6.bmp
+Image/ennemies/ground/left/ennemi_left_7.bmp
+Image/ennemies/ground/left/ennemi_left_7.bmp
+Image/ennemies/ground/left/ennemi_left_8.bmp
+Image/ennemies/ground/left/ennemi_left_8.bmp
+Image/ennemies/ground/left/ennemi_left_9.bmp
+Image/ennemies/ground/left/ennemi_left_9.bmp
 
-no
+Image/ennemies/ground/ennemi_static.bmp
+
+Image/ennemies/ground/right/ennemi_right_1.bmp
+Image/ennemies/ground/right/ennemi_right_1.bmp
+Image/ennemies/ground/right/ennemi_right_2.bmp
+Image/ennemies/ground/right/ennemi_right_2.bmp
+Image/ennemies/ground/right/ennemi_right_3.bmp
+Image/ennemies/ground/right/ennemi_right_3.bmp
+Image/ennemies/ground/right/ennemi_right_4.bmp
+Image/ennemies/ground/right/ennemi_right_4.bmp
+Image/ennemies/ground/right/ennemi_right_5.bmp
+Image/ennemies/ground/right/ennemi_right_5.bmp
+Image/ennemies/ground/right/ennemi_right_6.bmp
+Image/ennemies/ground/right/ennemi_right_6.bmp
+Image/ennemies/ground/right/ennemi_right_7.bmp
+Image/ennemies/ground/right/ennemi_right_7.bmp
+Image/ennemies/ground/right/ennemi_right_8.bmp
+Image/ennemies/ground/right/ennemi_right_8.bmp
+Image/ennemies/ground/right/ennemi_right_9.bmp
+Image/ennemies/ground/right/ennemi_right_9.bmp
 no
 
 Genre Plateforme  (73,10)
@@ -467,15 +829,50 @@ no
 no
 
 Genre Ennemi Shooter
-Position (1705,320)
+Position (1705,290)
 Vitesse (0.0,0.0)
 VitesseMax (0.0,1.0)
 PV 100
 Animation
-no
-Image/ennemies/ennemi_test_25_21.bmp
+Image/ennemies/ground/left/ennemi_left_1.bmp
+Image/ennemies/ground/left/ennemi_left_1.bmp
+Image/ennemies/ground/left/ennemi_left_2.bmp
+Image/ennemies/ground/left/ennemi_left_2.bmp
+Image/ennemies/ground/left/ennemi_left_3.bmp
+Image/ennemies/ground/left/ennemi_left_3.bmp
+Image/ennemies/ground/left/ennemi_left_4.bmp
+Image/ennemies/ground/left/ennemi_left_4.bmp
+Image/ennemies/ground/left/ennemi_left_5.bmp
+Image/ennemies/ground/left/ennemi_left_5.bmp
+Image/ennemies/ground/left/ennemi_left_6.bmp
+Image/ennemies/ground/left/ennemi_left_6.bmp
+Image/ennemies/ground/left/ennemi_left_7.bmp
+Image/ennemies/ground/left/ennemi_left_7.bmp
+Image/ennemies/ground/left/ennemi_left_8.bmp
+Image/ennemies/ground/left/ennemi_left_8.bmp
+Image/ennemies/ground/left/ennemi_left_9.bmp
+Image/ennemies/ground/left/ennemi_left_9.bmp
 
-no
+Image/ennemies/ground/ennemi_static.bmp
+
+Image/ennemies/ground/right/ennemi_right_1.bmp
+Image/ennemies/ground/right/ennemi_right_1.bmp
+Image/ennemies/ground/right/ennemi_right_2.bmp
+Image/ennemies/ground/right/ennemi_right_2.bmp
+Image/ennemies/ground/right/ennemi_right_3.bmp
+Image/ennemies/ground/right/ennemi_right_3.bmp
+Image/ennemies/ground/right/ennemi_right_4.bmp
+Image/ennemies/ground/right/ennemi_right_4.bmp
+Image/ennemies/ground/right/ennemi_right_5.bmp
+Image/ennemies/ground/right/ennemi_right_5.bmp
+Image/ennemies/ground/right/ennemi_right_6.bmp
+Image/ennemies/ground/right/ennemi_right_6.bmp
+Image/ennemies/ground/right/ennemi_right_7.bmp
+Image/ennemies/ground/right/ennemi_right_7.bmp
+Image/ennemies/ground/right/ennemi_right_8.bmp
+Image/ennemies/ground/right/ennemi_right_8.bmp
+Image/ennemies/ground/right/ennemi_right_9.bmp
+Image/ennemies/ground/right/ennemi_right_9.bmp
 no
 
 Genre Plateforme  (86,10)
@@ -515,15 +912,50 @@ no
 no
 
 Genre Ennemi Shooter
-Position (2123,250)
+Position (2123,220)
 Vitesse (0.0,0.0)
 VitesseMax (0.0,1.0)
 PV 100
 Animation
-no
-Image/ennemies/ennemi_test_25_21.bmp
+Image/ennemies/ground/left/ennemi_left_1.bmp
+Image/ennemies/ground/left/ennemi_left_1.bmp
+Image/ennemies/ground/left/ennemi_left_2.bmp
+Image/ennemies/ground/left/ennemi_left_2.bmp
+Image/ennemies/ground/left/ennemi_left_3.bmp
+Image/ennemies/ground/left/ennemi_left_3.bmp
+Image/ennemies/ground/left/ennemi_left_4.bmp
+Image/ennemies/ground/left/ennemi_left_4.bmp
+Image/ennemies/ground/left/ennemi_left_5.bmp
+Image/ennemies/ground/left/ennemi_left_5.bmp
+Image/ennemies/ground/left/ennemi_left_6.bmp
+Image/ennemies/ground/left/ennemi_left_6.bmp
+Image/ennemies/ground/left/ennemi_left_7.bmp
+Image/ennemies/ground/left/ennemi_left_7.bmp
+Image/ennemies/ground/left/ennemi_left_8.bmp
+Image/ennemies/ground/left/ennemi_left_8.bmp
+Image/ennemies/ground/left/ennemi_left_9.bmp
+Image/ennemies/ground/left/ennemi_left_9.bmp
 
-no
+Image/ennemies/ground/ennemi_static.bmp
+
+Image/ennemies/ground/right/ennemi_right_1.bmp
+Image/ennemies/ground/right/ennemi_right_1.bmp
+Image/ennemies/ground/right/ennemi_right_2.bmp
+Image/ennemies/ground/right/ennemi_right_2.bmp
+Image/ennemies/ground/right/ennemi_right_3.bmp
+Image/ennemies/ground/right/ennemi_right_3.bmp
+Image/ennemies/ground/right/ennemi_right_4.bmp
+Image/ennemies/ground/right/ennemi_right_4.bmp
+Image/ennemies/ground/right/ennemi_right_5.bmp
+Image/ennemies/ground/right/ennemi_right_5.bmp
+Image/ennemies/ground/right/ennemi_right_6.bmp
+Image/ennemies/ground/right/ennemi_right_6.bmp
+Image/ennemies/ground/right/ennemi_right_7.bmp
+Image/ennemies/ground/right/ennemi_right_7.bmp
+Image/ennemies/ground/right/ennemi_right_8.bmp
+Image/ennemies/ground/right/ennemi_right_8.bmp
+Image/ennemies/ground/right/ennemi_right_9.bmp
+Image/ennemies/ground/right/ennemi_right_9.bmp
 no
 
 Genre Plateforme  (31,10)
@@ -575,15 +1007,50 @@ no
 no
 
 Genre Ennemi Shooter
-Position (2230,290)
+Position (2230,260)
 Vitesse (0.0,0.0)
 VitesseMax (0.0,1.0)
 PV 100
 Animation
-no
-Image/ennemies/ennemi_test_25_21.bmp
+Image/ennemies/ground/left/ennemi_left_1.bmp
+Image/ennemies/ground/left/ennemi_left_1.bmp
+Image/ennemies/ground/left/ennemi_left_2.bmp
+Image/ennemies/ground/left/ennemi_left_2.bmp
+Image/ennemies/ground/left/ennemi_left_3.bmp
+Image/ennemies/ground/left/ennemi_left_3.bmp
+Image/ennemies/ground/left/ennemi_left_4.bmp
+Image/ennemies/ground/left/ennemi_left_4.bmp
+Image/ennemies/ground/left/ennemi_left_5.bmp
+Image/ennemies/ground/left/ennemi_left_5.bmp
+Image/ennemies/ground/left/ennemi_left_6.bmp
+Image/ennemies/ground/left/ennemi_left_6.bmp
+Image/ennemies/ground/left/ennemi_left_7.bmp
+Image/ennemies/ground/left/ennemi_left_7.bmp
+Image/ennemies/ground/left/ennemi_left_8.bmp
+Image/ennemies/ground/left/ennemi_left_8.bmp
+Image/ennemies/ground/left/ennemi_left_9.bmp
+Image/ennemies/ground/left/ennemi_left_9.bmp
 
-no
+Image/ennemies/ground/ennemi_static.bmp
+
+Image/ennemies/ground/right/ennemi_right_1.bmp
+Image/ennemies/ground/right/ennemi_right_1.bmp
+Image/ennemies/ground/right/ennemi_right_2.bmp
+Image/ennemies/ground/right/ennemi_right_2.bmp
+Image/ennemies/ground/right/ennemi_right_3.bmp
+Image/ennemies/ground/right/ennemi_right_3.bmp
+Image/ennemies/ground/right/ennemi_right_4.bmp
+Image/ennemies/ground/right/ennemi_right_4.bmp
+Image/ennemies/ground/right/ennemi_right_5.bmp
+Image/ennemies/ground/right/ennemi_right_5.bmp
+Image/ennemies/ground/right/ennemi_right_6.bmp
+Image/ennemies/ground/right/ennemi_right_6.bmp
+Image/ennemies/ground/right/ennemi_right_7.bmp
+Image/ennemies/ground/right/ennemi_right_7.bmp
+Image/ennemies/ground/right/ennemi_right_8.bmp
+Image/ennemies/ground/right/ennemi_right_8.bmp
+Image/ennemies/ground/right/ennemi_right_9.bmp
+Image/ennemies/ground/right/ennemi_right_9.bmp
 no
 
 Genre Plateforme  (31,10)
@@ -737,7 +1204,7 @@ Image/ennemies/Flying/Flying_left/ennemi_fly_left_2.bmp
 Image/ennemies/Flying/Flying_left/ennemi_fly_left_2.bmp
 Image/ennemies/Flying/Flying_left/ennemi_fly_left_2.bmp
 
-Image/ennemies/ennemi_test_25_21.bmp
+Image/ennemies/Flying/Flying_left/ennemi_fly_left_1.bmp
 
 Image/ennemies/Flying/Flying_right/ennemi_fly_right_1.bmp
 Image/ennemies/Flying/Flying_right/ennemi_fly_right_1.bmp
@@ -773,7 +1240,7 @@ Image/ennemies/Flying/Flying_left/ennemi_fly_left_2.bmp
 Image/ennemies/Flying/Flying_left/ennemi_fly_left_2.bmp
 Image/ennemies/Flying/Flying_left/ennemi_fly_left_2.bmp
 
-Image/ennemies/ennemi_test_25_21.bmp
+Image/ennemies/Flying/Flying_left/ennemi_fly_left_1.bmp
 
 Image/ennemies/Flying/Flying_right/ennemi_fly_right_1.bmp
 Image/ennemies/Flying/Flying_right/ennemi_fly_right_1.bmp
@@ -809,7 +1276,7 @@ Image/ennemies/Flying/Flying_left/ennemi_fly_left_2.bmp
 Image/ennemies/Flying/Flying_left/ennemi_fly_left_2.bmp
 Image/ennemies/Flying/Flying_left/ennemi_fly_left_2.bmp
 
-Image/ennemies/ennemi_test_25_21.bmp
+Image/ennemies/Flying/Flying_left/ennemi_fly_left_1.bmp
 
 Image/ennemies/Flying/Flying_right/ennemi_fly_right_1.bmp
 Image/ennemies/Flying/Flying_right/ennemi_fly_right_1.bmp
@@ -845,7 +1312,7 @@ Image/ennemies/Flying/Flying_left/ennemi_fly_left_2.bmp
 Image/ennemies/Flying/Flying_left/ennemi_fly_left_2.bmp
 Image/ennemies/Flying/Flying_left/ennemi_fly_left_2.bmp
 
-Image/ennemies/ennemi_test_25_21.bmp
+Image/ennemies/Flying/Flying_left/ennemi_fly_left_1.bmp
 
 Image/ennemies/Flying/Flying_right/ennemi_fly_right_1.bmp
 Image/ennemies/Flying/Flying_right/ennemi_fly_right_1.bmp
