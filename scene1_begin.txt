@@ -384,10 +384,34 @@ Vitesse (-4.5,0.0)
 VitesseMax (5.0,10.0)
 PV 100
 Animation
-no
+Image/ennemies/Flying/Flying_left/ennemi_fly_left_1.bmp
+Image/ennemies/Flying/Flying_left/ennemi_fly_left_1.bmp
+Image/ennemies/Flying/Flying_left/ennemi_fly_left_1.bmp
+Image/ennemies/Flying/Flying_left/ennemi_fly_left_1.bmp
+Image/ennemies/Flying/Flying_left/ennemi_fly_left_1.bmp
+Image/ennemies/Flying/Flying_left/ennemi_fly_left_1.bmp
+Image/ennemies/Flying/Flying_left/ennemi_fly_left_2.bmp
+Image/ennemies/Flying/Flying_left/ennemi_fly_left_2.bmp
+Image/ennemies/Flying/Flying_left/ennemi_fly_left_2.bmp
+Image/ennemies/Flying/Flying_left/ennemi_fly_left_2.bmp
+Image/ennemies/Flying/Flying_left/ennemi_fly_left_2.bmp
+Image/ennemies/Flying/Flying_left/ennemi_fly_left_2.bmp
+
 Image/ennemies/ennemi_test_25_21.bmp
 
-no
+Image/ennemies/Flying/Flying_right/ennemi_fly_right_1.bmp
+Image/ennemies/Flying/Flying_right/ennemi_fly_right_1.bmp
+Image/ennemies/Flying/Flying_right/ennemi_fly_right_1.bmp
+Image/ennemies/Flying/Flying_right/ennemi_fly_right_1.bmp
+Image/ennemies/Flying/Flying_right/ennemi_fly_right_1.bmp
+Image/ennemies/Flying/Flying_right/ennemi_fly_right_1.bmp
+Image/ennemies/Flying/Flying_right/ennemi_fly_right_2.bmp
+Image/ennemies/Flying/Flying_right/ennemi_fly_right_2.bmp
+Image/ennemies/Flying/Flying_right/ennemi_fly_right_2.bmp
+Image/ennemies/Flying/Flying_right/ennemi_fly_right_2.bmp
+Image/ennemies/Flying/Flying_right/ennemi_fly_right_2.bmp
+Image/ennemies/Flying/Flying_right/ennemi_fly_right_2.bmp
+
 no
 
 Genre Ennemi Both
@@ -396,8 +420,32 @@ Vitesse (3.6,0.0)
 VitesseMax (5.0,10.0)
 PV 100
 Animation
-no
+Image/ennemies/Flying/Flying_left/ennemi_fly_left_1.bmp
+Image/ennemies/Flying/Flying_left/ennemi_fly_left_1.bmp
+Image/ennemies/Flying/Flying_left/ennemi_fly_left_1.bmp
+Image/ennemies/Flying/Flying_left/ennemi_fly_left_1.bmp
+Image/ennemies/Flying/Flying_left/ennemi_fly_left_1.bmp
+Image/ennemies/Flying/Flying_left/ennemi_fly_left_1.bmp
+Image/ennemies/Flying/Flying_left/ennemi_fly_left_2.bmp
+Image/ennemies/Flying/Flying_left/ennemi_fly_left_2.bmp
+Image/ennemies/Flying/Flying_left/ennemi_fly_left_2.bmp
+Image/ennemies/Flying/Flying_left/ennemi_fly_left_2.bmp
+Image/ennemies/Flying/Flying_left/ennemi_fly_left_2.bmp
+Image/ennemies/Flying/Flying_left/ennemi_fly_left_2.bmp
+
 Image/ennemies/ennemi_test_25_21.bmp
 
-no
+Image/ennemies/Flying/Flying_right/ennemi_fly_right_1.bmp
+Image/ennemies/Flying/Flying_right/ennemi_fly_right_1.bmp
+Image/ennemies/Flying/Flying_right/ennemi_fly_right_1.bmp
+Image/ennemies/Flying/Flying_right/ennemi_fly_right_1.bmp
+Image/ennemies/Flying/Flying_right/ennemi_fly_right_1.bmp
+Image/ennemies/Flying/Flying_right/ennemi_fly_right_1.bmp
+Image/ennemies/Flying/Flying_right/ennemi_fly_right_2.bmp
+Image/ennemies/Flying/Flying_right/ennemi_fly_right_2.bmp
+Image/ennemies/Flying/Flying_right/ennemi_fly_right_2.bmp
+Image/ennemies/Flying/Flying_right/ennemi_fly_right_2.bmp
+Image/ennemies/Flying/Flying_right/ennemi_fly_right_2.bmp
+Image/ennemies/Flying/Flying_right/ennemi_fly_right_2.bmp
+
 no
