@@ -216,7 +216,7 @@ module Scene : Scene =  struct
 		  let (vecx,vecy) = (ppX-peX,ppY-peY) in
 		  let norm = sqrt(float_of_int(vecx*vecx + vecy*vecy))in
 		  (* on ne fait pas tirer l'ennemi si il est trop loin du personnage *)
-		  if norm > 900.0 then
+		  if norm > 750.0 then
 		    shootAll_sub s (x::listRes)
 		  else
 		    let (normX,normY) = ((float_of_int vecx)/.norm , (float_of_int vecy)/.norm) in
