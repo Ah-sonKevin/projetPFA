@@ -355,7 +355,7 @@ no
 no
 
 Genre Ennemi Normal
-Position (270,775)
+Position (270,745)
 Vitesse (4.0,0.0)
 VitesseMax (5.0,10.0)
 PV 100

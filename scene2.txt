@@ -7,7 +7,7 @@ Background Image/Background_2.bmp
 Theme Son/theme2.wav
 
 Genre Personnage
-Position (500,300)
+Position (1700,50)
 
 
 Genre Wall (3400,20)
