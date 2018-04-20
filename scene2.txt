@@ -130,6 +130,54 @@ Image/wall.bmp
 no
 no
 
+Genre Ennemi Normal
+Position (1600,710)
+Vitesse (-4.0,0.0)
+VitesseMax (5.0,10.0)
+PV 100
+Animation
+no
+Image/ennemies/ennemi_test_25_21.bmp
+
+no
+no
+
+Genre Ennemi Normal
+Position (1700,710)
+Vitesse (3.2,0.0)
+VitesseMax (5.0,10.0)
+PV 100
+Animation
+no
+Image/ennemies/ennemi_test_25_21.bmp
+
+no
+no
+
+Genre Ennemi Normal
+Position (1800,710)
+Vitesse (-1.8,0.0)
+VitesseMax (5.0,10.0)
+PV 100
+Animation
+no
+Image/ennemies/ennemi_test_25_21.bmp
+
+no
+no
+
+Genre Ennemi Normal
+Position (1900,710)
+Vitesse (2.7,0.0)
+VitesseMax (5.0,10.0)
+PV 100
+Animation
+no
+Image/ennemies/ennemi_test_25_21.bmp
+
+no
+no
+
 Genre Wall (10,10)
 Position (2700,740)
 Vitesse (0.0,0.0)
@@ -138,6 +186,54 @@ PV 1000
 Animation
 no
 Image/wall.bmp
+
+no
+no
+
+Genre Ennemi Normal
+Position (2750,710)
+Vitesse (-4.0,0.0)
+VitesseMax (5.0,10.0)
+PV 100
+Animation
+no
+Image/ennemies/ennemi_test_25_21.bmp
+
+no
+no
+
+Genre Ennemi Normal
+Position (2800,710)
+Vitesse (3.2,0.0)
+VitesseMax (5.0,10.0)
+PV 100
+Animation
+no
+Image/ennemies/ennemi_test_25_21.bmp
+
+no
+no
+
+Genre Ennemi Normal
+Position (2850,710)
+Vitesse (-1.8,0.0)
+VitesseMax (5.0,10.0)
+PV 100
+Animation
+no
+Image/ennemies/ennemi_test_25_21.bmp
+
+no
+no
+
+Genre Ennemi Normal
+Position (2900,710)
+Vitesse (2.7,0.0)
+VitesseMax (5.0,10.0)
+PV 100
+Animation
+no
+Image/ennemies/ennemi_test_25_21.bmp
 
 no
 no
@@ -226,9 +322,441 @@ Image/Plateforme.bmp
 no
 no
 
+Genre Ennemi Shooter
+Position (840,230)
+Vitesse (0.0,0.0)
+VitesseMax (0.0,1.0)
+PV 100
+Animation
+no
+Image/ennemies/ennemi_test_25_21.bmp
+
+no
+no
+
+Genre Plateforme  (73,10)
+Position (1090,200)
+Vitesse (0.0,0.0)
+VitesseMax (0.0,0.0)
+PV 1000
+Animation
+no
+Image/Plateforme.bmp
+
+no
+no
+
+Genre Plateforme  (62,10)
+Position (950,284)
+Vitesse (0.0,0.0)
+VitesseMax (0.0,0.0)
+PV 1000
+Animation
+no
+Image/Plateforme.bmp
+
+no
+no
+
+Genre Plateforme  (31,10)
+Position (1064,252)
+Vitesse (0.0,0.0)
+VitesseMax (0.0,0.0)
+PV 1000
+Animation
+no
+Image/Plateforme.bmp
+
+no
+no
+
+Genre Plateforme  (86,10)
+Position (1217,235)
+Vitesse (0.0,0.0)
+VitesseMax (0.0,0.0)
+PV 1000
+Animation
+no
+Image/Plateforme.bmp
+
+no
+no
+
+Genre Plateforme  (53,10)
+Position (1450,300)
+Vitesse (0.0,0.0)
+VitesseMax (0.0,0.0)
+PV 1000
+Animation
+no
+Image/Plateforme.bmp
+
+no
+no
+
+Genre Plateforme  (67,10)
+Position (1420,210)
+Vitesse (0.0,0.0)
+VitesseMax (0.0,0.0)
+PV 1000
+Animation
+no
+Image/Plateforme.bmp
+
+no
+no
+
+Genre Plateforme  (40,10)
+Position (1650,264)
+Vitesse (0.0,0.0)
+VitesseMax (0.0,0.0)
+PV 1000
+Animation
+no
+Image/Plateforme.bmp
+
+no
+no
+
+Genre Plateforme  (20,10)
+Position (1560,190)
+Vitesse (0.0,0.0)
+VitesseMax (0.0,0.0)
+PV 1000
+Animation
+no
+Image/Plateforme.bmp
+
+no
+no
+
+Genre Plateforme  (10,10)
+Position (1705,180)
+Vitesse (0.0,0.0)
+VitesseMax (0.0,0.0)
+PV 1000
+Animation
+no
+Image/Plateforme.bmp
+
+no
+no
+
+Genre Plateforme  (57,10)
+Position (1743,260)
+Vitesse (0.0,0.0)
+VitesseMax (0.0,0.0)
+PV 1000
+Animation
+no
+Image/Plateforme.bmp
+
+no
+no
+
+Genre Plateforme  (30,10)
+Position (1700,350)
+Vitesse (0.0,0.0)
+VitesseMax (0.0,0.0)
+PV 1000
+Animation
+no
+Image/Plateforme.bmp
+
+no
+no
+
+Genre Ennemi Shooter
+Position (1705,320)
+Vitesse (0.0,0.0)
+VitesseMax (0.0,1.0)
+PV 100
+Animation
+no
+Image/ennemies/ennemi_test_25_21.bmp
+
+no
+no
+
+Genre Plateforme  (86,10)
+Position (1860,230)
+Vitesse (0.0,0.0)
+VitesseMax (0.0,0.0)
+PV 1000
+Animation
+no
+Image/Plateforme.bmp
+
+no
+no
+
+Genre Plateforme  (45,10)
+Position (1800,280)
+Vitesse (0.0,0.0)
+VitesseMax (0.0,0.0)
+PV 1000
+Animation
+no
+Image/Plateforme.bmp
+
+no
+no
+
+Genre Plateforme  (62,10)
+Position (2100,284)
+Vitesse (0.0,0.0)
+VitesseMax (0.0,0.0)
+PV 1000
+Animation
+no
+Image/Plateforme.bmp
+
+no
+no
+
+Genre Ennemi Shooter
+Position (2123,250)
+Vitesse (0.0,0.0)
+VitesseMax (0.0,1.0)
+PV 100
+Animation
+no
+Image/ennemies/ennemi_test_25_21.bmp
+
+no
+no
+
+Genre Plateforme  (31,10)
+Position (2000,362)
+Vitesse (0.0,0.0)
+VitesseMax (0.0,0.0)
+PV 1000
+Animation
+no
+Image/Plateforme.bmp
+
+no
+no
+
+Genre Plateforme  (86,10)
+Position (2050,205)
+Vitesse (0.0,0.0)
+VitesseMax (0.0,0.0)
+PV 1000
+Animation
+no
+Image/Plateforme.bmp
+
+no
+no
+
+Genre Plateforme  (58,10)
+Position (2200,400)
+Vitesse (0.0,0.0)
+VitesseMax (0.0,0.0)
+PV 1000
+Animation
+no
+Image/Plateforme.bmp
+
+no
+no
+
+Genre Plateforme  (73,10)
+Position (2223,321)
+Vitesse (0.0,0.0)
+VitesseMax (0.0,0.0)
+PV 1000
+Animation
+no
+Image/Plateforme.bmp
+
+no
+no
+
+Genre Ennemi Shooter
+Position (2230,290)
+Vitesse (0.0,0.0)
+VitesseMax (0.0,1.0)
+PV 100
+Animation
+no
+Image/ennemies/ennemi_test_25_21.bmp
+
+no
+no
+
+Genre Plateforme  (31,10)
+Position (2289,239)
+Vitesse (0.0,0.0)
+VitesseMax (0.0,0.0)
+PV 1000
+Animation
+no
+Image/Plateforme.bmp
+
+no
+no
+
+Genre Plateforme  (46,10)
+Position (2350,180)
+Vitesse (0.0,0.0)
+VitesseMax (0.0,0.0)
+PV 1000
+Animation
+no
+Image/Plateforme.bmp
+
+no
+no
+
+Genre Plateforme  (57,10)
+Position (2460,230)
+Vitesse (0.0,0.0)
+VitesseMax (0.0,0.0)
+PV 1000
+Animation
+no
+Image/Plateforme.bmp
+
+no
+no
+
+Genre Plateforme  (41,10)
+Position (2510,191)
+Vitesse (0.0,0.0)
+VitesseMax (0.0,0.0)
+PV 1000
+Animation
+no
+Image/Plateforme.bmp
+
+no
+no
+
+Genre Plateforme  (82,10)
+Position (2486,328)
+Vitesse (0.0,0.0)
+VitesseMax (0.0,0.0)
+PV 1000
+Animation
+no
+Image/Plateforme.bmp
+
+no
+no
+
+Genre Plateforme  (23,10)
+Position (2623,248)
+Vitesse (0.0,0.0)
+VitesseMax (0.0,0.0)
+PV 1000
+Animation
+no
+Image/Plateforme.bmp
+
+no
+no
+
+Genre Plateforme  (39,10)
+Position (2756,360)
+Vitesse (0.0,0.0)
+VitesseMax (0.0,0.0)
+PV 1000
+Animation
+no
+Image/Plateforme.bmp
+
+no
+no
+
+Genre Plateforme  (68,10)
+Position (2806,450)
+Vitesse (0.0,0.0)
+VitesseMax (0.0,0.0)
+PV 1000
+Animation
+no
+Image/Plateforme.bmp
+
+no
+no
+
+Genre Plateforme  (68,10)
+Position (2954,230)
+Vitesse (0.0,0.0)
+VitesseMax (0.0,0.0)
+PV 1000
+Animation
+no
+Image/Plateforme.bmp
+
+no
+no
+
+Genre Plateforme  (36,10)
+Position (3068,350)
+Vitesse (0.0,0.0)
+VitesseMax (0.0,0.0)
+PV 1000
+Animation
+no
+Image/Plateforme.bmp
+
+no
+no
+
+Genre Plateforme  (60,10)
+Position (3207,294)
+Vitesse (0.0,0.0)
+VitesseMax (0.0,0.0)
+PV 1000
+Animation
+no
+Image/Plateforme.bmp
+
+no
+no
+
 Genre Ennemi Both
-Position (470,645)
+Position (1000,645)
 Vitesse (3.6,0.0)
+VitesseMax (5.0,10.0)
+PV 100
+Animation
+no
+Image/ennemies/ennemi_test_25_21.bmp
+
+no
+no
+
+Genre Ennemi Both
+Position (1500,600)
+Vitesse (-3.0,0.0)
+VitesseMax (5.0,10.0)
+PV 100
+Animation
+no
+Image/ennemies/ennemi_test_25_21.bmp
+
+no
+no
+
+Genre Ennemi Both
+Position (2000,400)
+Vitesse (-5.0,0.0)
+VitesseMax (5.0,10.0)
+PV 100
+Animation
+no
+Image/ennemies/ennemi_test_25_21.bmp
+
+no
+no
+
+Genre Ennemi Both
+Position (2000,520)
+Vitesse (1.0,0.0)
 VitesseMax (5.0,10.0)
 PV 100
 Animation
