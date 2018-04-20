@@ -36,29 +36,26 @@ let evenement e window renderer scene  =
     end
   |false -> ()
   in 
- (*evenementFenetre e (window,renderer); *)
+  evenementFenetre e (window,renderer); 
   Sdl. pump_events ();
   let tab = Sdl.get_keyboard_state () in
-  
-  begin 
-    if tab.{(Sdl.get_scancode_from_key Sdl.K.escape)}=1 then
-      exit 0;
-    if tab.{(Sdl.get_scancode_from_key Sdl.K.m)}=1 then
-      GameMap.startMap window renderer scene;
-    if tab.{(Sdl.get_scancode_from_key Sdl.K.r)}=1 then
-      Scene.suicide scene
-    else      
+  begin
+    if tab.{(Sdl.get_scancode_from_key Sdl.K.escape)}=1 then exit 0;
+    if tab.{(Sdl.get_scancode_from_key Sdl.K.m)}=1 then GameMap.startMap window renderer scene;
+    if tab.{(Sdl.get_scancode_from_key Sdl.K.r)}=1 then Scene.suicide scene
+    else
+    (*Calcul du deplacement du perso*)
       let x =  (0.2 *. (float_of_int (tab.{(Sdl.get_scancode_from_key Sdl.K.right)})))
-               -. 0.2 *. float_of_int (tab.{(Sdl.get_scancode_from_key Sdl.K.left)}) in
+	-. 0.2 *. float_of_int (tab.{(Sdl.get_scancode_from_key Sdl.K.left)}) in
       let y = float_of_int (-10 * tab.{(Sdl.get_scancode_from_key Sdl.K.up )}) in
+    (*Calcul de l'angle de tir du perso *)
       let xt = (tab.{(Sdl.get_scancode_from_key Sdl.K.d)})-(tab.{(Sdl.get_scancode_from_key Sdl.K.q)}) in
       let yt = (tab.{(Sdl.get_scancode_from_key Sdl.K.s)})-(tab.{(Sdl.get_scancode_from_key Sdl.K.z)}) in      
-      let temp =  if ((xt != 0)||(yt!=0)) then Scene.shoot (Scene.getPers scene) scene (xt,yt) else scene in
+      let temp =  if ((xt != 0)||(yt!=0)) then Scene.shoot (Scene.getPers scene) scene (xt,yt) else scene in (*Tir*)      
       Scene.movePersonnage temp (x,y)
   end
 
-
-let jeu () =
+let jeu () = 
   Random.self_init ();
   (*gestion de l'ouverture de la fenetre*)
     match Sdl.init Sdl.Init.video with
@@ -70,8 +67,7 @@ let jeu () =
         match Sdl.create_renderer window ~index:(-1) ~flags:Sdl.Renderer.(accelerated + presentvsync) with
         | Error (`Msg e) -> Sdl.log "Init render error: %s" e; exit 1
         | Ok render ->
-          Sdl.render_present render;
-
+           Sdl.render_present render;
 
           let genererScene t pers render  =
             let (l,g,b,t,p) = Lexer.lex t pers render in
@@ -91,13 +87,13 @@ let jeu () =
                 let sceneEvent = evenement event  window renderer sceneTemp  in
                 let sceneMove = Scene.moveAll sceneEvent in
 		let sceneShoot = Scene.shootAll sceneMove in
-	        let sceneActive = Scene.refreshLifebar (Scene.kickDead sceneShoot) in
+		let sceneActive = Scene.kickDead sceneShoot  in
                 Scene.refresh scene sceneActive;
                 GameMap.startMapMini window renderer scene;
                 Sdl.render_present renderer;
-              if Scene.continue sceneActive then 
-                game sceneActive window renderer
-              else ()
+		if Scene.continue sceneActive then
+		  game sceneActive window renderer (*le jeu continu*)
+		else () (*retour au menu*)
               in
               game scene window render;
               menu window renderer 

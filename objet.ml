@@ -33,6 +33,7 @@ module type Objet = sig
   val canBeDmg : objet -> bool 
   val triggerShoot : objet -> int -> objet
   val triggerInv : objet -> objet
+  val triggerInvPU : objet -> objet
   val decreaseClock : objet -> objet
   val getPvMax : objet -> int
   val clignote : objet -> bool
@@ -51,61 +52,66 @@ module Objet : Objet = struct
       |Error (`Msg e) -> Sdl.log "Init load picture error: %s" e; exit 1
       |Ok (_,_,y) -> y
     in
-    {genre = genre_o;
-     position = pos;
-     old_pos = pos;
-     can_jump = true;
-     vitesse = vit;
-     maxSpeed = maxvit;
-     pv = hp;
-     pvMax = hp;
-     clockInv = 0;
-     clockShoot = 0;
-     texture = textu;
-     baseSize =
+    {genre = genre_o; position = pos; old_pos = pos;can_jump = true;
+     vitesse = vit; maxSpeed = maxvit; pv = hp; pvMax = hp; clockInv = 0;
+     clockShoot = 0; texture = textu; baseSize =
 	match genre_o with
 	|Plateforme (x,y) | Wall (x,y) -> (x,y)
 	|_->sizeT (Anim.getTexture textu); (*taille de base de l'objet, utilisé lors des collision *)
     }
-      
+	
+  let getGenre obj = obj.genre 
+  let getPos obj = obj.position
+  let getOldPos obj = obj.old_pos
+  let getPV obj = obj.pv
+  let getPvMax obj = obj.pvMax
+  let getAnim obj = obj.texture
+  let allowJump obj = {obj with can_jump = true}
+  let forbidJump obj = {obj with can_jump = false}
+  let canJump obj = obj.can_jump 
+  let getSpeed obj = obj.vitesse
+  let getMaxSpeed obj = obj.maxSpeed
+  let getBaseSize obj = obj.baseSize 
+  let getTexture obj = Anim.getTexture obj.texture
+  let getSize obj =
+    match obj.genre  with
+    |Plateforme (w,h) | Wall (w,h) -> (w,h)
+    |_                            ->
+       begin
+	 let x = Anim.getTexture obj.texture in
+	 match Sdl.query_texture x with 
+	 |Error (`Msg e) -> Sdl.log "Init load picture error: %s" e; exit 1
+	 |Ok (_,_,(x,y)) -> (x,y)
+       end
+    
   let canShoot p = p.clockShoot = 0
   let canBeDmg p = p.clockInv = 0
+  let clignote p = (p.clockInv mod 2) = 0 
   let triggerShoot p n = {p with clockShoot = n}
   let triggerInv p = {p with clockInv = 40}
+  let triggerInvPU p = {p with clockInv = 300}
   let decreaseClock p =
     {p with clockShoot = if p.clockShoot > 0 then p.clockShoot -1 else 0;
       clockInv = if p.clockInv > 0 then p.clockInv -1 else 0}
 
-  let clignote p = (p.clockInv mod 2) = 0 
-
-  let getPvMax p = p.pvMax
-
-      
-  let kill obj = {obj with pv = 0}                   
-  let getBaseSize obj = obj.baseSize
-                          
-  let setSpeed obj (x,y) =
-    let (x1,y1) = obj.vitesse in
-    let (msx,msy) = obj.maxSpeed in
-    let signe = x *. x1 in
-    let interx = if (signe >= 0.0) then x+.x1 else 0.0 in
-    let intery = if (y < 0.0) && (obj.can_jump = true) then y else y+.y1 in
-    let finalx = if x+.x1 >= msx  then msx else if interx <= -.msx then -.msx else interx in
-    let finaly = if y+.y1 >= msy  then msy else if intery <= -.msy then -.msy else intery in
-    {obj with vitesse = (finalx,finaly)}
-
+  let move obj (x,y)  = {obj with position = (x,y); old_pos = obj.position}
+  let changeFrame obj dir = {obj with texture = Anim.changeFrame obj.texture dir}
+  let kill obj = {obj with pv = 0}
   let resetSpeed obj = {obj with vitesse =(0.0,0.0)}
-
   let reposition obj (x,y) (xs,ys) = {obj with position = (x,y); vitesse = (xs,ys)}
+
 
   let isDmgType obj =
     match obj.genre with
-    |Personnage -> true
-    |Ennemi _   -> true
-    |Projectile -> true
-    |_          -> false
-    
-    
+    |Personnage |Ennemi _ |Projectile -> true
+    |_                                -> false     
+
+  let isMovable obj =
+    match obj.genre with
+    |Personnage |Ennemi _ |Projectile |PowerUp _ -> true
+    |_                                           -> false
+
+       
   let changePV obj a =
     if ((isDmgType obj) && (canBeDmg obj)) then
       begin
@@ -115,38 +121,16 @@ module Objet : Objet = struct
 	|Ennemi _   -> {obj with pv = obj.pv+a}
 	|_          -> obj
       end
-    else obj
-    
-  let move obj (x,y)  = {obj with position = (x,y); old_pos = obj.position}
-	
-  let getGenre obj = obj.genre      
-  let getPos obj = obj.position
-  let getOldPos obj = obj.old_pos
-  let allowJump obj = {obj with can_jump = true}
-  let forbidJump obj = {obj with can_jump = false}
-  let canJump obj = obj.can_jump      
-  let getSpeed obj = obj.vitesse
-  let getMaxSpeed obj = obj.maxSpeed
-  let getPV  obj = obj.pv
-  let getAnim obj = obj.texture 
-  let getTexture obj =  Anim.getTexture obj.texture
-  let isMovable obj =
-    match obj.genre with
-    |Personnage -> true
-    |Ennemi _   -> true
-    |Projectile -> true
-    |_          -> false
-  let changeFrame obj dir = {obj with texture = Anim.changeFrame obj.texture dir}
-
-  let getSize obj =
-    match obj.genre  with
-    |Plateforme (w,h) | Wall (w,h) -> (w,h)
-    | _ ->
-       begin
-	 let x = Anim.getTexture obj.texture in
-	 match Sdl.query_texture x with 
-	 |Error (`Msg e) -> Sdl.log "Init load picture error: %s" e; exit 1
-	 |Ok (_,_,(x,y)) -> (x,y)
-       end
+    else obj 
+                          
+  let setSpeed obj (x,y) =
+    let (x1,y1) = obj.vitesse in
+    let (msx,msy) = obj.maxSpeed in
+    let signe = x *. x1 in
+    let interx = if (signe >= 0.0) then x+.x1 else 0.0 in
+    let intery = if (y < 0.0) && (obj.can_jump = true) then y else y+.y1 in
+    let finalx = if x+.x1 >= msx  then msx else if interx <= -.msx then -.msx else interx in
+    let finaly = if y+.y1 >= msy  then msy else if intery <= -.msy then -.msy else intery in
+    {obj with vitesse = (finalx,finaly)}       
       
 end

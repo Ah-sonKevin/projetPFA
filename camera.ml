@@ -23,12 +23,13 @@ module Camera : Camera = struct
   let convertPosObjet (x,y) cam =
     let (xw,yw) = cam.windowSize in 
     let (xPer,yPer) = cam.posCamera in 
-    let (sbx,sby) = cam.backgroundSize in 
-    let xPers = 
+    let (sbx,sby) = cam.backgroundSize in
+    (*Calcul de la position de la camera *)
+    let xCam = 
       if xPer >sbx - xw/2 then  sbx - xw/2
       else if xPer < xw/2 then xw/2 else xPer
     in
-    let (yPers) = 
+    let (yCam) = 
       if yPer >sby - yw/2 then 
         (sby - yw/2)
       else if yPer < yw/2 then (yw/2) else yPer
@@ -52,5 +53,4 @@ module Camera : Camera = struct
       else yr 
     in
     (-xf,-yf) 
-
 end

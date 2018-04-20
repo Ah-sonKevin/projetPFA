@@ -32,6 +32,7 @@ module type Objet = sig
   val canBeDmg : objet -> bool 
   val triggerShoot : objet -> int -> objet
   val triggerInv : objet -> objet
+  val triggerInvPU : objet -> objet
   val decreaseClock : objet -> objet
   val getPvMax : objet -> int
   val clignote : objet -> bool

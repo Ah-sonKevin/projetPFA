@@ -12,7 +12,6 @@ module type Scene = sig
   val addEntitie : scene -> Objet.objet -> scene
   val removeEntitie : scene -> Objet.objet -> scene 
   val kickDead : scene -> scene
-  val refreshLifebar : scene -> scene
   val refresh : scene -> scene -> unit
   val closeScene : scene -> unit
   val collision_All : scene -> scene

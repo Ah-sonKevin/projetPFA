@@ -12,7 +12,6 @@ end
   
 module GameMap : GameMap  = struct
 
-
   let my_exit (window,renderer)  =
     Sdl.destroy_renderer renderer;
     Sdl.destroy_window window;
@@ -48,7 +47,6 @@ module GameMap : GameMap  = struct
         bool
     end
 
-
   let selectColor g render=
     match g with
     |Objet.Personnage -> Tools.chooseColor  0 255  0 255 render
@@ -59,64 +57,36 @@ module GameMap : GameMap  = struct
     |Projectile -> Tools.chooseColor 0 0 0 255 render
     | _ -> ()
     
-  let draw scene window render =
+ let draw scene window render =
     Tools.chooseColor  255 255  255 255 render;
-    let (ws,hs) = Scene.getSize scene in
-    let (sw1,sw2) = Sdl.get_window_size window in
-    Tools.drawRect (50,50) (sw1-100,sw2-100) render;
-    let ratioX = (float_of_int (sw1-100)) /. (float_of_int ws) in
-    let ratioY =(float_of_int (sw2-100))/. (float_of_int hs) in
+    let (sceneWidth,sceneHeight) = Scene.getSize scene in
+    let (windowWidth,windowHeight) = Sdl.get_window_size window in
+    Tools.drawRect (50,50) (windowWidth-100,windowHeight-100) render;
+    let ratioX = (float_of_int (windowWidth-100)) /. (float_of_int sceneWidth) in
+    let ratioY =(float_of_int (windowHeight-100))/. (float_of_int sceneHeight) in
     List.iter (fun x ->
       selectColor (Objet.getGenre x) render;
-      let (xo,yo) = Objet.getPos x in
-      let (wo,ho) = Objet.getSize x in
-      Tools.drawFillRect (50 + (int_of_float ((float_of_int xo)*.ratioX)), 50 + (int_of_float ((float_of_int yo)*.ratioY)))
-       (int_of_float ((float_of_int wo) *. ratioX),(int_of_float  ((float_of_int ho) *. ratioY))) render) (Scene.getEntitie scene)
+      let (objX,objY) = Objet.getPos x in
+      let (objWidth,objHeight) = Objet.getSize x in
+      Tools.drawFillRect (50 + (int_of_float ((float_of_int objX)*.ratioX)), 50 + (int_of_float ((float_of_int objY)*.ratioY)))
+    (int_of_float ((float_of_int objWidth) *. ratioX),(int_of_float  ((float_of_int objHeight) *. ratioY))) render) (Scene.getEntitie scene)
 
   let drawMini scene window render sizeMap =
     Tools.chooseColor  255 255  255 255 render;
     let (sceneWidth,sceneHeight) = Scene.getSize scene in
-    (* let (demiWidth,demiHeight) = (sceneWidth/2,sceneHeight/2) in*)
-  
-    let (sw1Int,sw2Int) = sizeMap in
-    let (sw1Float,sw2Float) = (float_of_int sw1Int, float_of_int sw2Int) in
-    Tools.drawRect (0,0) (sw1Int,sw2Int) render;
-    let ratioX = sw1Float /. (float_of_int sceneWidth)  in
-    let ratioY =  sw2Float /. (float_of_int sceneHeight)  in
-    let (demiWidth,demiHeight) = (int_of_float ((float_of_int sceneWidth)*.ratioX),int_of_float ((float_of_int sceneHeight)*.ratioY)) in
-    let (xPer,yPer) = Objet.getPos (Scene.getPers scene ) in
+    let (windowWidthInt,windowHeightInt) = sizeMap in
+    let (windowWidthFloat,windowHeightFloat) = (float_of_int windowWidthInt, float_of_int windowHeightInt) in
+    Tools.drawRect (0,0) (windowWidthInt,windowHeightInt) render;
+    let ratioX = windowWidthFloat /. (float_of_int sceneWidth)  in
+    let ratioY =  windowHeightFloat /. (float_of_int sceneHeight)  in
     List.iter (fun x ->
       selectColor (Objet.getGenre x) render;
       let (objX,objY) = Objet.getPos x in
       let (objWidthTemp,objHeightTemp) = Objet.getSize x in
-      let xPers = 
-        if xPer >demiWidth - sw1Int/2 then  demiWidth - sw1Int/2
-        else if xPer < sw1Int/2 then sw1Int/2 else xPer 
-      in
-      let (yPers) = 
-        if yPer >sceneHeight - sw2Int/2 then 
-          (sceneHeight - sw2Int/2)
-        else if yPer < sw2Int/2 then sw2Int/2 else yPer       
-      in
-      let (rx,ry) = ((float_of_int (objX+(-xPers+demiWidth/2))*.ratioX), ((float_of_int (objY+(-yPers+sceneHeight/2)))*.ratioY)) in
-      if (((rx <= float_of_int sw1Int)&&(ry <= float_of_int sw2Int))) then 
-      	let objWidth=
-	  if ((rx+.(float_of_int objWidthTemp)*.ratioX) < float_of_int sw1Int) then
-	    int_of_float (float_of_int objWidthTemp *. ratioX) 
-	  else
-	    begin
-	      sw1Int-(int_of_float rx)
-	    end
-	in
-	let objHeight =
-	  if ((ry+.(float_of_int objHeightTemp)*.ratioY < float_of_int sw2Int)) then
-	    int_of_float  ((float_of_int objHeightTemp) *. ratioY)
-	  else
-	    sw2Int-(int_of_float ry)
-	in	 
-	Tools.drawFillRect (int_of_float rx, int_of_float ry)  (objWidth,objHeight) 	
+      let (objWidth,objHeight) = (int_of_float (ceil( (float_of_int objWidthTemp)*.ratioX)),int_of_float ( ceil ( (float_of_int objHeightTemp)*.ratioY))) in
+      let (x,y) = (((float_of_int (objX))*.ratioX),((float_of_int (objY))*.ratioY)) in
+      Tools.drawFillRect (int_of_float x, int_of_float y)  (objWidth,objHeight) 	
 	  render) (Scene.getEntitie scene)
-
 
   let startMap window render scene =
     (*chargement des éléments de jeu*)
@@ -173,12 +143,5 @@ module GameMap : GameMap  = struct
     let rec sub window renderer bool =
       refresh renderer;
     in sub window render true
-
-	
-
-  
-
-
-	
 end
   
