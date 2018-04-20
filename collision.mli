@@ -8,7 +8,7 @@ module type Collision  = sig
   val replace : Objet.objet -> int -> Objet.objet -> Objet.objet
   val collision_perso : Objet.objet -> Objet.objet -> Objet.objet
   val collision_ennemi : Objet.objet -> Objet.objet -> Objet.objet
-  val collision_projectile : Objet.objet -> Objet.objet
+  val collision_projectile : Objet.objet -> Objet.objet -> Objet.objet
   val collision : Objet.objet -> Objet.objet  -> Objet.objet
 end
 

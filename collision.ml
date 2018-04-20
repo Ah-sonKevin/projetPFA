@@ -8,7 +8,7 @@ module type Collision  = sig
   val replace : Objet.objet -> int -> Objet.objet -> Objet.objet
   val collision_perso : Objet.objet -> Objet.objet -> Objet.objet
   val collision_ennemi : Objet.objet -> Objet.objet -> Objet.objet
-  val collision_projectile : Objet.objet -> Objet.objet
+  val collision_projectile : Objet.objet -> Objet.objet -> Objet.objet
   val collision : Objet.objet -> Objet.objet  -> Objet.objet
 end
 
@@ -128,8 +128,10 @@ module Collision : Collision = struct
        if(xst = 0.0) then Objet.setSpeed (Objet.resetSpeed temp) (-.xs,ys) else Objet.setSpeed (Objet.resetSpeed temp) (xs,0.0)
 		     
 		     
-  let collision_projectile proj =
-    Objet.kill proj
+  let collision_projectile proj obj =
+    match Objet.getGenre obj with
+    |PowerUp _ -> proj
+    |_          -> Objet.kill proj
 
   let collision_powerUp obj1 obj2  =
     match (Objet.getGenre obj2) with
@@ -146,7 +148,7 @@ module Collision : Collision = struct
       match Objet.getGenre obj1 with
       |Personnage -> collision_perso obj1 obj2     
       |Ennemi _   -> collision_ennemi obj1 obj2 
-      |Projectile -> collision_projectile obj1
+      |Projectile -> collision_projectile obj1 obj2
       |PowerUp _  -> collision_powerUp obj1 obj2 
       |_          -> obj1
     else obj1
