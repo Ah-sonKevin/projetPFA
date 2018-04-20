@@ -131,14 +131,15 @@ module Collision : Collision = struct
   let collision_projectile proj =
     Objet.kill proj
 
-  let collision_powerUp obj1 obj2  =   
-    if (Objet.getGenre obj2) = Personnage then
-      begin
-        Sound.play_sound PowerUp;
-        Objet.kill obj1
-      end
-    else
-      obj1
+  let collision_powerUp obj1 obj2  =
+    match (Objet.getGenre obj2) with
+      Personnage ->
+	begin
+          Sound.play_sound PowerUp;
+          Objet.kill obj1
+	end
+    |Wall _ | Plateforme _ -> replace obj1 (directionCollision obj1 obj2) obj2
+    |_                     -> obj1
       
   let collision obj1 obj2  =
     if checkCollision obj1 obj2 then

@@ -18,30 +18,25 @@ module  type Sound = sig
 end
 
 module Sound : Sound = struct 
-
   type effet = Tir|Saut|Degat|MenuC|MenuO|PowerUp
                               
   let init  =
     match (Tsdl_mixer.Mixer.open_audio 44100 Tsdl_mixer.Mixer.default_format  Tsdl_mixer.Mixer.default_channels 1024) with 
     |Error (`Msg e) -> Sdl.log "Init opening error: %s" e; exit 1
-    |Ok () ->  ignore (Tsdl_mixer.Mixer.allocate_channels 100 100)      
-
+    |Ok () ->  ignore (Tsdl_mixer.Mixer.allocate_channels 100 100) 
          
   let loadChunk s = 
     match (Tsdl_mixer.Mixer.load_wav s) with
     |Error (`Msg e) -> Sdl.log "Init opening error: %s" e; exit 1
-    |Ok t -> t
-             
+    |Ok t -> t            
 
   let soundShoot = loadChunk "Son/tir.wav" 
   let soundJump = loadChunk "Son/saut.wav" 
   let soundDommage = loadChunk "Son/degat.wav"    
   let soundMenuC = loadChunk "Son/menuChoice.wav" 
   let soundMenuO = loadChunk "Son/menuOK.wav" 
-  let soundPU = loadChunk "Son/powerUp.wav" 
-                 
-
-        
+  let soundPU = loadChunk "Son/powerUp.wav"             
+     
   let play_mus mus =  
     if Tsdl_mixer.Mixer.playing_music () then 
       begin

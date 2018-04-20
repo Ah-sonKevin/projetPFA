@@ -1,4 +1,3 @@
-
 open Tsdl
 open Objet
 open Anim
@@ -53,9 +52,7 @@ module Scene : Scene =  struct
     }
       
   let getEntitie scene = scene.entities                           
-  let getSize scene = Objet.getSize scene.background 
-  let addEntitie scene objet = {scene with entities =  (objet::scene.entities)}
-  let removeEntitie scene objet = {scene with entities = List.fold_left (fun res obj -> if obj=objet then res else (obj::res)) [] scene.entities}
+  let getSize scene = Objet.getSize scene.background
   let getPers scene = 
     let rec getPers_rec l =
       match l with 
@@ -64,12 +61,15 @@ module Scene : Scene =  struct
       |x::s -> getPers_rec s
     in 
     getPers_rec scene.entities
+    
+  let addEntitie scene objet = {scene with entities =  (objet::scene.entities)}
+  let removeEntitie scene objet = {scene with entities = List.fold_left (fun res obj -> if obj=objet then res else (obj::res)) [] scene.entities}
 
   let newPowerUp (x,y) renderer=   
     if (Random.int 10) <=8 then 
-      (Objet.create (PowerUp HP) (x,y) (0.0,0.0) (0.0,0.0) 100 (Anim.create [||] [|"Image/powerUpHP.bmp"|] [||] [||] renderer) renderer)
+      (Objet.create (PowerUp HP) (x,y) (0.0,0.0) (0.0,1.0) 100 (Anim.create [||] [|"Image/powerUpHP.bmp"|] [||] [||] renderer) renderer)
     else
-      (Objet.create (PowerUp Inv) (x,y) (0.0,0.0) (0.0,0.0) 100 (Anim.create [||] [|"Image/powerUpInv.bmp"|] [||] [||] renderer) renderer)
+      (Objet.create (PowerUp Inv) (x,y) (0.0,0.0) (0.0,1.0) 100 (Anim.create [||] [|"Image/powerUpInv.bmp"|] [||] [||] renderer) renderer)
       
   (*On enleve les objet qui sont mort, on conserve le personnage meme mort, car la scene a besoin de lui pour determiner le game over*)
   let kickDead scene = 

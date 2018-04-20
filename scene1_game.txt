@@ -1,13 +1,23 @@
+
+(*dfgdhrtujghkjhl*)
 Scene 1
 
 (*dfgdhrtujghkjhl*)
 Gravity 0.15
 
+
+(*dfgdhrtujghkjhl*)
 Background Image/Background_2.bmp
 
+
+(*dfgdhrtujghkjhl*)
 Theme Son/theme1.wav
 
+
+(*dfgdhrtujghkjhl*)
 Genre Personnage
+
+(*dfgdhrtujghkjhl*)
 Position (500,300)
 
 Genre Wall (1000,100)

@@ -35,8 +35,14 @@ module Anim : Anim = struct
 	  }
 
   let getFrame ani = ani.frame
+  let getTexture ani = 
+    match ani.dir with 
+    |Milieu -> ani.milieu.(ani.frame)
+    |Gauche -> ani.gauche.(ani.frame)
+    |Droite -> ani.droite.(ani.frame)
+    |Saut   -> ani.saut.(ani.frame)
+       
   let changeDir ani newDir =  {ani with dir = newDir; frame = 0 }
-
   let changeFrame ani newDir =
     if (ani.dir != newDir &&  ani.animated = true) then 
       {ani with dir = newDir; frame = 0 } 
@@ -47,10 +53,5 @@ module Anim : Anim = struct
       |Droite -> {ani with frame = (((ani.frame)+1)mod (Array.length ani.droite))}
       |Saut ->   {ani with frame = (((ani.frame)+1)mod (Array.length ani.saut))} 
                    
-  let getTexture ani = 
-    match ani.dir with 
-    |Milieu -> ani.milieu.(ani.frame)
-    |Gauche -> ani.gauche.(ani.frame)
-    |Droite -> ani.droite.(ani.frame)
-    |Saut   -> ani.saut.(ani.frame)
+
 end

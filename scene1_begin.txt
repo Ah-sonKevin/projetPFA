@@ -1,5 +1,6 @@
 Scene 1
 
+(*dfgdhrtujghkjhl*)
 Gravity 0.15
 
 Background Image/Menu_backscreen_1200_900.bmp
@@ -7,14 +8,17 @@ Background Image/Menu_backscreen_1200_900.bmp
 Theme Son/theme1.wav
 
 Genre Personnage
+(*dfgdhrtujghkjhl*)
 Position (300,200)
 Vitesse (0.0,0.0)
 VitesseMax (5.0,7.5)
+(*dfgdhrtujghkjhl*)
 PV 200
 Animation
 Image/samus/Samus_left/Samus_left_walk/Samus_left_walk1_25_38.bmp
 Image/samus/Samus_left/Samus_left_walk/Samus_left_walk2_25_38.bmp
 Image/samus/Samus_left/Samus_left_walk/Samus_left_walk3_21_38.bmp
+(*dfgdhrtujghkjhl*)
 Image/samus/Samus_left/Samus_left_walk/Samus_left_walk4_20_39.bmp
 Image/samus/Samus_left/Samus_left_walk/Samus_left_walk5_20_38.bmp
 Image/samus/Samus_left/Samus_left_walk/Samus_left_walk6_26_38.bmp
